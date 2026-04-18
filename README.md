@@ -8,7 +8,7 @@
 
 IsdaSure is a Soroban-powered micro-insurance dApp on the Stellar network designed to ensure that fisherfolk are **financially protected during no-fishing days**. Built for coastal communities in the Philippines, it enables users to contribute small, consistent amounts into a shared on-chain fund, creating a reliable safety net during storms and extreme weather conditions.
 
-The name IsdaSure combines “Isda” (fish) and “Sure” (security), representing guaranteed support and peace of mind for fisherfolk when they are unable to earn due to unpredictable weather. It reflects a system built not just for technology, but for real communities that depend on daily income to survive.
+The name IsdaSure combines <b><i>“Isda”</i></b> (fish) and <b><i>“Sure”<i></b> (security), representing guaranteed support and peace of mind for fisherfolk when they are unable to earn due to unpredictable weather. It reflects a system built not just for technology, but for real communities that depend on daily income to survive.
 
 Instead of relying on delayed aid or high-interest loans, IsdaSure uses Soroban smart contracts to automatically distribute pooled funds when a storm is triggered. All transactions are recorded on-chain, ensuring transparency, fairness, and instant payouts without intermediaries—empowering communities with a decentralized and dependable financial protection system.
 
