@@ -30,4 +30,18 @@ Instead of falling into debt, Juan now has a reliable safety net powered by his 
 
 <h2> Stellar Expert Link</h2>
 <img src="frontend/images/stellar.png" width="100%">
-<h3 align="center"><a href="https://stellar.expert/explorer/testnet/contract/CDNZVMTK3RNWWEQTG4JYC55O5P47YYTC2C2ACJVPI5MDJP63TH3KKKKS">Click This to View Contract on Stellar Expert<a></h3>
+<h4 align="center"><a href="https://stellar.expert/explorer/testnet/contract/CDNZVMTK3RNWWEQTG4JYC55O5P47YYTC2C2ACJVPI5MDJP63TH3KKKKS">Click This to View Contract on Stellar Expert<a></h4>
+
+<h2> Smart Contract Address </h2>
+
+`CDNZVMTK3RNWWEQTG4JYC55O5P47YYTC2C2ACJVPI5MDJP63TH3KKKKS`
+
+<h2> Smart Contract Short Description </h2>
+The IsdaSure smart contract is a Soroban-based program deployed on the Stellar network that securely manages the entire lifecycle of the community fund, from collecting contributions to distributing payouts. It allows fisherfolk to contribute small amounts into a shared on-chain pool, where all transactions are recorded transparently and cannot be altered. The contract enforces predefined rules, ensuring that only authorized users—such as a trusted barangay officer—can trigger a storm event. Once triggered, the smart contract automatically calculates and distributes the pooled funds equally among all contributors, eliminating delays, manual processing, and the need for intermediaries. By automating this process, the contract provides a reliable, trustless, and efficient financial safety net that ensures fisherfolk receive immediate support during no-fishing days caused by storms or extreme weather conditions.
+
+<h2>What the IsdaSure Solves</h2>
+<b>Income Loss During Storms</b> – Fisherfolk depend entirely on daily fishing for income, and when storms or extreme weather occur, they are unable to go out to sea, resulting in a complete loss of earnings for several days or even weeks, leaving families without money for basic needs like food and fuel.
+<b>Debt Dependency</b> – Due to the absence of savings or financial safety nets, fisherfolk are often forced to borrow money from informal lenders during no-fishing days, usually at high interest rates, which traps them in a recurring cycle of debt every time bad weather disrupts their livelihood.
+<b>Delayed Financial Aid</b> – Government or NGO assistance is not always immediate and may take days or weeks to reach affected communities, making it unreliable for urgent, day-to-day survival during sudden weather disruptions.
+<b>Limited Access to Insurance<b> – Traditional insurance services are often inaccessible to small-scale fisherfolk due to high costs, complicated requirements, and lack of availability in rural coastal areas, leaving them without any formal financial protection.
+<b>Lack of Transparency</b> – Existing systems for distributing aid or community funds may lack clear tracking and accountability, leading to unequal distribution, mistrust, and uncertainty among beneficiaries, especially in underserved communities.
