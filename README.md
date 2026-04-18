@@ -30,4 +30,4 @@ Instead of falling into debt, Juan now has a reliable safety net powered by his 
 
 <h2> Stellar Expert Link</h2>
 <img src="frontend/images/stellar.png" width="100%"/>
-<h2 align="center"><a href="https://stellar.expert/explorer/testnet/contract/CDNZVMTK3RNWWEQTG4JYC55O5P47YYTC2C2ACJVPI5MDJP63TH3KKKKS">View Contract on Stellar Expert<a></h2>
+<h3 align="center"><a href="https://stellar.expert/explorer/testnet/contract/CDNZVMTK3RNWWEQTG4JYC55O5P47YYTC2C2ACJVPI5MDJP63TH3KKKKS">Click This to View Contract on Stellar Expert<a></h3>
