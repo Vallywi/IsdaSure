@@ -12,13 +12,13 @@ The name IsdaSure combines <b><i>“Isda”</i></b> (fish) and <b><i>“Sure”<
 
 Instead of relying on delayed aid or high-interest loans, IsdaSure uses Soroban smart contracts to automatically distribute pooled funds when a storm is triggered. All transactions are recorded on-chain, ensuring transparency, fairness, and instant payouts without intermediaries—empowering communities with a decentralized and dependable financial protection system.
 
-## PROBLEM 😟
+<h2 alight="center">PROBLEM</h2>
 
 Juan, a small-scale fisherman in a coastal barangay in Batangas, depends on his daily catch to feed his family. On good days, he earns just enough to cover food, fuel, and basic needs. But when a storm hits, Juan cannot go out to sea for days—or even weeks. During this time, his income drops to zero.
 
 With no savings or formal insurance, Juan is forced to borrow money from local lenders just to survive. These loans often come with high interest, trapping him in a cycle of debt every time bad weather strikes. For many fisherfolk like Juan, a single storm doesn’t just stop work—it pushes their families deeper into financial instability, with no reliable system to support them when they need it most.
 
-### SOLUTION 💡
+<h2 alight="center">SOLUTION</h2>
 
 With IsdaSure, Juan no longer faces storms alone. On good days, he contributes a small amount from his earnings into a shared community fund using the app. These contributions are securely stored on-chain through a Soroban smart contract, ensuring that the funds are safe and transparently managed.
 
