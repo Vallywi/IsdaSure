@@ -1,5 +1,10 @@
-## IsdaSure: On-Chain Financial Protection for Coastal Communities 🐟
-![seaa](frontend/gif/sea.gif)
+<h2 align="center">
+  IsdaSure: On-Chain Financial Protection for Coastal Communities 🐟
+</h2>
+
+<p align="center">
+  <img src="frontend/gif/sea.gif" width="100%" />
+</p>
 
 IsdaSure is a Soroban-powered micro-insurance dApp on the Stellar network designed to ensure that fisherfolk are **financially protected during no-fishing days**. Built for coastal communities in the Philippines, it enables users to contribute small, consistent amounts into a shared on-chain fund, creating a reliable safety net during storms and extreme weather conditions.
 
