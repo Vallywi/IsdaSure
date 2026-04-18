@@ -25,3 +25,8 @@ With IsdaSure, Juan no longer faces storms alone. On good days, he contributes a
 When a storm hits and fishing becomes impossible, a trusted local authority—such as a barangay officer—triggers the “storm day” event through the system. This action calls the smart contract, which instantly distributes the pooled funds equally to all contributors, including Juan. There are no forms to fill out, no approvals to wait for, and no middlemen involved.
 
 Instead of falling into debt, Juan now has a reliable safety net powered by his own community—allowing him to focus on recovery and return to work once conditions improve.
+
+<h2>UI/UX SCREENSHOTS</h2>
+
+<h2> Stellar Expert Link</h2>
+<img src="frontend/images/stellar.png" width="100%"/>
