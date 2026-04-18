@@ -1,60 +1,70 @@
 use super::*;
-use soroban_sdk::Env;
+use soroban_sdk::{Env, String};
 
 #[test]
-fn increment_updates_count() {
+fn contribute_updates_pool_and_contributors() {
 	let env = Env::default();
 	let contract_id = env.register_contract(None, IsdaSureContract);
 	let client = IsdaSureContractClient::new(&env, &contract_id);
 
-	assert_eq!(client.get_count(), 0);
-	assert_eq!(client.increment(&5), 5);
-	assert_eq!(client.get_count(), 5);
+	let first_user = String::from_str(&env, "User 1");
+	let second_user = String::from_str(&env, "User 2");
+
+	assert_eq!(client.contribute(&first_user, &50), 50);
+	assert_eq!(client.contribute(&second_user, &50), 100);
+	assert_eq!(client.distribute().len(), 2);
 }
 
 #[test]
-fn reset_clears_count() {
+fn trigger_storm_distributes_evenly() {
 	let env = Env::default();
 	let contract_id = env.register_contract(None, IsdaSureContract);
 	let client = IsdaSureContractClient::new(&env, &contract_id);
 
-	client.increment(&10);
-	client.reset();
+	let user_one = String::from_str(&env, "User 1");
+	let user_two = String::from_str(&env, "User 2");
+	let admin = String::from_str(&env, "admin");
 
-	assert_eq!(client.get_count(), 0);
+	client.contribute(&user_one, &60);
+	client.contribute(&user_two, &60);
+
+	let payouts = client.trigger_storm(&admin);
+
+	assert_eq!(payouts.len(), 2);
+	assert_eq!(payouts.get(0).unwrap().amount, 60);
+	assert_eq!(client.distribute().len(), 0);
 }
 
 #[test]
-fn multiple_increments_accumulate() {
+fn repeated_contributions_accumulate() {
 	let env = Env::default();
 	let contract_id = env.register_contract(None, IsdaSureContract);
 	let client = IsdaSureContractClient::new(&env, &contract_id);
 
-	assert_eq!(client.increment(&2), 2);
-	assert_eq!(client.increment(&3), 5);
-	assert_eq!(client.increment(&4), 9);
-	assert_eq!(client.get_count(), 9);
+	let user = String::from_str(&env, "User 1");
+
+	assert_eq!(client.contribute(&user, &20), 20);
+	assert_eq!(client.contribute(&user, &30), 50);
 }
 
 #[test]
-fn increment_by_zero_keeps_count() {
+fn zero_amount_is_rejected() {
 	let env = Env::default();
 	let contract_id = env.register_contract(None, IsdaSureContract);
 	let client = IsdaSureContractClient::new(&env, &contract_id);
 
-	client.increment(&7);
-	assert_eq!(client.increment(&0), 7);
-	assert_eq!(client.get_count(), 7);
+	let user = String::from_str(&env, "User 1");
+	let result = std::panic::catch_unwind(|| client.contribute(&user, &0));
+	assert!(result.is_err());
 }
 
 #[test]
-fn increment_saturates_at_u32_max() {
+fn unauthorized_admin_is_rejected() {
 	let env = Env::default();
 	let contract_id = env.register_contract(None, IsdaSureContract);
 	let client = IsdaSureContractClient::new(&env, &contract_id);
 
-	let max = u32::MAX;
-	assert_eq!(client.increment(&max), max);
-	assert_eq!(client.increment(&1), max);
-	assert_eq!(client.get_count(), max);
+	let admin = String::from_str(&env, "not-admin");
+	let result = std::panic::catch_unwind(|| client.trigger_storm(&admin));
+	assert!(result.is_err());
 }

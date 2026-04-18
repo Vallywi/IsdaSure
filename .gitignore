@@ -2,6 +2,16 @@
 **/target/
 **/Cargo.lock
 
+# Node / frontend / backend outputs
+**/node_modules/
+frontend/dist/
+backend/dist/
+frontend/.vite/
+backend/.vite/
+.env
+.env.*
+*.log
+
 # Editor and OS files
 .vscode/
 .idea/
