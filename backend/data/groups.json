@@ -1,0 +1,48 @@
+{
+  "groups": [
+    {
+      "id": "group-1776607690883",
+      "name": "SmokeGroup-1776607690799",
+      "createdBy": {
+        "identifier": "smoke@isdasure.dev",
+        "walletAddress": "GDUMMYWALLET",
+        "fullName": "Smoke User"
+      },
+      "dailyLimit": 1000,
+      "members": [
+        {
+          "identifier": "smoke@isdasure.dev",
+          "walletAddress": "GDUMMYWALLET",
+          "fullName": "Smoke User",
+          "joinedAt": "2026-04-19T14:08:10.883Z"
+        }
+      ],
+      "createdAt": "2026-04-19T14:08:10.883Z"
+    },
+    {
+      "id": "group-1776607780025",
+      "name": "Malungay Pandesal",
+      "createdBy": {
+        "identifier": "jecynvallirieturbanos@gmail.com",
+        "walletAddress": "GCC2L3MRJLUICVJCPI7R2RBJPID6RCC6USWXKOVE5XSRRTY5ANW5RQ6D",
+        "fullName": "Vallirie Turbanos"
+      },
+      "dailyLimit": 1000,
+      "members": [
+        {
+          "identifier": "jecynvallirieturbanos@gmail.com",
+          "walletAddress": "GCC2L3MRJLUICVJCPI7R2RBJPID6RCC6USWXKOVE5XSRRTY5ANW5RQ6D",
+          "fullName": "Vallirie Turbanos",
+          "joinedAt": "2026-04-19T14:09:40.025Z"
+        },
+        {
+          "identifier": "zarrahexekielvalles@gmail.com",
+          "walletAddress": "GCC2L3MRJLUICVJCPI7R2RBJPID6RCC6USWXKOVE5XSRRTY5ANW5RQ6D",
+          "fullName": "Zarswae Ganda sha",
+          "joinedAt": "2026-04-19T16:23:16.097Z"
+        }
+      ],
+      "createdAt": "2026-04-19T14:09:40.025Z"
+    }
+  ]
+}

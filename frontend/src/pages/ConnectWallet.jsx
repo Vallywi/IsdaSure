@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle2, Landmark, ShieldCheck, UserRound } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
+import adminImage from '../../images/Admin.jpg';
+import userImage from '../../images/User.jpg';
+import communityImage from '../../images/Community.jpg';
 import SpotlightCard from '../components/SpotlightCard';
 import { useWallet } from '../hooks/useWallet';
 
@@ -168,21 +171,21 @@ export default function ConnectWallet() {
       title: 'Admins',
       description: 'Monitor users, trigger storm events, and keep payout actions transparent.',
       points: ['Role-restricted controls', 'Payout execution logs', 'Wallet-bound operations'],
-      icon: Landmark,
+      image: adminImage,
     },
     {
       action: 'Action: Contribute',
       title: 'Users',
       description: 'Contribute to the community pool and maintain a verifiable personal contribution history.',
       points: ['Fast wallet onboarding', 'Profile-linked history', 'Transparent status updates'],
-      icon: UserRound,
+      image: userImage,
     },
     {
       action: 'Action: Verify',
       title: 'Community',
       description: 'Track pool movement and payout events with tamper-resistant, role-based visibility.',
       points: ['Real-time pool stats', 'Payout transparency', 'Accountability by design'],
-      icon: ShieldCheck,
+      image: communityImage,
     },
   ];
 
@@ -199,20 +202,13 @@ export default function ConnectWallet() {
           }}
         >
           <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
+            <div className="group flex items-center gap-2">
               <div className="h-11 w-11 shrink-0 overflow-visible">
-                <img src="/logo.png" alt="IsdaSure logo" className="h-11 w-11 scale-[1.45] object-contain" />
-              </div>
-              <div>
-                <p className="text-lg font-semibold tracking-tight text-[color:var(--foreground)]">IsdaSure</p>
-                <p className="linear-kicker !tracking-[0.16em] !text-[10px]">Digital marine resilience platform</p>
+                <img src="/logo.png" alt="IsdaSure logo" className="h-11 w-11 origin-left translate-x-0 scale-[4.5] object-contain" />
               </div>
             </div>
 
             <div className="hidden items-center gap-2 md:flex">
-              <button type="button" onClick={() => navigate('/roles')} className="linear-button-ghost rounded-lg px-4 py-2 text-sm">
-                Login
-              </button>
               <button type="button" onClick={handleConnect} className="linear-button-primary px-4 py-2 text-sm">
                 Connect Wallet
               </button>
@@ -265,7 +261,7 @@ export default function ConnectWallet() {
 
       <main className="mx-auto max-w-7xl space-y-60 px-4 pb-10 pt-32 sm:px-6 lg:px-8 lg:space-y-40 lg:pb-14 lg:pt-36">
 
-        <section ref={ecosystemRef} className="space-y-8">
+        <section ref={ecosystemRef} className="space-y-12 sm:space-y-14">
           <div
             className={[
               'space-y-2 text-center transition-all duration-700 ease-out',
@@ -278,8 +274,6 @@ export default function ConnectWallet() {
 
           <div className="grid gap-4 lg:grid-cols-3">
             {ecosystemCards.map((card, index) => {
-              const Icon = card.icon;
-
               return (
               <div
                 key={card.title}
@@ -289,21 +283,24 @@ export default function ConnectWallet() {
                 ].join(' ')}
                 style={!reduceMotion ? { transitionDelay: `${140 + index * 120}ms` } : undefined}
               >
-                <SpotlightCard as="article" className="p-6">
-                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-500/15 text-blue-200">
-                    <Icon className="h-6 w-6" strokeWidth={2.2} />
+                <SpotlightCard as="article" className="flex h-full min-h-[460px] flex-col overflow-hidden !p-0 text-center sm:min-h-[500px]">
+                  <div className="relative h-44 w-full overflow-hidden border-b border-white/12 shadow-[0_16px_30px_rgba(2,6,23,0.42)] sm:h-52">
+                    <img src={card.image} alt={`${card.title} role`} className="h-full w-full object-cover opacity-95" />
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-slate-900/10 via-transparent to-slate-950/35" />
                   </div>
-                  <p className="linear-kicker">{card.action}</p>
-                  <h3 className="mt-3 text-2xl font-semibold tracking-tight text-[color:var(--foreground)]">{card.title}</h3>
-                  <p className="mt-3 text-sm leading-6 linear-muted">{card.description}</p>
-                  <ul className="mt-5 space-y-2 text-sm text-[color:var(--foreground)]">
-                    {card.points.map((point) => (
-                      <li key={point} className="flex items-center gap-2 font-semibold">
-                        <CheckCircle2 className="h-4 w-4 shrink-0 text-blue-300" strokeWidth={2.2} />
-                        <span>{point}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="flex w-full flex-col items-center gap-3 px-6 pb-6 pt-4 sm:px-7 sm:pb-7 sm:pt-5">
+                    <p className="linear-kicker">{card.action}</p>
+                    <h3 className="text-2xl font-semibold tracking-tight text-[color:var(--foreground)]">{card.title}</h3>
+                    <p className="max-w-[34ch] text-sm leading-7 linear-muted">{card.description}</p>
+                    <ul className="mt-2 space-y-3 text-sm text-[color:var(--foreground)]">
+                      {card.points.map((point) => (
+                        <li key={point} className="flex items-center justify-center gap-2 font-semibold">
+                          <CheckCircle2 className="h-4 w-4 shrink-0 text-blue-300" strokeWidth={2.2} />
+                          <span>{point}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </SpotlightCard>
               </div>
               );

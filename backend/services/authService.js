@@ -1,3 +1,9 @@
+const fs = require('fs');
+const path = require('path');
+
+const dataDirectory = path.join(__dirname, '..', 'data');
+const usersFilePath = path.join(dataDirectory, 'users.json');
+
 const seedUsers = [
   {
     id: 'admin-1',
@@ -8,11 +14,46 @@ const seedUsers = [
     age: 40,
     walletAddress: '',
     profilePicture: '',
+    activityHistory: [
+      {
+        id: 'activity-admin-seed',
+        type: 'system',
+        title: 'System account ready',
+        amount: 0,
+        timestamp: new Date().toISOString(),
+      },
+    ],
     createdAt: new Date().toISOString(),
   },
 ];
 
-const users = [...seedUsers];
+function ensureUsersStore() {
+  if (!fs.existsSync(dataDirectory)) {
+    fs.mkdirSync(dataDirectory, { recursive: true });
+  }
+
+  if (!fs.existsSync(usersFilePath)) {
+    fs.writeFileSync(usersFilePath, JSON.stringify(seedUsers, null, 2));
+  }
+}
+
+function readUsersFromDisk() {
+  try {
+    ensureUsersStore();
+    const raw = fs.readFileSync(usersFilePath, 'utf8');
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [...seedUsers];
+  } catch {
+    return [...seedUsers];
+  }
+}
+
+function saveUsersToDisk(nextUsers) {
+  ensureUsersStore();
+  fs.writeFileSync(usersFilePath, JSON.stringify(nextUsers, null, 2));
+}
+
+const users = readUsersFromDisk();
 
 function publicUser(user) {
   return {
@@ -23,6 +64,7 @@ function publicUser(user) {
     age: user.age,
     walletAddress: user.walletAddress,
     profilePicture: user.profilePicture,
+    activityHistory: [...(user.activityHistory || [])],
     createdAt: user.createdAt,
   };
 }
@@ -34,6 +76,78 @@ function normalizeIdentifier(identifier) {
 function findUserByIdentifier(identifier) {
   const value = normalizeIdentifier(identifier);
   return users.find((user) => normalizeIdentifier(user.identifier) === value);
+}
+
+function findUserByWalletAddress(walletAddress) {
+  const value = String(walletAddress || '').trim().toLowerCase();
+  if (!value) {
+    return null;
+  }
+
+  return users.find((user) => String(user.walletAddress || '').trim().toLowerCase() === value);
+}
+
+function findUserByFullName(fullName) {
+  const value = String(fullName || '').trim().toLowerCase();
+  if (!value) {
+    return null;
+  }
+
+  return users.find((user) => String(user.fullName || '').trim().toLowerCase() === value);
+}
+
+function resolveUser({ identifier, walletAddress, fullName } = {}) {
+  return (
+    findUserByIdentifier(identifier) ||
+    findUserByWalletAddress(walletAddress) ||
+    findUserByFullName(fullName) ||
+    findUserByIdentifier(fullName)
+  );
+}
+
+function recordUserActivity({ identifier, walletAddress, fullName } = {}, activity = {}) {
+  const user = resolveUser({ identifier, walletAddress, fullName });
+
+  if (!user) {
+    return null;
+  }
+
+  const historyEntry = {
+    id: `activity-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+    type: activity.type || 'activity',
+    title: activity.title || 'Activity recorded',
+    user: activity.user || user.fullName || user.identifier,
+    identifier: user.identifier,
+    walletAddress: user.walletAddress,
+    amount: Number(activity.amount || 0),
+    timestamp: activity.timestamp || new Date().toISOString(),
+    metadata: activity.metadata || {},
+  };
+
+  user.activityHistory = [historyEntry, ...(user.activityHistory || [])].slice(0, 50);
+  saveUsersToDisk(users);
+
+  return publicUser(user);
+}
+
+function getDailyContributionTotal({ identifier, walletAddress, fullName } = {}, date = new Date()) {
+  const user = resolveUser({ identifier, walletAddress, fullName });
+  if (!user) {
+    return 0;
+  }
+
+  const dayStart = new Date(date);
+  dayStart.setHours(0, 0, 0, 0);
+  const dayEnd = new Date(dayStart);
+  dayEnd.setDate(dayEnd.getDate() + 1);
+
+  return (user.activityHistory || [])
+    .filter((entry) => entry.type === 'contribution')
+    .filter((entry) => {
+      const time = new Date(entry.timestamp).getTime();
+      return Number.isFinite(time) && time >= dayStart.getTime() && time < dayEnd.getTime();
+    })
+    .reduce((sum, entry) => sum + Number(entry.amount || 0), 0);
 }
 
 function registerUser(payload = {}) {
@@ -74,10 +188,23 @@ function registerUser(payload = {}) {
     age,
     walletAddress,
     profilePicture,
+    activityHistory: [
+      {
+        id: `activity-register-${Date.now()}`,
+        type: 'registration',
+        title: 'Account registered',
+        amount: 0,
+        timestamp: new Date().toISOString(),
+        metadata: {
+          walletAddress,
+        },
+      },
+    ],
     createdAt: new Date().toISOString(),
   };
 
   users.push(user);
+  saveUsersToDisk(users);
 
   return publicUser(user);
 }
@@ -115,4 +242,7 @@ module.exports = {
   registerUser,
   loginUser,
   listUsers,
+  recordUserActivity,
+  resolveUser,
+  getDailyContributionTotal,
 };

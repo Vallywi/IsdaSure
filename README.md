@@ -2,6 +2,32 @@
   IsdaSure: On-Chain Financial Protection for Coastal Communities 🐟
 </h2>
 
+<h2>Run Locally (Single Server)</h2>
+
+Use these commands from the project root:
+
+```bash
+npm install
+npm --prefix backend install
+npm --prefix frontend install
+```
+
+Development mode (single exposed server at port 4000):
+
+```bash
+npm run dev:single
+```
+
+Open in browser:
+
+`http://localhost:4000`
+
+Production-like mode (build once, serve from backend):
+
+```bash
+npm run start
+```
+
 <p align="center">
   <img src="frontend/gif/sea.gif" height="250px" style="object-fit: cover;" />
 </p>

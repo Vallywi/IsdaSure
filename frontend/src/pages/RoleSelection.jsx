@@ -12,7 +12,7 @@ function OptionCard({ title, action, copy, points, onClick, icon: Icon, highligh
       type="button"
       onClick={onClick}
       className={[
-        'w-full min-h-[255px] p-8 text-left transition-transform duration-300 hover:scale-[1.02] sm:min-h-[270px] [&::before]:hidden',
+        'flex w-full min-h-[470px] flex-col items-center justify-center p-8 text-center transition-transform duration-300 hover:scale-[1.02] sm:min-h-[540px] [&::before]:hidden',
         highlighted
           ? 'border-[color:var(--border-hover)] bg-[linear-gradient(180deg,rgba(30,58,138,0.46),rgba(15,23,42,0.9))] shadow-[0_0_0_1px_rgba(96,165,250,0.35),0_18px_38px_rgba(30,58,138,0.3)]'
           : 'bg-[linear-gradient(180deg,rgba(15,23,42,0.72),rgba(2,6,23,0.92))]',
@@ -33,11 +33,11 @@ function OptionCard({ title, action, copy, points, onClick, icon: Icon, highligh
       </p>
 
       <p className="mt-3 text-4xl font-semibold tracking-tight text-[color:var(--foreground)]">{title}</p>
-      <p className="mt-4 text-sm leading-7 linear-muted">{copy}</p>
+      <p className="mt-4 max-w-[34ch] text-sm leading-7 linear-muted">{copy}</p>
 
-      <ul className="mt-6 space-y-3">
+      <ul className="mt-6 space-y-3 text-center">
         {points.map((point) => (
-          <li key={point} className="flex items-center gap-3 text-sm font-semibold text-[color:var(--foreground)]">
+          <li key={point} className="mx-auto flex w-fit items-center gap-3 text-sm font-semibold text-[color:var(--foreground)]">
             <CheckCircle2 className={['h-5 w-5', highlighted ? 'text-indigo-300' : 'text-blue-300'].join(' ')} strokeWidth={2.2} />
             <span>{point}</span>
           </li>
@@ -63,10 +63,10 @@ export default function RoleSelection() {
       <main className="mx-auto max-w-7xl py-8 md:py-12">
         <section className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           <OptionCard
-            title="Admins"
+            title="Barangay Officials"
             action="Action: Manage"
-            copy="Monitor users, trigger storm events, and keep payout actions transparent."
-            points={['Role-restricted controls', 'Payout execution logs', 'Wallet-bound operations']}
+            copy="Barangay officials in small islands monitor members, trigger storm actions, and keep payout activity transparent."
+            points={['Storm trigger control', 'Payout execution logs', 'Wallet-bound governance actions']}
             icon={Landmark}
             onClick={() => {
               setSelectedRole('admin');
@@ -74,10 +74,10 @@ export default function RoleSelection() {
             }}
           />
           <OptionCard
-            title="Users"
-            action="Action: Contribute"
-            copy="Contribute to the community pool and maintain a verifiable personal contribution history."
-            points={['Fast wallet onboarding', 'Profile-linked history', 'Transparent status updates']}
+            title="Log In / Sign In"
+            action="Already have an account?"
+            copy="Access your existing account through a secure wallet-linked sign-in flow."
+            points={['Existing account access', 'Role-based sign in', 'Secure wallet session']}
             icon={UserRound}
             highlighted
             onClick={() => {
@@ -86,10 +86,10 @@ export default function RoleSelection() {
             }}
           />
           <OptionCard
-            title="Community"
-            action="Action: Verify"
-            copy="Track pool movement and payout events with tamper-resistant, role-based visibility."
-            points={['Real-time pool stats', 'Payout transparency', 'Accountability by design']}
+            title="Sign Up / Register"
+            action="New to IsdaSure?"
+            copy="Create an account to join the community and start with wallet-linked registration."
+            points={['Quick account creation', 'Wallet-linked registration', 'Ready for contribution tracking']}
             icon={ShieldCheck}
             onClick={() => {
               setSelectedRole('user');

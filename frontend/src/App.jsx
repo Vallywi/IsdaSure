@@ -7,6 +7,8 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
+import ContributionHistory from './pages/ContributionHistory';
+import ToastStack from './components/ToastStack';
 
 export default function App() {
   return (
@@ -24,10 +26,12 @@ export default function App() {
           <Route path="/login/:role" element={<Login />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/contribution-history" element={<ContributionHistory />} />
             <Route path="/admin" element={<Admin />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        <ToastStack />
       </BrowserRouter>
     </AppProvider>
   );

@@ -1,2 +1,6 @@
 # Keep contract test snapshot files in LF to avoid CRLF warnings on Windows.
 contract/test_snapshots/**/*.json text eol=lf
+
+# Keep backend data and root package metadata in LF as well.
+backend/data/**/*.json text eol=lf
+package.json text eol=lf

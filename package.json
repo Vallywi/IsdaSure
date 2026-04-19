@@ -1,4 +1,11 @@
 {
+  "scripts": {
+    "build:frontend": "npm --prefix frontend run build",
+    "build:frontend:watch": "npm --prefix frontend run build -- --watch --emptyOutDir false",
+    "start:backend": "npm --prefix backend start",
+    "start": "npm run build:frontend && npm run start:backend",
+    "dev:single": "node scripts/dev-single-server.js"
+  },
   "dependencies": {
     "lucide-react": "^1.8.0"
   }

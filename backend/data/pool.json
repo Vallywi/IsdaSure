@@ -1,0 +1,525 @@
+{
+  "totalPool": 198,
+  "contributors": [
+    "User 1",
+    "User 2",
+    "User 3",
+    "User 4",
+    "User 5",
+    "User 6",
+    "Vallirie Turbanos",
+    "Zarrah Exekiel Valles",
+    "Zarswae Ganda sha"
+  ],
+  "recentContributions": [
+    {
+      "user": "Zarswae Ganda sha",
+      "amount": 100,
+      "time": "Just now"
+    },
+    {
+      "user": "Vallirie Turbanos",
+      "amount": 98,
+      "time": "Just now"
+    },
+    {
+      "user": "Vallirie Turbanos",
+      "amount": 100,
+      "time": "Just now"
+    },
+    {
+      "user": "Vallirie Turbanos",
+      "amount": 50,
+      "time": "Just now"
+    },
+    {
+      "user": "Vallirie Turbanos",
+      "amount": 50,
+      "time": "Just now"
+    }
+  ],
+  "payouts": [
+    {
+      "user": "User 1",
+      "amount": 31.25
+    },
+    {
+      "user": "User 2",
+      "amount": 31.25
+    },
+    {
+      "user": "User 3",
+      "amount": 31.25
+    },
+    {
+      "user": "User 4",
+      "amount": 31.25
+    },
+    {
+      "user": "User 5",
+      "amount": 31.25
+    },
+    {
+      "user": "User 6",
+      "amount": 31.25
+    },
+    {
+      "user": "Vallirie Turbanos",
+      "amount": 31.25
+    },
+    {
+      "user": "Zarrah Exekiel Valles",
+      "amount": 31.25
+    }
+  ],
+  "lastUpdated": "Now",
+  "chainHistory": [
+    {
+      "id": "chain-1776615818152-c1d8fc",
+      "type": "contribution",
+      "user": "Zarswae Ganda sha",
+      "amount": 100,
+      "groupName": "Malungay Pandesal",
+      "txHash": "8110e396f6c1c9f134aba9e0f6a2090a778f7981f83246d3f12e5cd310aece6f",
+      "status": "CONFIRMED",
+      "ledger": 2122139,
+      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/8110e396f6c1c9f134aba9e0f6a2090a778f7981f83246d3f12e5cd310aece6f",
+      "timestamp": "2026-04-19T16:23:38.152Z",
+      "contractResult": {
+        "_maxDepth": 200,
+        "_switch": {
+          "name": "scvU32",
+          "value": 3
+        },
+        "_arm": "u32",
+        "_value": 198
+      }
+    },
+    {
+      "id": "chain-1776615507907-6ba93a",
+      "type": "contribution",
+      "user": "Vallirie Turbanos",
+      "amount": 98,
+      "groupName": "Malungay Pandesal",
+      "txHash": "97761f05e54855265e22f01fd4edd8565d502f650bddb8a75dfb39abe569ab7c",
+      "status": "CONFIRMED",
+      "ledger": 2122077,
+      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/97761f05e54855265e22f01fd4edd8565d502f650bddb8a75dfb39abe569ab7c",
+      "timestamp": "2026-04-19T16:18:27.907Z",
+      "contractResult": {
+        "_maxDepth": 200,
+        "_switch": {
+          "name": "scvU32",
+          "value": 3
+        },
+        "_arm": "u32",
+        "_value": 98
+      }
+    },
+    {
+      "id": "chain-1776615348384-61db06",
+      "type": "storm",
+      "user": "admin@isdasure.dev",
+      "amount": 31.25,
+      "txHash": "5ad1d7c985db6e448cd615084d842569ef7f8e38bf827bc52f4f950f0cff6b07",
+      "status": "CONFIRMED",
+      "ledger": 2122045,
+      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/5ad1d7c985db6e448cd615084d842569ef7f8e38bf827bc52f4f950f0cff6b07",
+      "timestamp": "2026-04-19T16:15:48.384Z",
+      "contractResult": {
+        "_maxDepth": 200,
+        "_switch": {
+          "name": "scvVoid",
+          "value": 1
+        }
+      }
+    },
+    {
+      "id": "chain-1776614882113-149288",
+      "type": "contribution",
+      "user": "Vallirie Turbanos",
+      "amount": 100,
+      "groupName": "Malungay Pandesal",
+      "txHash": "69639c808ae0c1aa34c2ba23a1eec0cbe9014e59c5034ef18d0879eb403f1d53",
+      "status": "CONFIRMED",
+      "ledger": 2121952,
+      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/69639c808ae0c1aa34c2ba23a1eec0cbe9014e59c5034ef18d0879eb403f1d53",
+      "timestamp": "2026-04-19T16:08:02.113Z",
+      "contractResult": {
+        "_maxDepth": 200,
+        "_switch": {
+          "name": "scvU32",
+          "value": 3
+        },
+        "_arm": "u32",
+        "_value": 150
+      }
+    },
+    {
+      "id": "chain-1776614746557-772168",
+      "type": "contribution",
+      "user": "Vallirie Turbanos",
+      "amount": 50,
+      "groupName": "Malungay Pandesal",
+      "txHash": "8c53d5223c214b214c78ff37cf87ba6c5e69aa8c3a3b9191f08572da334fd312",
+      "status": "CONFIRMED",
+      "ledger": 2121925,
+      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/8c53d5223c214b214c78ff37cf87ba6c5e69aa8c3a3b9191f08572da334fd312",
+      "timestamp": "2026-04-19T16:05:46.557Z",
+      "contractResult": {
+        "_maxDepth": 200,
+        "_switch": {
+          "name": "scvU32",
+          "value": 3
+        },
+        "_arm": "u32",
+        "_value": 50
+      }
+    },
+    {
+      "id": "chain-1776613803779-80976c",
+      "type": "contribution",
+      "user": "Vallirie Turbanos",
+      "amount": 50,
+      "groupName": "Malungay Pandesal",
+      "txHash": "",
+      "status": "CONFIRMED",
+      "ledger": null,
+      "explorerUrl": "",
+      "timestamp": "2026-04-19T15:50:03.779Z",
+      "contractResult": {
+        "note": "No Soroban RPC configured; using mocked confirmation. Set SOROBAN_RPC_URL to enable real on-chain submission.",
+        "contractCall": {
+          "contractId": "CDNZVMTK3RNWWEQTG4JYC55O5P47YYTC2C2ACJVPI5MDJP63TH3KKKKS",
+          "method": "contribute",
+          "args": {
+            "user": "Vallirie Turbanos",
+            "amount": 50
+          }
+        }
+      }
+    },
+    {
+      "id": "chain-1776613790302-fb6e21",
+      "type": "contribution",
+      "user": "Vallirie Turbanos",
+      "amount": 50,
+      "groupName": "Malungay Pandesal",
+      "txHash": "",
+      "status": "CONFIRMED",
+      "ledger": null,
+      "explorerUrl": "",
+      "timestamp": "2026-04-19T15:49:50.302Z",
+      "contractResult": {
+        "note": "No Soroban RPC configured; using mocked confirmation. Set SOROBAN_RPC_URL to enable real on-chain submission.",
+        "contractCall": {
+          "contractId": "CDNZVMTK3RNWWEQTG4JYC55O5P47YYTC2C2ACJVPI5MDJP63TH3KKKKS",
+          "method": "contribute",
+          "args": {
+            "user": "Vallirie Turbanos",
+            "amount": 50
+          }
+        }
+      }
+    },
+    {
+      "id": "chain-1776610287942-a48584",
+      "type": "storm",
+      "user": "admin@isdasure.dev",
+      "amount": 6.25,
+      "txHash": "0adf567ced9ccab281560513b2dc74c610d92b6726a77992500a69b436fa8820",
+      "status": "CONFIRMED",
+      "ledger": null,
+      "explorerUrl": "",
+      "timestamp": "2026-04-19T14:51:27.942Z",
+      "contractResult": {
+        "method": "trigger_storm",
+        "note": "No Soroban RPC configured; using mocked confirmation. Set SOROBAN_RPC_URL to enable real on-chain submission."
+      }
+    },
+    {
+      "id": "chain-1776610221986-c71dd9",
+      "type": "contribution",
+      "user": "Vallirie Turbanos",
+      "amount": 50,
+      "groupName": "Malungay Pandesal",
+      "txHash": "81f0bf91461ddb3858993f79354cf533adbaee012437688599b71b9b2d6cc58f",
+      "status": "CONFIRMED",
+      "ledger": null,
+      "explorerUrl": "",
+      "timestamp": "2026-04-19T14:50:21.986Z",
+      "contractResult": {
+        "method": "contribute",
+        "note": "No Soroban RPC configured; using mocked confirmation. Set SOROBAN_RPC_URL to enable real on-chain submission."
+      }
+    },
+    {
+      "id": "chain-1776608042357-40453b",
+      "type": "storm",
+      "user": "admin@isdasure.dev",
+      "amount": 100.13,
+      "txHash": "e4e52673692e0a3b8a6889e20a642f4ddaca0be0d8dcd93df816ee720069e06b",
+      "status": "CONFIRMED",
+      "ledger": null,
+      "explorerUrl": "",
+      "timestamp": "2026-04-19T14:14:02.357Z",
+      "contractResult": {
+        "method": "trigger_storm",
+        "note": "No Soroban RPC configured; using mocked confirmation. Set SOROBAN_RPC_URL to enable real on-chain submission."
+      }
+    },
+    {
+      "id": "chain-1776607814304-bb94d4",
+      "type": "contribution",
+      "user": "Vallirie Turbanos",
+      "amount": 50,
+      "groupName": "Malungay Pandesal",
+      "txHash": "af7b688d8702737571ccab7d3257e03dff7dc9eb46bee8eacb02e62bbdedc527",
+      "status": "CONFIRMED",
+      "ledger": null,
+      "explorerUrl": "",
+      "timestamp": "2026-04-19T14:10:14.304Z",
+      "contractResult": {
+        "method": "contribute",
+        "note": "No Soroban RPC configured; using mocked confirmation. Set SOROBAN_RPC_URL to enable real on-chain submission."
+      }
+    },
+    {
+      "id": "chain-1776605944213-a71135",
+      "type": "contribution",
+      "user": "Vallirie Turbanos",
+      "amount": 101,
+      "txHash": "aa899ef70b236399aeaac03581f9bcd40992f06b65bc1ebe69473752c3f86ab2",
+      "status": "CONFIRMED",
+      "ledger": null,
+      "explorerUrl": "",
+      "timestamp": "2026-04-19T13:39:04.213Z",
+      "contractResult": {
+        "method": "contribute",
+        "note": "No Soroban RPC configured; using mocked confirmation. Set SOROBAN_RPC_URL to enable real on-chain submission."
+      }
+    },
+    {
+      "id": "chain-1776605917160-62e86e",
+      "type": "contribution",
+      "user": "Vallirie Turbanos",
+      "amount": 50,
+      "txHash": "180fb7167e09f2f0409e2fa7c078f57cd9e3d761497e9def8ff82dd8fa2ec1b7",
+      "status": "CONFIRMED",
+      "ledger": null,
+      "explorerUrl": "",
+      "timestamp": "2026-04-19T13:38:37.160Z",
+      "contractResult": {
+        "method": "contribute",
+        "note": "No Soroban RPC configured; using mocked confirmation. Set SOROBAN_RPC_URL to enable real on-chain submission."
+      }
+    },
+    {
+      "id": "chain-1776605588459-6502e6",
+      "type": "contribution",
+      "user": "Vallirie Turbanos",
+      "amount": 50,
+      "txHash": "4dd9a8f43d6b3a650ccc0472d86a11e56f0a526b935c11dc661d01c66c3fced2",
+      "status": "CONFIRMED",
+      "ledger": null,
+      "explorerUrl": "",
+      "timestamp": "2026-04-19T13:33:08.459Z",
+      "contractResult": {
+        "method": "contribute",
+        "note": "No Soroban RPC configured; using mocked confirmation. Set SOROBAN_RPC_URL to enable real on-chain submission."
+      }
+    },
+    {
+      "id": "chain-1776605234961-2e5f9d",
+      "type": "contribution",
+      "user": "Vallirie Turbanos",
+      "amount": 50,
+      "txHash": "8bb62e6c807303976062075b4b3faf10b84f5f58dbf4c4e4a9240159272f4d79",
+      "status": "CONFIRMED",
+      "ledger": null,
+      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/8bb62e6c807303976062075b4b3faf10b84f5f58dbf4c4e4a9240159272f4d79",
+      "timestamp": "2026-04-19T13:27:14.961Z",
+      "contractResult": {
+        "method": "contribute",
+        "note": "No Soroban RPC configured; using mocked confirmation."
+      }
+    },
+    {
+      "id": "chain-1776605182037-314b5a",
+      "type": "contribution",
+      "user": "Vallirie Turbanos",
+      "amount": 50,
+      "txHash": "281375b691d7143ec7a5206108e63a822340f0ff3f5f6a5de00d491d43e06f98",
+      "status": "CONFIRMED",
+      "ledger": null,
+      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/281375b691d7143ec7a5206108e63a822340f0ff3f5f6a5de00d491d43e06f98",
+      "timestamp": "2026-04-19T13:26:22.038Z",
+      "contractResult": {
+        "method": "contribute",
+        "note": "No Soroban RPC configured; using mocked confirmation."
+      }
+    }
+  ],
+  "payoutLogs": [
+    {
+      "id": "payout-1776615348384-c9633f-User 1",
+      "type": "payout",
+      "user": "User 1",
+      "amount": 31.25,
+      "timestamp": "2026-04-19T16:15:48.384Z",
+      "txHash": "5ad1d7c985db6e448cd615084d842569ef7f8e38bf827bc52f4f950f0cff6b07",
+      "txStatus": "CONFIRMED",
+      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/5ad1d7c985db6e448cd615084d842569ef7f8e38bf827bc52f4f950f0cff6b07"
+    },
+    {
+      "id": "payout-1776615348384-8dc4fd-User 2",
+      "type": "payout",
+      "user": "User 2",
+      "amount": 31.25,
+      "timestamp": "2026-04-19T16:15:48.384Z",
+      "txHash": "5ad1d7c985db6e448cd615084d842569ef7f8e38bf827bc52f4f950f0cff6b07",
+      "txStatus": "CONFIRMED",
+      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/5ad1d7c985db6e448cd615084d842569ef7f8e38bf827bc52f4f950f0cff6b07"
+    },
+    {
+      "id": "payout-1776615348384-28bbae-User 3",
+      "type": "payout",
+      "user": "User 3",
+      "amount": 31.25,
+      "timestamp": "2026-04-19T16:15:48.384Z",
+      "txHash": "5ad1d7c985db6e448cd615084d842569ef7f8e38bf827bc52f4f950f0cff6b07",
+      "txStatus": "CONFIRMED",
+      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/5ad1d7c985db6e448cd615084d842569ef7f8e38bf827bc52f4f950f0cff6b07"
+    },
+    {
+      "id": "payout-1776615348384-a64652-User 4",
+      "type": "payout",
+      "user": "User 4",
+      "amount": 31.25,
+      "timestamp": "2026-04-19T16:15:48.384Z",
+      "txHash": "5ad1d7c985db6e448cd615084d842569ef7f8e38bf827bc52f4f950f0cff6b07",
+      "txStatus": "CONFIRMED",
+      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/5ad1d7c985db6e448cd615084d842569ef7f8e38bf827bc52f4f950f0cff6b07"
+    },
+    {
+      "id": "payout-1776615348384-dd29ce-User 5",
+      "type": "payout",
+      "user": "User 5",
+      "amount": 31.25,
+      "timestamp": "2026-04-19T16:15:48.384Z",
+      "txHash": "5ad1d7c985db6e448cd615084d842569ef7f8e38bf827bc52f4f950f0cff6b07",
+      "txStatus": "CONFIRMED",
+      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/5ad1d7c985db6e448cd615084d842569ef7f8e38bf827bc52f4f950f0cff6b07"
+    },
+    {
+      "id": "payout-1776615348384-68a8f6-User 6",
+      "type": "payout",
+      "user": "User 6",
+      "amount": 31.25,
+      "timestamp": "2026-04-19T16:15:48.384Z",
+      "txHash": "5ad1d7c985db6e448cd615084d842569ef7f8e38bf827bc52f4f950f0cff6b07",
+      "txStatus": "CONFIRMED",
+      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/5ad1d7c985db6e448cd615084d842569ef7f8e38bf827bc52f4f950f0cff6b07"
+    },
+    {
+      "id": "payout-1776615348384-b93dc8-Vallirie Turbanos",
+      "type": "payout",
+      "user": "Vallirie Turbanos",
+      "amount": 31.25,
+      "timestamp": "2026-04-19T16:15:48.384Z",
+      "txHash": "5ad1d7c985db6e448cd615084d842569ef7f8e38bf827bc52f4f950f0cff6b07",
+      "txStatus": "CONFIRMED",
+      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/5ad1d7c985db6e448cd615084d842569ef7f8e38bf827bc52f4f950f0cff6b07"
+    },
+    {
+      "id": "payout-1776615348384-ddf2a4-Zarrah Exekiel Valles",
+      "type": "payout",
+      "user": "Zarrah Exekiel Valles",
+      "amount": 31.25,
+      "timestamp": "2026-04-19T16:15:48.384Z",
+      "txHash": "5ad1d7c985db6e448cd615084d842569ef7f8e38bf827bc52f4f950f0cff6b07",
+      "txStatus": "CONFIRMED",
+      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/5ad1d7c985db6e448cd615084d842569ef7f8e38bf827bc52f4f950f0cff6b07"
+    },
+    {
+      "id": "payout-1776610287942-182222-User 1",
+      "type": "payout",
+      "user": "User 1",
+      "amount": 6.25,
+      "timestamp": "2026-04-19T14:51:27.942Z",
+      "txHash": "0adf567ced9ccab281560513b2dc74c610d92b6726a77992500a69b436fa8820",
+      "txStatus": "CONFIRMED",
+      "explorerUrl": ""
+    },
+    {
+      "id": "payout-1776610287942-8321bf-User 2",
+      "type": "payout",
+      "user": "User 2",
+      "amount": 6.25,
+      "timestamp": "2026-04-19T14:51:27.942Z",
+      "txHash": "0adf567ced9ccab281560513b2dc74c610d92b6726a77992500a69b436fa8820",
+      "txStatus": "CONFIRMED",
+      "explorerUrl": ""
+    },
+    {
+      "id": "payout-1776610287942-cc0cd2-User 3",
+      "type": "payout",
+      "user": "User 3",
+      "amount": 6.25,
+      "timestamp": "2026-04-19T14:51:27.942Z",
+      "txHash": "0adf567ced9ccab281560513b2dc74c610d92b6726a77992500a69b436fa8820",
+      "txStatus": "CONFIRMED",
+      "explorerUrl": ""
+    },
+    {
+      "id": "payout-1776610287942-8053b5-User 4",
+      "type": "payout",
+      "user": "User 4",
+      "amount": 6.25,
+      "timestamp": "2026-04-19T14:51:27.942Z",
+      "txHash": "0adf567ced9ccab281560513b2dc74c610d92b6726a77992500a69b436fa8820",
+      "txStatus": "CONFIRMED",
+      "explorerUrl": ""
+    },
+    {
+      "id": "payout-1776610287942-a4af05-User 5",
+      "type": "payout",
+      "user": "User 5",
+      "amount": 6.25,
+      "timestamp": "2026-04-19T14:51:27.942Z",
+      "txHash": "0adf567ced9ccab281560513b2dc74c610d92b6726a77992500a69b436fa8820",
+      "txStatus": "CONFIRMED",
+      "explorerUrl": ""
+    },
+    {
+      "id": "payout-1776610287942-c928ff-User 6",
+      "type": "payout",
+      "user": "User 6",
+      "amount": 6.25,
+      "timestamp": "2026-04-19T14:51:27.942Z",
+      "txHash": "0adf567ced9ccab281560513b2dc74c610d92b6726a77992500a69b436fa8820",
+      "txStatus": "CONFIRMED",
+      "explorerUrl": ""
+    },
+    {
+      "id": "payout-1776610287942-07fd74-Vallirie Turbanos",
+      "type": "payout",
+      "user": "Vallirie Turbanos",
+      "amount": 6.25,
+      "timestamp": "2026-04-19T14:51:27.942Z",
+      "txHash": "0adf567ced9ccab281560513b2dc74c610d92b6726a77992500a69b436fa8820",
+      "txStatus": "CONFIRMED",
+      "explorerUrl": ""
+    },
+    {
+      "id": "payout-1776610287942-cd4b7e-Zarrah Exekiel Valles",
+      "type": "payout",
+      "user": "Zarrah Exekiel Valles",
+      "amount": 6.25,
+      "timestamp": "2026-04-19T14:51:27.942Z",
+      "txHash": "0adf567ced9ccab281560513b2dc74c610d92b6726a77992500a69b436fa8820",
+      "txStatus": "CONFIRMED",
+      "explorerUrl": ""
+    }
+  ]
+}

@@ -1,17 +1,28 @@
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
+const path = require('path');
+const dotenv = require('dotenv');
+
+// Load backend/.env first for local single-server runs, then root .env as optional fallback.
+dotenv.config({ path: path.join(__dirname, '.env') });
+dotenv.config();
 
 const authRoute = require('./routes/auth');
 const contributeRoute = require('./routes/contribute');
 const triggerStormRoute = require('./routes/triggerStorm');
-const { getStatus } = require('./services/sorobanService');
+const groupsRoute = require('./routes/groups');
+const { getStatus, getChainHistory } = require('./services/sorobanService');
 
 const app = express();
 const port = process.env.PORT || 4000;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '25mb' }));
+app.use(express.urlencoded({ limit: '25mb', extended: true }));
+
+// Serve frontend static files
+const frontendDistPath = path.join(__dirname, '..', 'frontend', 'dist');
+app.use(express.static(frontendDistPath));
 
 app.get('/api/status', (_request, response) => {
   response.json({
@@ -20,9 +31,17 @@ app.get('/api/status', (_request, response) => {
   });
 });
 
+app.get('/api/chain/history', (request, response) => {
+  response.json({
+    success: true,
+    history: getChainHistory(request.query.limit),
+  });
+});
+
 app.use('/api/auth', authRoute);
 app.use('/api/contribute', contributeRoute);
 app.use('/api/trigger-storm', triggerStormRoute);
+app.use('/api/groups', groupsRoute);
 
 app.get('/api/health', (_request, response) => {
   response.json({ success: true, message: 'IsdaSure backend is running' });
@@ -35,6 +54,11 @@ app.use((error, _request, response, _next) => {
   });
 });
 
+// Catch-all: serve index.html for React Router (client-side routing)
+app.get('*', (_request, response) => {
+  response.sendFile(path.join(frontendDistPath, 'index.html'));
+});
+
 app.listen(port, () => {
-  console.log(`IsdaSure backend listening on port ${port}`);
+  console.log(`IsdaSure listening on http://localhost:${port}`);
 });

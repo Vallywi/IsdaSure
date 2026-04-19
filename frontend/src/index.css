@@ -4,21 +4,21 @@
 
 :root {
   color-scheme: light;
-  --bg-deep: #e5ebf6;
-  --bg-base: #f3f4f6;
-  --bg-elevated: #ffffff;
-  --surface: rgba(255, 255, 255, 0.94);
-  --surface-hover: rgba(255, 255, 255, 1);
-  --foreground: #1f2937;
-  --foreground-muted: #6b7280;
-  --foreground-subtle: rgba(31, 41, 55, 0.62);
+  --bg-deep: #273447;
+  --bg-base: #334155;
+  --bg-elevated: #3f4e63;
+  --surface: rgba(63, 78, 99, 0.78);
+  --surface-hover: rgba(76, 94, 118, 0.88);
+  --foreground: #e5e7eb;
+  --foreground-muted: #cbd5e1;
+  --foreground-subtle: rgba(226, 232, 240, 0.7);
   --accent: #1e3a8a;
   --accent-bright: #3b82f6;
   --accent-soft: #60a5fa;
   --accent-teal: #0ea5e9;
   --accent-glow: rgba(59, 130, 246, 0.24);
-  --border-default: rgba(30, 58, 138, 0.14);
-  --border-hover: rgba(30, 58, 138, 0.26);
+  --border-default: rgba(148, 163, 184, 0.32);
+  --border-hover: rgba(96, 165, 250, 0.5);
   --border-accent: rgba(59, 130, 246, 0.4);
 }
 
@@ -176,11 +176,11 @@ html.dark {
   }
 
   html:not(.dark) .linear-heading {
-    background-image: linear-gradient(to bottom, #1f2937, #1e3a8a);
+    background-image: linear-gradient(to bottom, #f1f5f9, #bfdbfe);
   }
 
   html:not(.dark) .linear-display {
-    background-image: linear-gradient(to bottom, #1f2937, #1e3a8a);
+    background-image: linear-gradient(to bottom, #f1f5f9, #bfdbfe);
   }
 
   .linear-muted {
@@ -239,7 +239,7 @@ html.dark {
     position: absolute;
     inset: 1px;
     border-radius: inherit;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.48), transparent 38%);
+    background: linear-gradient(to bottom, rgba(148, 163, 184, 0.2), transparent 38%);
     pointer-events: none;
   }
 

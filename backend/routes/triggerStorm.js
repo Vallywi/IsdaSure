@@ -1,15 +1,30 @@
 const express = require('express');
-const { triggerStormDay } = require('../services/sorobanService');
+const { prepareStormTransaction, triggerStormDay } = require('../services/sorobanService');
+const { createRateLimiter } = require('../middleware/rateLimit');
 
 const router = express.Router();
+const limiter = createRateLimiter({ windowMs: 60_000, max: 10 });
 
-router.post('/', (request, response, next) => {
+router.post('/prepare', limiter, async (request, response, next) => {
   try {
-    const status = triggerStormDay(request.body);
+    const prepared = await prepareStormTransaction(request.body);
+    response.json({
+      success: true,
+      ...prepared,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/', limiter, async (request, response, next) => {
+  try {
+    const result = await triggerStormDay(request.body);
     response.json({
       success: true,
       message: 'Storm day triggered',
-      status,
+      status: result.status,
+      tx: result.tx,
     });
   } catch (error) {
     next(error);
