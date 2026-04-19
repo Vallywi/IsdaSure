@@ -7,7 +7,7 @@ function navClass({ isActive }) {
   return [
     'linear-button-ghost rounded-lg px-3 py-2 text-sm',
     isActive
-      ? 'bg-[color:var(--accent)] text-white shadow-[0_0_0_1px_rgba(94,106,210,0.5),0_4px_12px_rgba(94,106,210,0.3)]'
+      ? 'bg-[color:var(--accent)] text-white shadow-[0_0_0_1px_rgba(59,130,246,0.45),0_6px_16px_rgba(30,58,138,0.3)]'
       : '',
   ].join(' ');
 }

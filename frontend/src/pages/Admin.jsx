@@ -59,7 +59,7 @@ export default function Admin() {
           <SpotlightCard className="space-y-4">
             <h2 className="text-2xl font-semibold tracking-tight text-[color:var(--foreground)]">Trigger Storm Day</h2>
             <p className="text-sm linear-muted">This action is restricted to admin accounts only.</p>
-            <button type="button" onClick={handleTriggerStorm} disabled={loadingAction === 'storm'} className="linear-button-primary w-full">
+            <button type="button" onClick={handleTriggerStorm} disabled={loadingAction === 'storm'} className="linear-button-admin w-full">
               {loadingAction === 'storm' ? 'Triggering...' : 'Trigger Storm Day'}
             </button>
             <div className="rounded-lg border border-[color:var(--border-default)] bg-[color:var(--surface)] p-4 text-sm linear-muted">

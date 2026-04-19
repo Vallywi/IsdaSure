@@ -1,15 +1,19 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { CheckCircle2, Landmark, ShieldCheck, UserRound } from 'lucide-react';
 import SpotlightCard from '../components/SpotlightCard';
 import { useWallet } from '../hooks/useWallet';
-import { useTheme } from '../hooks/useTheme';
 
 export default function ConnectWallet() {
   const navigate = useNavigate();
-  const { connectWallet, walletConnected, shortWalletAddress, hasFreighter } = useWallet();
-  const { theme, toggleTheme } = useTheme();
+  const { connectWallet } = useWallet();
   const [scrollProgress, setScrollProgress] = useState(0);
   const [reduceMotion, setReduceMotion] = useState(false);
+  const [heroVisible, setHeroVisible] = useState(false);
+  const [ecosystemVisible, setEcosystemVisible] = useState(false);
+  const [ctaVisible, setCtaVisible] = useState(false);
+  const ecosystemRef = useRef(null);
+  const ctaRef = useRef(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -55,31 +59,99 @@ export default function ConnectWallet() {
     };
   }, []);
 
+  useEffect(() => {
+    if (reduceMotion) {
+      setHeroVisible(true);
+      return;
+    }
+
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const rafId = window.requestAnimationFrame(() => setHeroVisible(true));
+    return () => window.cancelAnimationFrame(rafId);
+  }, [reduceMotion]);
+
+  useEffect(() => {
+    if (reduceMotion) {
+      setEcosystemVisible(true);
+      return;
+    }
+
+    const section = ecosystemRef.current;
+    if (!section || typeof window === 'undefined') {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setEcosystemVisible(true);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.2,
+        rootMargin: '0px 0px -8% 0px',
+      },
+    );
+
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, [reduceMotion]);
+
+  useEffect(() => {
+    if (reduceMotion) {
+      setCtaVisible(true);
+      return;
+    }
+
+    const section = ctaRef.current;
+    if (!section || typeof window === 'undefined') {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setCtaVisible(true);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.22,
+        rootMargin: '0px 0px -10% 0px',
+      },
+    );
+
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, [reduceMotion]);
+
   const heroTextStyle = useMemo(() => {
     if (reduceMotion) {
       return undefined;
     }
 
+    const entryOffsetY = heroVisible ? 0 : 30;
+    const entryScale = heroVisible ? 1 : 0.975;
+    const scrollScale = 1 - scrollProgress * 0.028;
+
     return {
-      opacity: Math.max(0, 1 - scrollProgress * 0.56),
-      transform: `translate3d(0, ${scrollProgress * 52}px, 0) scale(${1 - scrollProgress * 0.028})`,
+      opacity: Math.max(0, 1 - scrollProgress * 0.56) * (heroVisible ? 1 : 0),
+      transform: `translate3d(0, ${scrollProgress * 52 + entryOffsetY}px, 0) scale(${scrollScale * entryScale})`,
       transformOrigin: 'top left',
+      transition: heroVisible ? undefined : 'transform 820ms cubic-bezier(0.22,1,0.36,1), opacity 820ms ease-out',
       willChange: 'transform, opacity',
     };
-  }, [reduceMotion, scrollProgress]);
-
-  const heroPanelStyle = useMemo(() => {
-    if (reduceMotion) {
-      return undefined;
-    }
-
-    return {
-      opacity: Math.max(0, 1 - scrollProgress * 0.46),
-      transform: `translate3d(0, ${scrollProgress * 28}px, 0) scale(${1 - scrollProgress * 0.016})`,
-      transformOrigin: 'top right',
-      willChange: 'transform, opacity',
-    };
-  }, [reduceMotion, scrollProgress]);
+  }, [heroVisible, reduceMotion, scrollProgress]);
 
   const handleConnect = async () => {
     try {
@@ -90,13 +162,47 @@ export default function ConnectWallet() {
     }
   };
 
+  const ecosystemCards = [
+    {
+      action: 'Action: Manage',
+      title: 'Admins',
+      description: 'Monitor users, trigger storm events, and keep payout actions transparent.',
+      points: ['Role-restricted controls', 'Payout execution logs', 'Wallet-bound operations'],
+      icon: Landmark,
+    },
+    {
+      action: 'Action: Contribute',
+      title: 'Users',
+      description: 'Contribute to the community pool and maintain a verifiable personal contribution history.',
+      points: ['Fast wallet onboarding', 'Profile-linked history', 'Transparent status updates'],
+      icon: UserRound,
+    },
+    {
+      action: 'Action: Verify',
+      title: 'Community',
+      description: 'Track pool movement and payout events with tamper-resistant, role-based visibility.',
+      points: ['Real-time pool stats', 'Payout transparency', 'Accountability by design'],
+      icon: ShieldCheck,
+    },
+  ];
+
   return (
-    <div className="min-h-screen">
-      <header className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
-        <div className="rounded-2xl border border-[color:var(--border-default)] bg-[color:var(--surface)] px-4 py-4 shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_10px_36px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:px-6">
+    <div className="relative min-h-screen">
+      <header className="absolute inset-x-0 top-0 z-30 mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
+        <div
+          className="rounded-2xl px-4 py-4 shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_10px_36px_rgba(0,0,0,0.35)] sm:px-6"
+          style={{
+            background: 'rgba(255, 255, 255, 0.05)',
+            backdropFilter: 'blur(10px)',
+            borderRadius: '16px',
+            border: '1px solid rgba(255,255,255,0.1)',
+          }}
+        >
           <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-[color:var(--border-accent)] bg-[color:var(--accent)] text-lg font-semibold text-white shadow-[0_4px_14px_rgba(94,106,210,0.35)]">I</div>
+            <div className="flex items-center gap-2">
+              <div className="h-11 w-11 shrink-0 overflow-visible">
+                <img src="/logo.png" alt="IsdaSure logo" className="h-11 w-11 scale-[1.45] object-contain" />
+              </div>
               <div>
                 <p className="text-lg font-semibold tracking-tight text-[color:var(--foreground)]">IsdaSure</p>
                 <p className="linear-kicker !tracking-[0.16em] !text-[10px]">Digital marine resilience platform</p>
@@ -104,13 +210,6 @@ export default function ConnectWallet() {
             </div>
 
             <div className="hidden items-center gap-2 md:flex">
-              <button
-                type="button"
-                onClick={toggleTheme}
-                className="linear-button-secondary px-4 py-2 text-sm"
-              >
-                {theme === 'dark' ? 'Light' : 'Dark'}
-              </button>
               <button type="button" onClick={() => navigate('/roles')} className="linear-button-ghost rounded-lg px-4 py-2 text-sm">
                 Login
               </button>
@@ -120,13 +219,6 @@ export default function ConnectWallet() {
             </div>
 
             <div className="flex items-center gap-2 md:hidden">
-              <button
-                type="button"
-                onClick={toggleTheme}
-                className="linear-button-secondary px-3 py-2 text-sm"
-              >
-                {theme === 'dark' ? 'Light' : 'Dark'}
-              </button>
               <button type="button" onClick={handleConnect} className="linear-button-primary px-4 py-2 text-sm">
                 Connect
               </button>
@@ -135,15 +227,22 @@ export default function ConnectWallet() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl space-y-16 px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-        <section className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-          <div className="space-y-7 stagger-enter" style={heroTextStyle}>
-            <div className="linear-pill gap-2">
-              <span className="linear-kicker !text-[10px] !tracking-[0.24em] !text-[color:var(--accent-bright)]">verified</span>
-              <span className="h-1 w-1 rounded-full bg-[color:var(--accent)]" />
-              <span>Stellar Network Powered</span>
-            </div>
+      <section
+        id="hero"
+        className="relative isolate left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] min-h-[145vh] w-screen overflow-hidden"
+      >
+        <div
+          className="absolute inset-0 bg-cover bg-right-center bg-no-repeat"
+          style={{
+            backgroundImage: "linear-gradient(rgba(15,23,42,0.75), rgba(15,23,42,0.85)), url('/fisherman.jpg')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'right center',
+            backgroundRepeat: 'no-repeat',
+          }}
+        />
 
+        <div className="relative mx-auto flex min-h-[145vh] w-full max-w-[90rem] items-center px-4 pb-12 pt-32 sm:px-6 lg:px-10">
+          <div className="max-w-3xl space-y-7 stagger-enter" style={heroTextStyle}>
             <h1 className="linear-display max-w-3xl">
               The future of fisherfolk trust.
             </h1>
@@ -160,83 +259,65 @@ export default function ConnectWallet() {
                 Register User
               </button>
             </div>
-
-            {walletConnected ? (
-              <div className="rounded-lg border border-[color:var(--border-accent)] bg-[color:var(--accent-glow)] p-5 text-sm text-[color:var(--foreground)]">
-                Connected wallet: {shortWalletAddress}
-              </div>
-            ) : null}
-            {!hasFreighter() ? (
-              <p className="text-sm text-amber-300">Freighter extension not detected in this browser.</p>
-            ) : null}
           </div>
+        </div>
+      </section>
 
-          <SpotlightCard className="relative overflow-hidden rounded-[2.2rem] p-6" style={heroPanelStyle}>
-            <div className="absolute inset-0 bg-gradient-to-br from-brand-500/12 via-transparent to-sky-500/12" />
-            <div className="relative space-y-5">
-              <div className="rounded-[1.7rem] border border-[color:var(--border-default)] bg-[color:var(--surface)] p-5">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="linear-kicker">Community Certificate</p>
-                    <p className="mt-1 text-xl font-semibold tracking-tight text-[color:var(--foreground)]">Contribution Record</p>
-                  </div>
-                  <span className="rounded-full border border-emerald-400/30 bg-emerald-500/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-200">Verified</span>
-                </div>
-              </div>
+      <main className="mx-auto max-w-7xl space-y-60 px-4 pb-10 pt-32 sm:px-6 lg:px-8 lg:space-y-40 lg:pb-14 lg:pt-36">
 
-              <div className="h-52 rounded-[1.7rem] bg-gradient-to-br from-indigo-500/30 via-sky-400/20 to-blue-500/30" />
-
-              <div className="rounded-[1.7rem] border border-[color:var(--border-default)] bg-[color:var(--surface)] p-5 text-sm">
-                <p className="linear-kicker !text-[10px]">Cryptographic Hash</p>
-                <p className="mt-2 break-all font-semibold text-[color:var(--foreground)]">GAVX...K7N2...9QWL...M9R4...Z3B8</p>
-              </div>
-            </div>
-          </SpotlightCard>
-        </section>
-
-        <section className="space-y-8">
-          <div className="space-y-2 text-center">
-            <h2 className="linear-heading text-4xl sm:text-5xl md:text-6xl">Built for the ecosystem.</h2>
+        <section ref={ecosystemRef} className="space-y-8">
+          <div
+            className={[
+              'space-y-2 text-center transition-all duration-700 ease-out',
+              ecosystemVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0',
+            ].join(' ')}
+          >
+            <h2 className="linear-heading text-4xl sm:text-5xl md:text-6xl">Built for the ecosystem.🐟</h2>
             <p className="mx-auto max-w-2xl linear-muted">One wallet-linked system, three focused experiences for community resilience.</p>
           </div>
 
           <div className="grid gap-4 lg:grid-cols-3">
-            <SpotlightCard as="article" className="p-6">
-              <p className="linear-kicker">Action: Manage</p>
-              <h3 className="mt-3 text-2xl font-semibold tracking-tight text-[color:var(--foreground)]">Admins</h3>
-              <p className="mt-3 text-sm leading-6 linear-muted">Monitor users, trigger storm events, and keep payout actions transparent.</p>
-              <ul className="mt-5 space-y-2 text-sm text-[color:var(--foreground)]">
-                <li>Role-restricted controls</li>
-                <li>Payout execution logs</li>
-                <li>Wallet-bound operations</li>
-              </ul>
-            </SpotlightCard>
+            {ecosystemCards.map((card, index) => {
+              const Icon = card.icon;
 
-            <SpotlightCard as="article" className="p-6">
-              <p className="linear-kicker">Action: Contribute</p>
-              <h3 className="mt-3 text-2xl font-semibold tracking-tight text-[color:var(--foreground)]">Users</h3>
-              <p className="mt-3 text-sm leading-6 linear-muted">Contribute to the community pool and maintain a verifiable personal contribution history.</p>
-              <ul className="mt-5 space-y-2 text-sm text-[color:var(--foreground)]">
-                <li>Fast wallet onboarding</li>
-                <li>Profile-linked history</li>
-                <li>Transparent status updates</li>
-              </ul>
-            </SpotlightCard>
-
-            <SpotlightCard as="article" className="p-6">
-              <p className="linear-kicker">Action: Verify</p>
-              <h3 className="mt-3 text-2xl font-semibold tracking-tight text-[color:var(--foreground)]">Community</h3>
-              <p className="mt-3 text-sm leading-6 linear-muted">Track pool movement and payout events with tamper-resistant, role-based visibility.</p>
-              <ul className="mt-5 space-y-2 text-sm text-[color:var(--foreground)]">
-                <li>Real-time pool stats</li>
-                <li>Payout transparency</li>
-                <li>Accountability by design</li>
-              </ul>
-            </SpotlightCard>
+              return (
+              <div
+                key={card.title}
+                className={[
+                  'transition-all duration-700 ease-out',
+                  ecosystemVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0',
+                ].join(' ')}
+                style={!reduceMotion ? { transitionDelay: `${140 + index * 120}ms` } : undefined}
+              >
+                <SpotlightCard as="article" className="p-6">
+                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-500/15 text-blue-200">
+                    <Icon className="h-6 w-6" strokeWidth={2.2} />
+                  </div>
+                  <p className="linear-kicker">{card.action}</p>
+                  <h3 className="mt-3 text-2xl font-semibold tracking-tight text-[color:var(--foreground)]">{card.title}</h3>
+                  <p className="mt-3 text-sm leading-6 linear-muted">{card.description}</p>
+                  <ul className="mt-5 space-y-2 text-sm text-[color:var(--foreground)]">
+                    {card.points.map((point) => (
+                      <li key={point} className="flex items-center gap-2 font-semibold">
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-blue-300" strokeWidth={2.2} />
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </SpotlightCard>
+              </div>
+              );
+            })}
           </div>
         </section>
 
-        <section className="relative overflow-hidden rounded-[2.2rem] border border-[color:var(--border-accent)] bg-[color:var(--accent)] p-8 text-white shadow-[0_0_0_1px_rgba(94,106,210,0.6),0_24px_60px_rgba(31,41,55,0.4)] sm:p-10">
+        <section
+          ref={ctaRef}
+          className={[
+            'relative mt-20 overflow-hidden rounded-[2.2rem] border border-[color:var(--border-accent)] bg-[color:var(--accent)] p-8 text-white shadow-[0_0_0_1px_rgba(94,106,210,0.6),0_24px_60px_rgba(31,41,55,0.4)] transition-all duration-700 ease-out sm:mt-24 sm:p-10 lg:mt-28',
+            ctaVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0',
+          ].join(' ')}
+        >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.25),transparent_32%),radial-gradient(circle_at_80%_70%,rgba(186,230,253,0.35),transparent_35%)]" />
           <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl space-y-3">
@@ -256,8 +337,8 @@ export default function ConnectWallet() {
         </section>
       </main>
 
-      <footer className="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-start justify-between gap-4 border-t border-[color:var(--border-default)] pt-6 text-sm linear-muted md:flex-row md:items-center">
+      <footer className="mx-auto mt-16 max-w-7xl px-4 pb-2 sm:mt-20 sm:px-6 sm:pb-3 lg:mt-24 lg:px-8">
+        <div className="flex flex-col items-start justify-between gap-1 border-t border-[color:var(--border-default)] pt-2 text-xs linear-muted md:flex-row md:items-center sm:text-sm">
           <div>
             <p className="font-semibold text-[color:var(--foreground)]">IsdaSure</p>
             <p>© 2026 IsdaSure. Powered by Stellar.</p>

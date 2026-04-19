@@ -7,9 +7,9 @@ export default {
         brand: {
           50: '#eff6ff',
           100: '#dbeafe',
-          500: '#2563EB',
-          600: '#1d4ed8',
-          700: '#1d4ed8',
+          500: '#3B82F6',
+          600: '#1E3A8A',
+          700: '#1E3A8A',
         },
         surface: {
           light: '#F1F5F9',

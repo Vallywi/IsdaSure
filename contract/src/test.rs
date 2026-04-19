@@ -1,10 +1,13 @@
+extern crate std;
+
 use super::*;
 use soroban_sdk::{Env, String};
+use std::panic::{self, AssertUnwindSafe};
 
 #[test]
 fn contribute_updates_pool_and_contributors() {
 	let env = Env::default();
-	let contract_id = env.register_contract(None, IsdaSureContract);
+	let contract_id = env.register(IsdaSureContract, ());
 	let client = IsdaSureContractClient::new(&env, &contract_id);
 
 	let first_user = String::from_str(&env, "User 1");
@@ -18,7 +21,7 @@ fn contribute_updates_pool_and_contributors() {
 #[test]
 fn trigger_storm_distributes_evenly() {
 	let env = Env::default();
-	let contract_id = env.register_contract(None, IsdaSureContract);
+	let contract_id = env.register(IsdaSureContract, ());
 	let client = IsdaSureContractClient::new(&env, &contract_id);
 
 	let user_one = String::from_str(&env, "User 1");
@@ -38,7 +41,7 @@ fn trigger_storm_distributes_evenly() {
 #[test]
 fn repeated_contributions_accumulate() {
 	let env = Env::default();
-	let contract_id = env.register_contract(None, IsdaSureContract);
+	let contract_id = env.register(IsdaSureContract, ());
 	let client = IsdaSureContractClient::new(&env, &contract_id);
 
 	let user = String::from_str(&env, "User 1");
@@ -50,21 +53,21 @@ fn repeated_contributions_accumulate() {
 #[test]
 fn zero_amount_is_rejected() {
 	let env = Env::default();
-	let contract_id = env.register_contract(None, IsdaSureContract);
+	let contract_id = env.register(IsdaSureContract, ());
 	let client = IsdaSureContractClient::new(&env, &contract_id);
 
 	let user = String::from_str(&env, "User 1");
-	let result = std::panic::catch_unwind(|| client.contribute(&user, &0));
+	let result = panic::catch_unwind(AssertUnwindSafe(|| client.contribute(&user, &0)));
 	assert!(result.is_err());
 }
 
 #[test]
 fn unauthorized_admin_is_rejected() {
 	let env = Env::default();
-	let contract_id = env.register_contract(None, IsdaSureContract);
+	let contract_id = env.register(IsdaSureContract, ());
 	let client = IsdaSureContractClient::new(&env, &contract_id);
 
 	let admin = String::from_str(&env, "not-admin");
-	let result = std::panic::catch_unwind(|| client.trigger_storm(&admin));
+	let result = panic::catch_unwind(AssertUnwindSafe(|| client.trigger_storm(&admin)));
 	assert!(result.is_err());
 }

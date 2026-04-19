@@ -69,7 +69,7 @@ export default function Dashboard() {
             <h2 className="text-2xl font-semibold tracking-tight text-[color:var(--foreground)]">Contribute</h2>
             <p className="text-sm linear-muted">Support the pool with a quick ₱50 contribution.</p>
             <button type="button" onClick={handleContribute} disabled={loadingAction === 'contribute'} className="linear-button-primary w-full">
-              {loadingAction === 'contribute' ? 'Processing...' : 'Contribute ₱50'}
+              {loadingAction === 'contribute' ? 'Processing...' : 'Contribute P50'}
             </button>
             <div className="rounded-lg border border-[color:var(--border-default)] bg-[color:var(--surface)] p-4 text-sm linear-muted">
               Wallet Address: {walletConnected ? userProfile.walletAddress : 'Not connected'}

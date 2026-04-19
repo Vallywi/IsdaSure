@@ -1,0 +1,2 @@
+# Keep contract test snapshot files in LF to avoid CRLF warnings on Windows.
+contract/test_snapshots/**/*.json text eol=lf

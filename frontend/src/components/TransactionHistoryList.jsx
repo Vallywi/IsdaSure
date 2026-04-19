@@ -6,8 +6,8 @@ function typeLabel(type) {
 
 function typeBadge(type) {
   return type === 'payout'
-    ? 'bg-emerald-500/20 text-emerald-200 border border-emerald-400/30'
-    : 'bg-[color:var(--accent-glow)] text-indigo-100 border border-[color:var(--border-accent)]';
+    ? 'bg-emerald-100 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-100 dark:border-emerald-400/30'
+    : 'bg-blue-100 text-blue-800 border border-blue-200 dark:bg-[color:var(--accent-glow)] dark:text-blue-100 dark:border-[color:var(--border-accent)]';
 }
 
 function formatTimestamp(value) {
@@ -23,7 +23,7 @@ export default function TransactionHistoryList({ title, items = [], emptyText = 
       {items.length ? (
         <ul className="mt-4 space-y-3">
           {items.map((item) => (
-            <li key={item.id} className="rounded-2xl border border-[color:var(--border-default)] bg-[color:var(--surface)] px-4 py-3">
+            <li key={item.id} className="rounded-xl border border-[color:var(--border-default)] bg-[color:var(--surface)] px-4 py-4 shadow-sm transition hover:border-[color:var(--border-hover)]">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="font-semibold text-[color:var(--foreground)]">{item.user}</p>
