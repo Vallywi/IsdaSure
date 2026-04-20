@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { recordUserActivity, getDailyContributionTotal } = require('./authService');
+const { recordUserActivity } = require('./authService');
 const { assertFreshNonce } = require('./nonceService');
 const {
   getSorobanChainMode,
@@ -8,7 +8,15 @@ const {
   prepareUnsignedSorobanTransaction,
   submitSignedSorobanTransaction,
 } = require('./sorobanRpcService');
-const { isMemberOfGroup, getGroupByName } = require('./groupService');
+const {
+  isMemberOfGroup,
+  getGroupByName,
+  getMemberGroupStats,
+  recordContribution,
+  triggerStormForGroup,
+  getGlobalPoolSummary,
+  allStormHistory,
+} = require('./groupService');
 
 const adminAddress = 'admin@isdasure.dev';
 const configuredAdminWallet = String(process.env.ADMIN_WALLET_ADDRESS || '')
@@ -23,13 +31,9 @@ const ESTIMATED_FEE_XLM = Number(process.env.ESTIMATED_FEE_XLM || 0.00001);
 const DEFAULT_CONTRACT_ID = String(process.env.SOROBAN_CONTRACT_ID || '').trim();
 
 const defaultState = {
-  totalPool: 200,
-  contributors: ['User 1', 'User 2', 'User 3', 'User 4', 'User 5', 'User 6'],
-  recentContributions: [
-    { user: 'User 1', amount: 50, time: '1 minute ago' },
-    { user: 'User 2', amount: 50, time: '1 minute ago' },
-    { user: 'User 3', amount: 50, time: '1 minute ago' },
-  ],
+  totalPool: 0,
+  contributors: [],
+  recentContributions: [],
   payouts: [],
   payoutLogs: [],
   chainHistory: [],
@@ -65,15 +69,36 @@ function savePoolState(nextState) {
 const state = readPoolState();
 
 function snapshot() {
+  const summary = getGlobalPoolSummary();
+  const latestStorm = summary.recentStorms[0] || null;
+  const payoutLogs = summary.recentStorms
+    .flatMap((storm) =>
+      (storm.payouts || []).map((item) => ({
+        id: `${storm.id}-${item.walletAddress || item.identifier || item.user}`,
+        type: 'payout',
+        groupId: storm.groupId,
+        groupName: storm.groupName,
+        user: item.user,
+        amount: item.amount,
+        timestamp: storm.timestamp,
+        txHash: storm.txHash || '',
+        txStatus: storm.txStatus || 'CONFIRMED',
+        explorerUrl: storm.explorerUrl || '',
+      })),
+    )
+    .slice(0, 200);
+
   return {
     chainMode: getSorobanChainMode(),
     rpcConfigured: isSorobanRpcConfigured(),
-    totalPool: state.totalPool,
-    contributors: state.contributors.length,
-    contributorNames: [...state.contributors],
-    recentContributions: [...state.recentContributions],
-    payouts: [...state.payouts],
-    payoutLogs: [...(state.payoutLogs || [])],
+    totalPool: summary.totalPool,
+    contributors: summary.contributors,
+    contributorNames: [...summary.contributorNames],
+    groups: summary.groups,
+    recentContributions: [...summary.recentContributions],
+    payouts: latestStorm ? [...(latestStorm.payouts || [])] : [],
+    payoutLogs,
+    stormHistory: [...summary.recentStorms],
     chainHistory: [...(state.chainHistory || [])],
     contributionRules: {
       minAmount: MIN_CONTRIBUTION,
@@ -152,9 +177,14 @@ function buildMockConfirmedTx(contractCall) {
 function validateContribution(payload = {}) {
   const user = payload.user || 'Anonymous User';
   const amount = normalizeAmount(payload.amount ?? 50);
-  const groupName = String(payload.groupName || '').trim();
+  const groupName = String(payload.groupName || payload.groupId || '').trim();
   if (!groupName) {
     throw new Error('You must join or create a group before contributing.');
+  }
+
+  const group = getGroupByName(groupName);
+  if (!group) {
+    throw new Error('Group not found.');
   }
 
   const isMember = isMemberOfGroup(
@@ -163,28 +193,42 @@ function validateContribution(payload = {}) {
       walletAddress: payload.walletAddress,
       fullName: user,
     },
-    groupName,
+    group.id,
   );
   if (!isMember) {
     throw new Error('You are not a member of this group. Join the group before contributing.');
   }
 
-  const group = getGroupByName(groupName);
+  const requiredDailyAmount = Number(group?.requiredDailyAmount || 50);
+  if (amount < requiredDailyAmount) {
+    throw new Error(`Minimum daily contribution for this group is ₱${requiredDailyAmount}.`);
+  }
+
   const groupDailyLimit = Number(group?.dailyLimit || DAILY_PESO_LIMIT);
-  const contributedToday = getDailyContributionTotal({
-    identifier: payload.identifier,
-    walletAddress: payload.walletAddress,
-    fullName: user,
-  });
+  const stats = getMemberGroupStats(
+    {
+      identifier: payload.identifier,
+      walletAddress: payload.walletAddress,
+      fullName: user,
+    },
+    group.id,
+  );
+
+  const contributedToday = Number(stats?.contributedTodayAmount || 0);
   if (contributedToday + amount > groupDailyLimit) {
-    throw new Error(`Daily limit reached. You can contribute up to ₱${groupDailyLimit} per day.`);
+    throw new Error(`Daily limit reached. You can contribute up to ₱${groupDailyLimit} per day in this group.`);
   }
 
   return {
+    identifier: payload.identifier,
+    walletAddress: payload.walletAddress,
+    fullName: user,
     user,
     amount,
-    groupName,
+    groupId: group.id,
+    groupName: group.name,
     contributedToday,
+    requiredDailyAmount,
   };
 }
 
@@ -206,18 +250,25 @@ function validateAdminTrigger(payload = {}) {
     throw error;
   }
 
+  const group = getGroupByName(payload.groupName || payload.groupId);
+  if (!group) {
+    throw new Error('Group not found.');
+  }
+
   return {
     admin,
     walletAddress,
+    groupId: group.id,
+    groupName: group.name,
   };
 }
 
 async function prepareContributionTransaction(payload = {}) {
-  const { user, amount } = validateContribution(payload);
+  const { user, amount, groupId } = validateContribution(payload);
   const contractCall = buildContractCall({
     payload,
     method: 'contribute',
-    args: [user, amount],
+    args: [user, groupId, amount],
   });
 
   if (!isSorobanRpcConfigured()) {
@@ -251,11 +302,11 @@ async function prepareContributionTransaction(payload = {}) {
 }
 
 async function prepareStormTransaction(payload = {}) {
-  const { walletAddress } = validateAdminTrigger(payload);
+  const { walletAddress, groupId } = validateAdminTrigger(payload);
   const contractCall = buildContractCall({
     payload,
     method: 'trigger_storm',
-    args: [],
+    args: [groupId],
   });
 
   if (!isSorobanRpcConfigured()) {
@@ -289,11 +340,11 @@ async function prepareStormTransaction(payload = {}) {
 }
 
 async function contributeToPool(payload = {}) {
-  const { user, amount, groupName, contributedToday } = validateContribution(payload);
+  const { user, amount, groupName, groupId, contributedToday } = validateContribution(payload);
   const contractCall = buildContractCall({
     payload,
     method: 'contribute',
-    args: [user, amount],
+    args: [user, groupId, amount],
   });
 
   assertFreshNonce({
@@ -310,22 +361,24 @@ async function contributeToPool(payload = {}) {
       })
     : buildMockConfirmedTx(contractCall);
 
-  if (!state.contributors.includes(user)) {
-    state.contributors.push(user);
-  }
-
-  state.totalPool += amount;
-  state.recentContributions.unshift({
+  const contributionResult = recordContribution({
+    groupId,
+    groupName,
     user,
+    identifier: payload.identifier,
+    walletAddress: payload.walletAddress,
     amount,
-    time: tx.status === 'CONFIRMED' ? 'Just now' : 'Pending',
+    txHash: tx.txHash,
+    txStatus: tx.status,
+    explorerUrl: tx.explorerUrl,
   });
-  state.recentContributions = state.recentContributions.slice(0, 5);
+
   appendChainHistory({
     id: `chain-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
     type: 'contribution',
     user,
     amount,
+    groupId,
     groupName,
     txHash: tx.txHash,
     status: tx.status,
@@ -334,6 +387,11 @@ async function contributeToPool(payload = {}) {
     timestamp: new Date().toISOString(),
     contractResult: tx.contractResult,
   });
+
+  const summary = getGlobalPoolSummary();
+  state.totalPool = summary.totalPool;
+  state.contributors = summary.contributorNames;
+  state.recentContributions = summary.recentContributions.slice(0, 30);
   state.lastUpdated = 'Now';
   savePoolState(state);
 
@@ -349,6 +407,7 @@ async function contributeToPool(payload = {}) {
       amount,
       metadata: {
         walletAddress: payload.walletAddress || '',
+        groupId,
         groupName,
         dailyTotal: contributedToday + amount,
         txHash: tx.txHash,
@@ -364,11 +423,11 @@ async function contributeToPool(payload = {}) {
 }
 
 async function triggerStormDay(payload = {}) {
-  const { admin, walletAddress } = validateAdminTrigger(payload);
+  const { admin, walletAddress, groupId, groupName } = validateAdminTrigger(payload);
   const contractCall = buildContractCall({
     payload,
     method: 'trigger_storm',
-    args: [],
+    args: [groupId],
   });
 
   assertFreshNonce({
@@ -385,17 +444,21 @@ async function triggerStormDay(payload = {}) {
       })
     : buildMockConfirmedTx(contractCall);
 
-  const contributorCount = Math.max(state.contributors.length, 1);
-  const payoutAmount = contributorCount > 0 ? Number((state.totalPool / contributorCount).toFixed(2)) : 0;
+  const stormResult = triggerStormForGroup({
+    groupId,
+    groupName,
+    admin,
+    walletAddress,
+    txHash: tx.txHash,
+    txStatus: tx.status,
+    explorerUrl: tx.explorerUrl,
+  });
 
-  state.payouts = state.contributors.map((user) => ({
-    user,
-    amount: payoutAmount,
-  }));
-
-  const payoutLogEntries = state.payouts.map((item) => ({
+  const payoutLogEntries = (stormResult.payouts || []).map((item) => ({
     id: `payout-${Date.now()}-${Math.random().toString(16).slice(2, 8)}-${item.user}`,
     type: 'payout',
+    groupId,
+    groupName,
     user: item.user,
     amount: item.amount,
     timestamp: new Date().toISOString(),
@@ -404,13 +467,19 @@ async function triggerStormDay(payload = {}) {
     explorerUrl: tx.explorerUrl,
   }));
 
+  const summary = getGlobalPoolSummary();
+  state.totalPool = summary.totalPool;
+  state.contributors = summary.contributorNames;
+  state.recentContributions = summary.recentContributions.slice(0, 30);
+  state.payouts = stormResult.payouts || [];
   state.payoutLogs = [...payoutLogEntries, ...(state.payoutLogs || [])].slice(0, 200);
-  state.totalPool = 0;
   appendChainHistory({
     id: `chain-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
     type: 'storm',
     user: admin || 'admin',
-    amount: payoutAmount,
+    groupId,
+    groupName,
+    amount: (stormResult.payouts || []).reduce((sum, item) => sum + Number(item.amount || 0), 0),
     txHash: tx.txHash,
     status: tx.status,
     ledger: tx.ledger,
@@ -421,15 +490,21 @@ async function triggerStormDay(payload = {}) {
   state.lastUpdated = 'Now';
   savePoolState(state);
 
-  state.contributors.forEach((user) => {
+  (stormResult.payouts || []).forEach((item) => {
     recordUserActivity(
-      { fullName: user },
+      {
+        identifier: item.identifier,
+        walletAddress: item.walletAddress,
+        fullName: item.user,
+      },
       {
         type: 'payout',
         title: 'Payout received',
-        amount: payoutAmount,
+        amount: item.amount,
         metadata: {
           source: 'storm-trigger',
+          groupId,
+          groupName,
           txHash: tx.txHash,
           txStatus: tx.status,
         },
@@ -444,7 +519,12 @@ async function triggerStormDay(payload = {}) {
 }
 
 function getStatus() {
-  return snapshot();
+  const status = snapshot();
+  const globalStormHistory = allStormHistory();
+  return {
+    ...status,
+    stormHistory: globalStormHistory,
+  };
 }
 
 function getChainHistory(limit = 30) {

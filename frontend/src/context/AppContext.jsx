@@ -1,9 +1,11 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import {
+  apiApproveGroupJoin,
   apiCreateGroup,
   apiGetChainHistory,
   apiGetStatus,
   apiJoinGroup,
+  apiRejectGroupJoin,
   apiLogin,
   apiMyGroups,
   apiListGroups,
@@ -26,14 +28,12 @@ import {
 const defaultPoolState = {
   chainMode: 'mock',
   rpcConfigured: false,
-  totalPool: 200,
-  contributors: 6,
-  contributorNames: ['Ana', 'Ben', 'Cora', 'Dino', 'Ella', 'Fritz'],
-  recentContributions: [
-    { user: 'Ana', amount: 50, timestamp: new Date().toISOString() },
-    { user: 'Ben', amount: 50, timestamp: new Date().toISOString() },
-    { user: 'Cora', amount: 50, timestamp: new Date().toISOString() },
-  ],
+  totalPool: 0,
+  contributors: 0,
+  contributorNames: [],
+  groups: [],
+  recentContributions: [],
+  stormHistory: [],
   payouts: [],
   lastUpdated: 'Now',
 };
@@ -142,7 +142,64 @@ export function AppProvider({ children }) {
   const [txLifecycle, setTxLifecycle] = useState(defaultTxLifecycle);
   const [themeReady, setThemeReady] = useState(false);
 
+  const mergedGroups = useMemo(() => {
+    const map = new Map();
+    [...groups, ...myGroups].forEach((group) => {
+      if (!group?.name) return;
+      map.set(group.name, group);
+    });
+    return Array.from(map.values());
+  }, [groups, myGroups]);
+
+  const activeGroup = useMemo(() => {
+    if (!activeGroupName) return null;
+    return mergedGroups.find((group) => group.name === activeGroupName) || null;
+  }, [activeGroupName, mergedGroups]);
+
+  const activeGroupContributionHistory = useMemo(() => {
+    if (!activeGroup?.contributionHistory) return [];
+    return [...activeGroup.contributionHistory].sort((a, b) => String(b.timestamp).localeCompare(String(a.timestamp)));
+  }, [activeGroup]);
+
+  const activeGroupMemberStats = useMemo(() => {
+    if (!activeGroup || !auth.user) {
+      return null;
+    }
+
+    const member = (activeGroup.contributionByMember || []).find((item) => {
+      const identifierMatch =
+        String(item.identifier || '').trim().toLowerCase() === String(auth.user.identifier || '').trim().toLowerCase();
+      const walletMatch =
+        String(item.walletAddress || '').trim().toUpperCase() === String(wallet.address || auth.user.walletAddress || '').trim().toUpperCase();
+      const fullNameMatch =
+        String(item.fullName || '').trim().toLowerCase() === String(auth.user.fullName || '').trim().toLowerCase();
+      return identifierMatch || walletMatch || fullNameMatch;
+    });
+
+    return member || null;
+  }, [activeGroup, auth.user, wallet.address]);
+
   const createNonce = () => `${Date.now()}-${Math.random().toString(16).slice(2, 10)}`;
+
+  const refreshGroupCollections = async () => {
+    const [allGroupsResponse, myGroupsResponse] = await Promise.all([
+      apiListGroups().catch(() => ({ groups: [] })),
+      auth.isAuthenticated && auth.user
+        ? apiMyGroups({
+            identifier: auth.user.identifier,
+            walletAddress: wallet.address || auth.user.walletAddress,
+            fullName: auth.user.fullName,
+          }).catch(() => ({ groups: [] }))
+        : Promise.resolve({ groups: [] }),
+    ]);
+
+    setGroups(allGroupsResponse.groups || []);
+    setMyGroups(myGroupsResponse.groups || []);
+    return {
+      groups: allGroupsResponse.groups || [],
+      myGroups: myGroupsResponse.groups || [],
+    };
+  };
 
   const normalizeMessage = (value, fallback = 'Transaction failed') => {
     const fallbackText = String(fallback || 'Transaction failed');
@@ -464,17 +521,7 @@ export function AppProvider({ children }) {
       dailyLimit: Number(poolState?.contributionRules?.dailyPesoLimit || 1000),
     });
     const next = response.group;
-    const [allGroupsResponse, myGroupsResponse] = await Promise.all([
-      apiListGroups().catch(() => ({ groups: [] })),
-      apiMyGroups({
-        identifier: auth.user.identifier,
-        walletAddress: wallet.address || auth.user.walletAddress,
-        fullName: auth.user.fullName,
-      }).catch(() => ({ groups: [] })),
-    ]);
-
-    setGroups(allGroupsResponse.groups || []);
-    setMyGroups(myGroupsResponse.groups || []);
+    await refreshGroupCollections();
     setMyGroups((previous) => {
       const filtered = previous.filter((item) => item.name !== next.name);
       return [next, ...filtered];
@@ -499,17 +546,7 @@ export function AppProvider({ children }) {
       fullName: auth.user.fullName,
     });
     const next = response.group;
-    const [allGroupsResponse, myGroupsResponse] = await Promise.all([
-      apiListGroups().catch(() => ({ groups: [] })),
-      apiMyGroups({
-        identifier: auth.user.identifier,
-        walletAddress: wallet.address || auth.user.walletAddress,
-        fullName: auth.user.fullName,
-      }).catch(() => ({ groups: [] })),
-    ]);
-
-    setGroups(allGroupsResponse.groups || []);
-    setMyGroups(myGroupsResponse.groups || []);
+    await refreshGroupCollections();
     setMyGroups((previous) => {
       const filtered = previous.filter((item) => item.name !== next.name);
       return [next, ...filtered];
@@ -521,6 +558,44 @@ export function AppProvider({ children }) {
     setActiveGroupName(next.name);
     setSuccessWithToast(`Joined group ${next.name}`);
     return next;
+  };
+
+  const approveJoinRequest = async (groupName, targetMember) => {
+    if (!auth.isAuthenticated || !auth.user) {
+      throw new Error('Please sign in first.');
+    }
+    const response = await apiApproveGroupJoin({
+      groupName,
+      approver: {
+        identifier: auth.user.identifier,
+        walletAddress: wallet.address || auth.user.walletAddress,
+        fullName: auth.user.fullName,
+      },
+      target: targetMember,
+    });
+
+    await refreshGroupCollections();
+    setSuccessWithToast('Join request approved');
+    return response.group;
+  };
+
+  const rejectJoinRequest = async (groupName, targetMember) => {
+    if (!auth.isAuthenticated || !auth.user) {
+      throw new Error('Please sign in first.');
+    }
+    const response = await apiRejectGroupJoin({
+      groupName,
+      approver: {
+        identifier: auth.user.identifier,
+        walletAddress: wallet.address || auth.user.walletAddress,
+        fullName: auth.user.fullName,
+      },
+      target: targetMember,
+    });
+
+    await refreshGroupCollections();
+    setSuccessWithToast('Join request rejected');
+    return response.group;
   };
 
   const refreshStatus = async () => {
@@ -568,6 +643,7 @@ export function AppProvider({ children }) {
         identifier: auth.user?.identifier || '',
         walletAddress: wallet.address,
         amount: normalizedAmount,
+        groupId: activeGroup?.id,
         groupName: activeGroupName,
       });
 
@@ -595,6 +671,7 @@ export function AppProvider({ children }) {
         identifier: auth.user?.identifier || '',
         walletAddress: wallet.address,
         amount: normalizedAmount,
+        groupId: activeGroup?.id,
         groupName: activeGroupName,
         nonce,
         signedTxXdr,
@@ -610,6 +687,21 @@ export function AppProvider({ children }) {
         ...previous,
         ...nextStatus,
       }));
+      if (Array.isArray(nextStatus.groups)) {
+        setGroups(nextStatus.groups);
+        if (auth.isAuthenticated && auth.user) {
+          const mine = nextStatus.groups.filter((group) =>
+            (group.members || []).some((member) => {
+              const identifierMatch =
+                String(member.identifier || '').trim().toLowerCase() === String(auth.user.identifier || '').trim().toLowerCase();
+              const walletMatch =
+                String(member.walletAddress || '').trim().toUpperCase() === String(wallet.address || auth.user.walletAddress || '').trim().toUpperCase();
+              return identifierMatch || walletMatch;
+            }),
+          );
+          setMyGroups(mine);
+        }
+      }
       if (Array.isArray(nextStatus.chainHistory)) {
         setChainHistory(nextStatus.chainHistory);
       }
@@ -656,7 +748,7 @@ export function AppProvider({ children }) {
     }
   };
 
-  const triggerStorm = async () => {
+  const triggerStorm = async (groupNameOverride = '') => {
     if (!auth.isAuthenticated || auth.role !== 'admin') {
       throw new Error('Unauthorized action');
     }
@@ -665,6 +757,16 @@ export function AppProvider({ children }) {
     }
     if (ADMIN_WALLET_ADDRESS && wallet.address.toUpperCase() !== ADMIN_WALLET_ADDRESS) {
       throw new Error('Only the admin wallet can trigger storm day.');
+    }
+
+    const targetGroupName = String(groupNameOverride || activeGroupName || '').trim();
+    if (!targetGroupName) {
+      throw new Error('Select a group before triggering storm day.');
+    }
+
+    const targetGroup = mergedGroups.find((group) => group.name === targetGroupName);
+    if (!targetGroup) {
+      throw new Error('Selected group was not found. Refresh and try again.');
     }
 
     setLoading(true);
@@ -676,6 +778,8 @@ export function AppProvider({ children }) {
       const prepared = await prepareTriggerStormInvocation({
         admin: auth.user?.identifier || auth.user?.fullName || 'admin',
         walletAddress: wallet.address,
+        groupId: targetGroup.id,
+        groupName: targetGroup.name,
       });
 
       const nonce = createNonce();
@@ -700,6 +804,8 @@ export function AppProvider({ children }) {
       const response = await invokeTriggerStorm({
         admin: auth.user?.identifier || auth.user?.fullName || 'admin',
         walletAddress: wallet.address,
+        groupId: targetGroup.id,
+        groupName: targetGroup.name,
         nonce,
         signedTxXdr,
         networkPassphrase: prepared.networkPassphrase,
@@ -714,6 +820,9 @@ export function AppProvider({ children }) {
         ...previous,
         ...nextStatus,
       }));
+      if (Array.isArray(nextStatus.groups)) {
+        setGroups(nextStatus.groups);
+      }
       if (Array.isArray(nextStatus.chainHistory)) {
         setChainHistory(nextStatus.chainHistory);
       }
@@ -826,11 +935,17 @@ export function AppProvider({ children }) {
     myActivity,
     refreshStatus,
     groups,
+    mergedGroups,
     myGroups,
     activeGroupName,
     setActiveGroupName,
+    activeGroup,
+    activeGroupContributionHistory,
+    activeGroupMemberStats,
     createGroup,
     joinGroup,
+    approveJoinRequest,
+    rejectJoinRequest,
     login,
     register,
     logout,

@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import SpotlightCard from '../components/SpotlightCard';
 import { useWallet } from '../hooks/useWallet';
+import adaminImage from '../../images/adamin.jpg';
+import loginImage from '../../images/login.jpg';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -35,6 +37,7 @@ export default function Login() {
 
   const primaryHighlights = roleHighlights.slice(0, 2);
   const secondaryHighlights = roleHighlights.slice(2, 4);
+  const backgroundImage = isAdminRole ? adaminImage : loginImage;
 
   useEffect(() => {
     if (!walletConnected) {
@@ -58,9 +61,22 @@ export default function Login() {
   };
 
   return (
-    <div className="isdasure-shell">
-      <Navbar />
-      <main className="mx-auto grid max-w-7xl gap-10 py-6 md:py-10 lg:grid-cols-[1fr_0.92fr] lg:items-start">
+    <div className="relative min-h-screen overflow-hidden">
+      <img
+        src={backgroundImage}
+        alt={isAdminRole ? 'Barangay coastal community' : 'User login backdrop'}
+        className="pointer-events-none absolute inset-0 h-full w-full scale-105 object-cover"
+        aria-hidden="true"
+      />
+      <div className="pointer-events-none absolute inset-0 bg-slate-950/45" aria-hidden="true" />
+
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <Navbar className="!bg-slate-900/28" />
+        <main
+          className={[
+            'grid gap-10 py-6 md:py-10 lg:grid-cols-[1fr_0.92fr] lg:items-start',
+          ].join(' ')}
+        >
         <section>
           <div className="max-w-3xl space-y-4">
             <div className="linear-pill">
@@ -145,7 +161,8 @@ export default function Login() {
             ))}
           </div>
         </SpotlightCard>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

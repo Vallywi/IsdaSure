@@ -1,6 +1,13 @@
 const express = require('express');
 const { createRateLimiter } = require('../middleware/rateLimit');
-const { createGroup, joinGroup, listGroups, getUserGroups } = require('../services/groupService');
+const {
+  createGroup,
+  joinGroup,
+  listGroups,
+  getUserGroups,
+  approveJoinRequest,
+  rejectJoinRequest,
+} = require('../services/groupService');
 
 const router = express.Router();
 const limiter = createRateLimiter({ windowMs: 60_000, max: 40 });
@@ -42,6 +49,30 @@ router.post('/my', limiter, (request, response, next) => {
     response.json({
       success: true,
       groups,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/approve', limiter, (request, response, next) => {
+  try {
+    const group = approveJoinRequest(request.body);
+    response.json({
+      success: true,
+      group,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/reject', limiter, (request, response, next) => {
+  try {
+    const group = rejectJoinRequest(request.body);
+    response.json({
+      success: true,
+      group,
     });
   } catch (error) {
     next(error);

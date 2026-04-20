@@ -110,3 +110,17 @@ export async function apiMyGroups(payload) {
     body: JSON.stringify(payload),
   });
 }
+
+export async function apiApproveGroupJoin(payload) {
+  return request('/groups/approve', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function apiRejectGroupJoin(payload) {
+  return request('/groups/reject', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}

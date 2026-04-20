@@ -5,6 +5,7 @@ import adminImage from '../../images/Admin.jpg';
 import userImage from '../../images/User.jpg';
 import communityImage from '../../images/Community.jpg';
 import SpotlightCard from '../components/SpotlightCard';
+import SiteFooter from '../components/SiteFooter';
 import { useWallet } from '../hooks/useWallet';
 
 export default function ConnectWallet() {
@@ -17,6 +18,13 @@ export default function ConnectWallet() {
   const [ctaVisible, setCtaVisible] = useState(false);
   const ecosystemRef = useRef(null);
   const ctaRef = useRef(null);
+
+  const homepageNavItems = [
+    ['Home', '/'],
+    ['How It Works', '/how-it-works'],
+    ['about', '/about-us'],
+    ['FAQ', '/faq'],
+  ];
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -208,15 +216,28 @@ export default function ConnectWallet() {
               </div>
             </div>
 
+            <nav className="hidden items-center gap-5 md:flex">
+              {homepageNavItems.map(([label, path]) => (
+                <button
+                  key={label}
+                  type="button"
+                  onClick={() => navigate(path)}
+                  className="text-sm font-medium text-[color:var(--foreground-muted)] transition hover:text-[color:var(--foreground)]"
+                >
+                  {label}
+                </button>
+              ))}
+            </nav>
+
             <div className="hidden items-center gap-2 md:flex">
               <button type="button" onClick={handleConnect} className="linear-button-primary px-4 py-2 text-sm">
-                Connect Wallet
+                Connect Freighter Wallet
               </button>
             </div>
 
             <div className="flex items-center gap-2 md:hidden">
               <button type="button" onClick={handleConnect} className="linear-button-primary px-4 py-2 text-sm">
-                Connect
+                Freighter
               </button>
             </div>
           </div>
@@ -268,7 +289,7 @@ export default function ConnectWallet() {
               ecosystemVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0',
             ].join(' ')}
           >
-            <h2 className="linear-heading text-4xl sm:text-5xl md:text-6xl">Built for the ecosystem.🐟</h2>
+            <h2 className="linear-heading text-4xl sm:text-5xl md:text-6xl">Built to Protect Fisherfolk Livelihoods🐟</h2>
             <p className="mx-auto max-w-2xl linear-muted">One wallet-linked system, three focused experiences for community resilience.</p>
           </div>
 
@@ -324,7 +345,7 @@ export default function ConnectWallet() {
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
               <button type="button" onClick={handleConnect} className="inline-flex items-center justify-center rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-brand-700 transition hover:bg-slate-100">
-                Connect Wallet
+                Connect Freighter Wallet
               </button>
               <button type="button" onClick={() => navigate('/roles')} className="inline-flex items-center justify-center rounded-2xl border border-white/50 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
                 Documentation
@@ -334,20 +355,7 @@ export default function ConnectWallet() {
         </section>
       </main>
 
-      <footer className="mx-auto mt-16 max-w-7xl px-4 pb-2 sm:mt-20 sm:px-6 sm:pb-3 lg:mt-24 lg:px-8">
-        <div className="flex flex-col items-start justify-between gap-1 border-t border-[color:var(--border-default)] pt-2 text-xs linear-muted md:flex-row md:items-center sm:text-sm">
-          <div>
-            <p className="font-semibold text-[color:var(--foreground)]">IsdaSure</p>
-            <p>© 2026 IsdaSure. Powered by Stellar.</p>
-          </div>
-          <div className="flex flex-wrap items-center gap-4">
-            <button type="button" onClick={() => navigate('/roles')} className="transition hover:text-[color:var(--accent-bright)]">Network Status</button>
-            <button type="button" onClick={() => navigate('/roles')} className="transition hover:text-[color:var(--accent-bright)]">Documentation</button>
-            <button type="button" onClick={() => navigate('/register')} className="transition hover:text-[color:var(--accent-bright)]">Privacy Policy</button>
-            <button type="button" onClick={() => navigate('/register')} className="transition hover:text-[color:var(--accent-bright)]">Terms</button>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter className="mt-16 sm:mt-20 lg:mt-24" />
     </div>
   );
 }

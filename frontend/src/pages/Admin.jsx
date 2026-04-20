@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import PoolCard from '../components/PoolCard';
@@ -8,8 +8,6 @@ import { useWallet } from '../hooks/useWallet';
 import { useContract } from '../hooks/useContract';
 
 export default function Admin() {
-  const allowedContributorNames = ['zarrah', 'vallirie'];
-
   const navigate = useNavigate();
   const {
     walletConnected,
@@ -27,14 +25,11 @@ export default function Admin() {
     walletApprovalAction,
   } = useWallet();
   const { triggerStormOnContract } = useContract();
+  const [selectedStormGroup, setSelectedStormGroup] = useState('');
 
   const usersWithStats = useMemo(() => {
     return users
-      .filter((user) => {
-        if (user.role !== 'user') return false;
-        const fullName = String(user.fullName || '').trim().toLowerCase();
-        return allowedContributorNames.some((name) => fullName.includes(name));
-      })
+      .filter((user) => user.role === 'user')
       .map((user) => {
       const totalContributions = (user.activityHistory || [])
         .filter((entry) => entry.type === 'contribution')
@@ -72,6 +67,21 @@ export default function Admin() {
     });
   }, [groups, users]);
 
+  const allGroupsSummary = useMemo(() => {
+    return (groups || []).map((group) => ({
+      id: group.id,
+      name: group.name,
+      members: Array.isArray(group.members) ? group.members.length : Number(group.memberCount || 0),
+      totalPool: Number(group.totalPool || 0),
+    }));
+  }, [groups]);
+
+  useEffect(() => {
+    if (!selectedStormGroup && allGroupsSummary.length) {
+      setSelectedStormGroup(allGroupsSummary[0].name);
+    }
+  }, [allGroupsSummary, selectedStormGroup]);
+
   useEffect(() => {
     if (!walletConnected) {
       navigate('/');
@@ -84,7 +94,7 @@ export default function Admin() {
 
   const handleTriggerStorm = async () => {
     try {
-      await triggerStormOnContract();
+      await triggerStormOnContract(selectedStormGroup);
     } catch {
       // shared state already shows error
     }
@@ -123,9 +133,19 @@ export default function Admin() {
             <h2 className="text-2xl font-semibold tracking-tight text-[color:var(--foreground)]">Trigger Storm Day</h2>
             <p className="text-sm linear-muted">This action is restricted to admin accounts only.</p>
             {isAdminWallet ? (
-              <button type="button" onClick={handleTriggerStorm} disabled={loadingAction === 'storm'} className="linear-button-admin w-full">
+              <div className="space-y-3">
+                <select value={selectedStormGroup} onChange={(event) => setSelectedStormGroup(event.target.value)} className="linear-input w-full">
+                  <option value="">Select group</option>
+                  {allGroupsSummary.map((group) => (
+                    <option key={group.id || group.name} value={group.name}>
+                      {group.name} ({group.members} members)
+                    </option>
+                  ))}
+                </select>
+                <button type="button" onClick={handleTriggerStorm} disabled={loadingAction === 'storm' || !selectedStormGroup} className="linear-button-admin w-full">
                 {loadingAction === 'storm' ? <span className="inline-flex items-center gap-2"><span className="h-4 w-4 animate-spin rounded-full border-2 border-current/40 border-t-current" />Triggering...</span> : 'Trigger Storm Day'}
-              </button>
+                </button>
+              </div>
             ) : (
               <div className="rounded-lg border border-[color:var(--border-default)] bg-[color:var(--surface)] p-4 text-sm linear-muted">
                 Connect the configured admin wallet to enable storm trigger.
@@ -150,46 +170,23 @@ export default function Admin() {
           </SpotlightCard>
 
           <SpotlightCard className="space-y-4">
-            <h2 className="text-2xl font-semibold tracking-tight text-[color:var(--foreground)]">Users</h2>
+            <h2 className="text-2xl font-semibold tracking-tight text-[color:var(--foreground)]">Groups</h2>
             <div className="space-y-3">
-              {usersWithStats.map((user) => (
-                <div key={user.id} className="rounded-xl border border-[color:var(--border-default)] bg-[color:var(--surface)] p-4">
-                  <div className="flex items-start gap-3">
-                    {user.profilePicture ? (
-                      <img
-                        src={user.profilePicture}
-                        alt={`${user.fullName} profile`}
-                        className="h-12 w-12 rounded-full border border-[color:var(--border-default)] object-cover"
-                      />
-                    ) : (
-                      <div className="grid h-12 w-12 place-items-center rounded-full border border-[color:var(--border-default)] bg-[color:var(--surface-muted)] text-sm font-semibold text-[color:var(--foreground)]">
-                        {user.avatarInitials}
-                      </div>
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <p className="font-semibold text-[color:var(--foreground)]">{user.fullName}</p>
-                      <p className="text-sm linear-muted break-all">{user.identifier}</p>
-                      <p className="linear-kicker !mt-1 !text-[10px] !tracking-[0.16em]">{user.role}</p>
-                    </div>
-                  </div>
-
-                  <div className="mt-3 grid gap-2 text-sm text-[color:var(--foreground)]">
-                    <p>Age: {user.age || 'N/A'}</p>
-                    <p className="break-all">Wallet: {user.walletAddress || 'Not linked yet'}</p>
-                    <p>Contributions: ₱{user.totalContributions}</p>
-                    <p className="linear-muted">
-                      Groups: {user.userGroupNames.length ? user.userGroupNames.join(', ') : 'No group yet'}
-                    </p>
-                  </div>
+              {allGroupsSummary.map((group) => (
+                <div key={group.id || group.name} className="rounded-xl border border-[color:var(--border-default)] bg-[color:var(--surface)] p-4 text-sm">
+                  <p className="font-semibold text-[color:var(--foreground)]">{group.name}</p>
+                  <p className="mt-1 linear-muted">Members: {group.members}</p>
+                  <p className="linear-muted">Group Pool: ₱{group.totalPool}</p>
                 </div>
               ))}
-              {!usersWithStats.length ? (
+              {!allGroupsSummary.length ? (
                 <div className="rounded-xl border border-[color:var(--border-default)] bg-[color:var(--surface)] p-4 text-sm linear-muted">
-                  No matching contributor profiles found for Zarrah and Vallirie.
+                  No groups yet.
                 </div>
               ) : null}
             </div>
           </SpotlightCard>
+
         </section>
 
         <TransactionHistoryList title="Payout Logs" items={payoutHistory} emptyText="No payout logs yet" />

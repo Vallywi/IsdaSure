@@ -4,6 +4,7 @@ import { CheckCircle2, Landmark, ShieldCheck, UserRound } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import SpotlightCard from '../components/SpotlightCard';
 import { useWallet } from '../hooks/useWallet';
+import gandaImage from '../../images/ganda.jpg';
 
 function OptionCard({ title, action, copy, points, onClick, icon: Icon, highlighted = false }) {
   return (
@@ -58,46 +59,56 @@ export default function RoleSelection() {
   }, [navigate, walletConnected]);
 
   return (
-    <div className="isdasure-shell">
-      <Navbar />
-      <main className="mx-auto max-w-7xl py-8 md:py-12">
-        <section className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          <OptionCard
-            title="Barangay Officials"
-            action="Action: Manage"
-            copy="Barangay officials in small islands monitor members, trigger storm actions, and keep payout activity transparent."
-            points={['Storm trigger control', 'Payout execution logs', 'Wallet-bound governance actions']}
-            icon={Landmark}
-            onClick={() => {
-              setSelectedRole('admin');
-              navigate('/login/admin');
-            }}
-          />
-          <OptionCard
-            title="Log In / Sign In"
-            action="Already have an account?"
-            copy="Access your existing account through a secure wallet-linked sign-in flow."
-            points={['Existing account access', 'Role-based sign in', 'Secure wallet session']}
-            icon={UserRound}
-            highlighted
-            onClick={() => {
-              setSelectedRole('user');
-              navigate('/login/user');
-            }}
-          />
-          <OptionCard
-            title="Sign Up / Register"
-            action="New to IsdaSure?"
-            copy="Create an account to join the community and start with wallet-linked registration."
-            points={['Quick account creation', 'Wallet-linked registration', 'Ready for contribution tracking']}
-            icon={ShieldCheck}
-            onClick={() => {
-              setSelectedRole('user');
-              navigate('/register');
-            }}
-          />
-        </section>
-      </main>
+    <div className="relative min-h-screen overflow-hidden">
+      <img
+        src={gandaImage}
+        alt="Fisherfolk community"
+        className="pointer-events-none absolute inset-0 h-full w-full scale-105 object-cover"
+        aria-hidden="true"
+      />
+      <div className="pointer-events-none absolute inset-0 bg-slate-950/35" aria-hidden="true" />
+
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <Navbar className="!bg-slate-900/28" />
+        <main className="py-6 md:py-8">
+          <section className="grid min-h-[78vh] content-center gap-5 md:min-h-[82vh] md:grid-cols-2 lg:min-h-[86vh] lg:grid-cols-3">
+            <OptionCard
+              title="Barangay Officials"
+              action="Action: Manage"
+              copy="Barangay officials in small islands monitor members, trigger storm actions, and keep payout activity transparent."
+              points={['Storm trigger control', 'Payout execution logs', 'Wallet-bound governance actions']}
+              icon={Landmark}
+              onClick={() => {
+                setSelectedRole('admin');
+                navigate('/login/admin');
+              }}
+            />
+            <OptionCard
+              title="Log In / Sign In"
+              action="Already have an account?"
+              copy="Access your existing account through a secure wallet-linked sign-in flow."
+              points={['Existing account access', 'Role-based sign in', 'Secure wallet session']}
+              icon={UserRound}
+              highlighted
+              onClick={() => {
+                setSelectedRole('user');
+                navigate('/login/user');
+              }}
+            />
+            <OptionCard
+              title="Sign Up / Register"
+              action="New to IsdaSure?"
+              copy="Create an account to join the community and start with wallet-linked registration."
+              points={['Quick account creation', 'Wallet-linked registration', 'Ready for contribution tracking']}
+              icon={ShieldCheck}
+              onClick={() => {
+                setSelectedRole('user');
+                navigate('/register');
+              }}
+            />
+          </section>
+        </main>
+      </div>
     </div>
   );
 }

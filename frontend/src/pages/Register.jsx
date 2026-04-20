@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import SpotlightCard from '../components/SpotlightCard';
 import { useWallet } from '../hooks/useWallet';
+import registerImage from '../../images/register.jpg';
 
 const REGISTER_DRAFT_KEY = 'isdasure-register-draft';
 
@@ -116,15 +117,24 @@ export default function Register() {
   };
 
   return (
-    <div className="isdasure-shell">
-      <Navbar />
-      <main className="mx-auto grid max-w-7xl gap-10 py-6 md:py-10 lg:grid-cols-[1fr_0.96fr] lg:items-start">
-        <section className="space-y-7">
+    <div className="relative min-h-screen overflow-hidden">
+      <img
+        src={registerImage}
+        alt="Fisherfolk registration backdrop"
+        className="pointer-events-none absolute inset-0 h-full w-full scale-105 object-cover"
+        aria-hidden="true"
+      />
+      <div className="pointer-events-none absolute inset-0 bg-slate-950/38" aria-hidden="true" />
+
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <Navbar className="!bg-slate-900/28" />
+        <main className="grid gap-10 py-6 md:py-10 lg:grid-cols-[1fr_0.96fr] lg:items-start">
+          <section className="space-y-7">
           <div className="linear-pill">Register</div>
-          <h1 className="linear-display max-w-3xl">
+          <h1 className="linear-display max-w-3xl text-slate-200 [text-shadow:0_1px_2px_rgba(255,255,255,0.12)]">
             Create your profile.
           </h1>
-          <p className="text-sm font-medium text-[color:var(--accent-soft)]">
+          <p className="text-sm font-medium text-slate-950/95 text-blue-950 [text-shadow:0_1px_2px_rgba(255,255,255,0.08)]">
             {draftSaved ? 'Auto-save on: your profile draft is being saved while you type.' : 'Auto-save is preparing...'}
           </p>
 
@@ -145,9 +155,9 @@ export default function Register() {
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--foreground-subtle)]">Functionality highlights</p>
             <p className="mt-2 text-sm linear-muted">Auto-save draft, wallet-linked verification, profile photo preview, and secure registration flow built for coastal fisherfolk communities.</p>
           </div>
-        </section>
+          </section>
 
-        <SpotlightCard className="space-y-5 [&::before]:hidden">
+          <SpotlightCard className="space-y-5 [&::before]:hidden">
           <div>
             <p className="linear-kicker">Registration panel</p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[color:var(--foreground)]">User Registration</h2>
@@ -194,8 +204,9 @@ export default function Register() {
               {loading ? 'Registering...' : 'Register'}
             </button>
           </form>
-        </SpotlightCard>
-      </main>
+          </SpotlightCard>
+        </main>
+      </div>
     </div>
   );
 }
