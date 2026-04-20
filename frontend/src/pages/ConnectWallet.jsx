@@ -8,7 +8,6 @@ import SpotlightCard from '../components/SpotlightCard';
 import SiteFooter from '../components/SiteFooter';
 import { useWallet } from '../hooks/useWallet';
 
-
 export default function ConnectWallet() {
   const navigate = useNavigate();
   const { connectWallet } = useWallet();
