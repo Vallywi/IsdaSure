@@ -1,9 +1,5 @@
 {
   "private": true,
-  "workspaces": [
-    "frontend",
-    "backend"
-  ],
   "scripts": {
     "build": "npm --prefix frontend run build",
     "build:frontend": "npm --prefix frontend run build",
@@ -12,8 +8,5 @@
     "dev": "node scripts/dev-single-server.js",
     "dev:single": "node scripts/dev-single-server.js",
     "start": "node scripts/dev-single-server.js"
-  },
-  "dependencies": {
-    "lucide-react": "^1.8.0"
   }
 }
