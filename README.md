@@ -39,6 +39,9 @@ Instead of falling into debt, Juan now has a reliable safety net powered by his 
 <h2> Smart Contract Short Description </h2>
 The IsdaSure smart contract is a Soroban-based program deployed on the Stellar network that securely manages the entire lifecycle of the community fund, from collecting contributions to distributing payouts. It allows fisherfolk to contribute small amounts into a shared on-chain pool, where all transactions are recorded transparently and cannot be altered. The contract enforces predefined rules, ensuring that only authorized users—such as a trusted barangay officer—can trigger a storm event. Once triggered, the smart contract automatically calculates and distributes the pooled funds equally among all contributors, eliminating delays, manual processing, and the need for intermediaries. By automating this process, the contract provides a reliable, trustless, and efficient financial safety net that ensures fisherfolk receive immediate support during no-fishing days caused by storms or extreme weather conditions.
 
+<h2> Vercel Deployment </h2>
+This repository includes a root <code>vercel.json</code> that builds the Vite frontend and exposes the Express backend as a serverless function under <code>/api</code>. The backend uses writable temp storage on Vercel, so local JSON persistence works during a warm function lifetime but is not permanent across redeploys or cold starts. If you need durable production data, replace the JSON file storage with an external database.
+
 <h2>What the IsdaSure Solves</h2>
 <ol>
     <li><b>Income Loss During Storms</b> – Fisherfolk depend entirely on daily fishing for income, and when storms or extreme weather occur, they are unable to go out to sea, resulting in a complete loss of earnings for several days or even weeks, leaving families without money for basic needs like food and fuel.</li>

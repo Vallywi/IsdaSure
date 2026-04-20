@@ -1,7 +1,8 @@
 const fs = require('fs');
 const path = require('path');
+const { getDataDirectory } = require('./storagePath');
 
-const dataDirectory = path.join(__dirname, '..', 'data');
+const dataDirectory = getDataDirectory();
 const usersFilePath = path.join(dataDirectory, 'users.json');
 
 const seedUsers = [

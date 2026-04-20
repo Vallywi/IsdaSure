@@ -1,8 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 const { resolveUser, listUsers } = require('./authService');
+const { getDataDirectory } = require('./storagePath');
 
-const dataDirectory = path.join(__dirname, '..', 'data');
+const dataDirectory = getDataDirectory();
 const groupsFilePath = path.join(dataDirectory, 'groups.json');
 const REQUIRED_DAILY_CONTRIBUTION = Number(process.env.REQUIRED_DAILY_CONTRIBUTION || 50);
 

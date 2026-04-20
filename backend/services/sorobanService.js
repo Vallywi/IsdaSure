@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { getDataDirectory } = require('./storagePath');
 const { recordUserActivity } = require('./authService');
 const { assertFreshNonce } = require('./nonceService');
 const {
@@ -22,7 +23,7 @@ const adminAddress = 'admin@isdasure.dev';
 const configuredAdminWallet = String(process.env.ADMIN_WALLET_ADDRESS || '')
   .trim()
   .toUpperCase();
-const dataDirectory = path.join(__dirname, '..', 'data');
+const dataDirectory = getDataDirectory();
 const poolFilePath = path.join(dataDirectory, 'pool.json');
 const MIN_CONTRIBUTION = Number(process.env.MIN_CONTRIBUTION || 10);
 const MAX_CONTRIBUTION = Number(process.env.MAX_CONTRIBUTION || 100000);
