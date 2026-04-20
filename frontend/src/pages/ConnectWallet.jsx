@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Info, ShieldCheck, Wallet } from 'lucide-react';
-import adminImage from '../../images/Admin.jpg';
+import adminImage from '../../images/admin.jpg';
 import userImage from '../../images/User.jpg';
 import communityImage from '../../images/Community.jpg';
 import SpotlightCard from '../components/SpotlightCard';
