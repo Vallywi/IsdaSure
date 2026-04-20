@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="frontend/images/logo.png" height="250px" style="object-fit: cover;" />
+  <img src="frontend/images/logo.png" height="150px" style="object-fit: cover;" />
 </p>
 
 <h2 align="center">
