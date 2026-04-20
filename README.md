@@ -42,6 +42,9 @@ The IsdaSure smart contract is a Soroban-based program deployed on the Stellar n
 <h2> Vercel Deployment </h2>
 This repository includes a root <code>vercel.json</code> that defines the frontend and backend as separate Vercel services. In production, the frontend calls the backend through the <code>/_/backend</code> service prefix. If you need durable production data, replace the JSON file storage with an external database.
 
+<h2> Local One-Command Run </h2>
+Run <code>npm start</code> from the repository root to host the frontend and backend together in one local process. It builds the frontend, watches for changes, and starts the backend on <code>http://localhost:4000</code>.
+
 <h2>What the IsdaSure Solves</h2>
 <ol>
     <li><b>Income Loss During Storms</b> – Fisherfolk depend entirely on daily fishing for income, and when storms or extreme weather occur, they are unable to go out to sea, resulting in a complete loss of earnings for several days or even weeks, leaving families without money for basic needs like food and fuel.</li>
