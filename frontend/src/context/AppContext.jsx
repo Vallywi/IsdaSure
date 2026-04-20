@@ -16,6 +16,7 @@ import {
   connectFreighterWallet,
   formatWalletAddress,
   isFreighterAvailable,
+  signFreighterTransaction,
   signPreparedFreighterTransaction,
 } from '../services/freighter';
 import {
@@ -674,15 +675,30 @@ export function AppProvider({ children }) {
       });
 
       const nonce = createNonce();
-      const requiresWalletSignature = prepared?.mode !== 'mock';
+      const requiresWalletSignature = prepared?.mode !== 'mock' || isFreighterAvailable();
       let signedTxXdr = '';
 
       if (requiresWalletSignature) {
         setWalletApprovalAction('contribute');
-        const signed = await signPreparedFreighterTransaction({
-          unsignedTxXdr: prepared.unsignedTxXdr,
-          networkPassphrase: prepared.networkPassphrase,
-        });
+        const signed = prepared?.mode === 'mock'
+          ? await signFreighterTransaction({
+              walletAddress: wallet.address,
+              action: 'contribute',
+              payload: {
+                user: auth.user?.fullName || auth.user?.identifier || wallet.address,
+                identifier: auth.user?.identifier || '',
+                walletAddress: wallet.address,
+                amount: normalizedAmount,
+                groupId: activeGroup?.id,
+                groupName: activeGroupName,
+                nonce,
+              },
+              memoText: `IsdaSure contribute ${normalizedAmount}`,
+            })
+          : await signPreparedFreighterTransaction({
+              unsignedTxXdr: prepared.unsignedTxXdr,
+              networkPassphrase: prepared.networkPassphrase,
+            });
         signedTxXdr = signed.signedTxXdr;
       }
       setWalletApprovalAction('');
