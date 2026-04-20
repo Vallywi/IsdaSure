@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { ArrowRight, CloudRainWind, CreditCard, HandCoins, Lock, ShieldCheck, Users, Wallet } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import SpotlightCard from '../components/SpotlightCard';
 import { useWallet } from '../hooks/useWallet';
@@ -23,16 +24,16 @@ export default function Login() {
 
   const roleHighlights = isAdminRole
     ? [
-        ['Barangay Governance', 'Review resident member records and enforce local policy workflows.'],
-        ['Storm Trigger Action', 'Initiate approved storm-trigger operations for affected island communities.'],
-        ['Payout Oversight', 'Track and verify payout execution with clear accountability records.'],
-        ['Island Activity Monitoring', 'Monitor community-level activity signals for operational readiness.'],
+        { title: 'Barangay Governance', copy: 'Review resident member records and enforce local policy workflows.', icon: Users },
+        { title: 'Storm Trigger Action', copy: 'Initiate approved storm-trigger operations for affected island communities.', icon: CloudRainWind },
+        { title: 'Payout Oversight', copy: 'Track and verify payout execution with clear accountability records.', icon: HandCoins },
+        { title: 'Island Activity Monitoring', copy: 'Monitor community-level activity signals for operational readiness.', icon: ShieldCheck },
       ]
     : [
-        ['Personal Dashboard', 'Open your account workspace with role-aware navigation and controls.'],
-        ['Activity Tracking', 'Review your recent account actions and contribution history in one place.'],
-        ['Wallet Security', 'Continue using wallet-linked verification for safer account access.'],
-        ['Guided Access', 'Follow a simplified sign-in experience built for fast user entry.'],
+        { title: 'Personal Dashboard', copy: 'Open your account workspace with role-aware navigation and controls.', icon: Users },
+        { title: 'Activity Tracking', copy: 'Review your recent account actions and contribution history in one place.', icon: CreditCard },
+        { title: 'Wallet Security', copy: 'Continue using wallet-linked verification for safer account access.', icon: Wallet },
+        { title: 'Guided Access', copy: 'Follow a simplified sign-in experience built for fast user entry.', icon: ArrowRight },
       ];
 
   const primaryHighlights = roleHighlights.slice(0, 2);
@@ -88,16 +89,22 @@ export default function Login() {
             <p className="linear-lead max-w-2xl">{roleSummary}</p>
 
             <div className="grid gap-4 md:grid-cols-2 md:items-stretch">
-              {primaryHighlights.map(([title, copy]) => (
+              {primaryHighlights.map(({ title, copy, icon: HighlightIcon }) => (
                 <SpotlightCard key={title} className="h-full p-4 [&::before]:hidden">
-                  <p className="linear-kicker">{title}</p>
+                  <p className="linear-kicker flex items-center gap-2">
+                    <HighlightIcon className="h-4 w-4 text-[color:var(--accent-bright)]" />
+                    <span>{title}</span>
+                  </p>
                   <p className="mt-2 text-sm leading-6 linear-muted">{copy}</p>
                 </SpotlightCard>
               ))}
             </div>
 
             <div className="rounded-2xl border border-[color:var(--border-default)] bg-[color:var(--surface)]/60 px-4 py-3 backdrop-blur-xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--foreground-subtle)]">Security note</p>
+              <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--foreground-subtle)]">
+                <Lock className="h-3.5 w-3.5 text-[color:var(--accent-bright)]" />
+                <span>Security note</span>
+              </p>
               <p className="mt-2 text-sm linear-muted">Only wallet-connected sessions can proceed to authenticated role actions.</p>
             </div>
           </div>
@@ -111,7 +118,10 @@ export default function Login() {
         >
           <div>
             <p className="linear-kicker">Access panel</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[color:var(--foreground)]">{isAdminRole ? '🏦 Barangay Official Login' : 'User Login'}</h2>
+            <h2 className="mt-2 flex items-center gap-2 text-2xl font-semibold tracking-tight text-[color:var(--foreground)]">
+              {!isAdminRole ? <Users className="h-6 w-6 text-[color:var(--accent-bright)]" /> : null}
+              <span>{isAdminRole ? '🏦 Barangay Official Login' : 'User Login'}</span>
+            </h2>
           </div>
           <form className="space-y-4" onSubmit={handleSubmit}>
             <label className="block">
@@ -153,9 +163,12 @@ export default function Login() {
           </form>
 
           <div className="grid gap-3 md:grid-cols-2">
-            {secondaryHighlights.map(([title, copy]) => (
+            {secondaryHighlights.map(({ title, copy, icon: HighlightIcon }) => (
               <div key={title} className="rounded-xl border border-[color:var(--border-default)] bg-[color:var(--surface)]/55 p-3">
-                <p className="linear-kicker">{title}</p>
+                <p className="linear-kicker flex items-center gap-2">
+                  <HighlightIcon className="h-4 w-4 text-[color:var(--accent-bright)]" />
+                  <span>{title}</span>
+                </p>
                 <p className="mt-2 text-sm leading-6 linear-muted">{copy}</p>
               </div>
             ))}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AlertTriangle, ArrowRight, CloudRainWind, HandCoins, ShieldCheck, Users, Waves, Umbrella, HeartHandshake, Lightbulb, Apple, TrendingDown } from 'lucide-react';
+import SiteFooter from '../components/SiteFooter';
 import SpotlightCard from '../components/SpotlightCard';
 import { useWallet } from '../hooks/useWallet';
 import typhoonGif from '../../gif/typhoon.gif';
@@ -345,6 +346,8 @@ export default function AboutUs() {
           </p>
         </div>
       </section>
+
+      <SiteFooter className="mt-0" />
     </div>
   );
 }

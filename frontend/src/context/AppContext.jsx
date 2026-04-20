@@ -87,6 +87,40 @@ function shortAddress(address) {
   return formatWalletAddress(address);
 }
 
+function normalizeMemberIdentifier(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function normalizeMemberWallet(value) {
+  return String(value || '').trim().toUpperCase();
+}
+
+function normalizeMemberName(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function memberMatchesUser(member, user, walletAddress = '') {
+  const memberIdentifier = normalizeMemberIdentifier(member?.identifier);
+  const userIdentifier = normalizeMemberIdentifier(user?.identifier);
+  if (memberIdentifier && userIdentifier) {
+    return memberIdentifier === userIdentifier;
+  }
+
+  const memberName = normalizeMemberName(member?.fullName);
+  const userName = normalizeMemberName(user?.fullName);
+  if (memberName && userName) {
+    return memberName === userName;
+  }
+
+  const memberWallet = normalizeMemberWallet(member?.walletAddress);
+  const userWallet = normalizeMemberWallet(walletAddress || user?.walletAddress);
+  if (memberWallet && userWallet) {
+    return memberWallet === userWallet;
+  }
+
+  return false;
+}
+
 function normalizeActivityHistory(entries, fallbackUser) {
   return (entries || []).map((entry, index) => ({
     id: entry.id || `activity-${Date.now()}-${index}`,
@@ -166,15 +200,9 @@ export function AppProvider({ children }) {
       return null;
     }
 
-    const member = (activeGroup.contributionByMember || []).find((item) => {
-      const identifierMatch =
-        String(item.identifier || '').trim().toLowerCase() === String(auth.user.identifier || '').trim().toLowerCase();
-      const walletMatch =
-        String(item.walletAddress || '').trim().toUpperCase() === String(wallet.address || auth.user.walletAddress || '').trim().toUpperCase();
-      const fullNameMatch =
-        String(item.fullName || '').trim().toLowerCase() === String(auth.user.fullName || '').trim().toLowerCase();
-      return identifierMatch || walletMatch || fullNameMatch;
-    });
+    const member = (activeGroup.contributionByMember || []).find((item) =>
+      memberMatchesUser(item, auth.user, wallet.address || auth.user.walletAddress),
+    );
 
     return member || null;
   }, [activeGroup, auth.user, wallet.address]);
@@ -388,16 +416,14 @@ export function AppProvider({ children }) {
         });
         const nextGroups = response.groups || [];
         setMyGroups(nextGroups);
-        if (!nextGroups.some((group) => group.name === activeGroupName)) {
-          setActiveGroupName(nextGroups[0]?.name || '');
-        }
+        setActiveGroupName((previous) => (nextGroups.some((group) => group.name === previous) ? previous : nextGroups[0]?.name || ''));
       } catch {
         setMyGroups([]);
       }
     };
 
     loadMyGroups();
-  }, [activeGroupName, auth.isAuthenticated, auth.user, wallet.address]);
+  }, [auth.isAuthenticated, auth.user, wallet.address]);
 
   useEffect(() => {
     const intervalId = window.setInterval(async () => {
@@ -691,13 +717,9 @@ export function AppProvider({ children }) {
         setGroups(nextStatus.groups);
         if (auth.isAuthenticated && auth.user) {
           const mine = nextStatus.groups.filter((group) =>
-            (group.members || []).some((member) => {
-              const identifierMatch =
-                String(member.identifier || '').trim().toLowerCase() === String(auth.user.identifier || '').trim().toLowerCase();
-              const walletMatch =
-                String(member.walletAddress || '').trim().toUpperCase() === String(wallet.address || auth.user.walletAddress || '').trim().toUpperCase();
-              return identifierMatch || walletMatch;
-            }),
+            (group.members || []).some((member) =>
+              memberMatchesUser(member, auth.user, wallet.address || auth.user.walletAddress),
+            ),
           );
           setMyGroups(mine);
         }

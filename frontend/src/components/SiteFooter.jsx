@@ -25,10 +25,9 @@ export default function SiteFooter({ className = '' }) {
               <p className="text-xs font-semibold uppercase tracking-[0.34em] text-[color:var(--accent-bright)]">Site</p>
               <div className="space-y-3 text-sm text-[color:var(--foreground-muted)]">
                 <button type="button" onClick={() => navigate('/')} className="block transition hover:text-[color:var(--foreground)]">Home</button>
-                <button type="button" onClick={() => navigate('/roles')} className="block transition hover:text-[color:var(--foreground)]">App</button>
-                <button type="button" onClick={() => navigate('/register')} className="block transition hover:text-[color:var(--foreground)]">Verify</button>
-                <button type="button" onClick={() => navigate('/login/user')} className="block transition hover:text-[color:var(--foreground)]">Issuer</button>
-                <button type="button" onClick={() => navigate('/dashboard')} className="block transition hover:text-[color:var(--foreground)]">About</button>
+                <button type="button" onClick={() => navigate('/how-it-works')} className="block transition hover:text-[color:var(--foreground)]">How It Works</button>
+                <button type="button" onClick={() => navigate('/about-us')} className="block transition hover:text-[color:var(--foreground)]">about</button>
+                <button type="button" onClick={() => navigate('/faq')} className="block transition hover:text-[color:var(--foreground)]">FAQ</button>
               </div>
             </div>
 
@@ -36,7 +35,7 @@ export default function SiteFooter({ className = '' }) {
               <p className="text-xs font-semibold uppercase tracking-[0.34em] text-[color:var(--accent-bright)]">On-chain</p>
               <div className="space-y-3 text-sm text-[color:var(--foreground-muted)]">
                 <a
-                  href="https://stellar.expert/explorer/public"
+                  href="https://stellar.expert/explorer/testnet/contract/CDNZVMTK3RNWWEQTG4JYC55O5P47YYTC2C2ACJVPI5MDJP63TH3KKKKS"
                   target="_blank"
                   rel="noreferrer"
                   className="flex items-center gap-2 transition hover:text-[color:var(--foreground)]"
@@ -68,15 +67,15 @@ export default function SiteFooter({ className = '' }) {
             <div className="space-y-4">
               <p className="text-xs font-semibold uppercase tracking-[0.34em] text-[color:var(--accent-bright)]">Source</p>
               <div className="space-y-3 text-sm text-[color:var(--foreground-muted)]">
-                <a href="https://github.com/" target="_blank" rel="noreferrer" className="flex items-center gap-2 transition hover:text-[color:var(--foreground)]">
+                <a href="https://github.com/Vallywi/IsdaSure.git" target="_blank" rel="noreferrer" className="flex items-center gap-2 transition hover:text-[color:var(--foreground)]">
                   <span>GitHub</span>
                   <ExternalLink className="h-3.5 w-3.5" />
                 </a>
-                <a href="https://www.risein.com/" target="_blank" rel="noreferrer" className="flex items-center gap-2 transition hover:text-[color:var(--foreground)]">
+                <a href="https://github.com/Vallywi/IsdaSure/tree/main/contract" target="_blank" rel="noreferrer" className="flex items-center gap-2 transition hover:text-[color:var(--foreground)]">
                   <span>Contract crate</span>
                   <ExternalLink className="h-3.5 w-3.5" />
                 </a>
-                <a href="https://www.risein.com/" target="_blank" rel="noreferrer" className="flex items-center gap-2 transition hover:text-[color:var(--foreground)]">
+                <a href="https://www.risein.com/en/home" target="_blank" rel="noreferrer" className="flex items-center gap-2 transition hover:text-[color:var(--foreground)]">
                   <span>Rise In</span>
                   <ExternalLink className="h-3.5 w-3.5" />
                 </a>

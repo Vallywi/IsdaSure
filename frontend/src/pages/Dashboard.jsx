@@ -33,6 +33,8 @@ export default function Dashboard() {
     walletApprovalAction,
   } = useWallet();
   const { contributeToContract } = useContract();
+  const chainMode = String(poolState?.chainMode || 'mock').toLowerCase();
+  const isOnChainMode = chainMode === 'rpc';
   const minAmount = Number(poolState?.contributionRules?.minAmount || 10);
   const maxAmount = Number(poolState?.contributionRules?.maxAmount || 100000);
   const dailyLimit = Number(poolState?.contributionRules?.dailyPesoLimit || 1000);
@@ -43,11 +45,19 @@ export default function Dashboard() {
   const [joinGroupName, setJoinGroupName] = useState('');
   const [groupError, setGroupError] = useState('');
 
+  const createdByIdentifier = String(activeGroup?.createdBy?.identifier || '').trim().toLowerCase();
+  const currentUserIdentifier = String(currentUser?.identifier || '').trim().toLowerCase();
+  const createdByName = String(activeGroup?.createdBy?.fullName || '').trim().toLowerCase();
+  const currentUserName = String(currentUser?.fullName || '').trim().toLowerCase();
+  const createdByWallet = String(activeGroup?.createdBy?.walletAddress || '').trim().toUpperCase();
+  const currentUserWallet = String(currentUser?.walletAddress || '').trim().toUpperCase();
+
   const isActiveGroupCreator = Boolean(
     activeGroup &&
       currentUser &&
-      (String(activeGroup?.createdBy?.identifier || '').trim().toLowerCase() === String(currentUser?.identifier || '').trim().toLowerCase() ||
-        String(activeGroup?.createdBy?.walletAddress || '').trim().toUpperCase() === String(currentUser?.walletAddress || '').trim().toUpperCase()),
+      ((createdByIdentifier && currentUserIdentifier && createdByIdentifier === currentUserIdentifier) ||
+        (createdByName && currentUserName && createdByName === currentUserName) ||
+        (!createdByIdentifier && !currentUserIdentifier && createdByWallet && currentUserWallet && createdByWallet === currentUserWallet)),
   );
 
   const getSafeErrorMessage = (error, fallback) => {
@@ -188,6 +198,14 @@ export default function Dashboard() {
           <SpotlightCard className="space-y-4">
             <h2 className="text-2xl font-semibold tracking-tight text-[color:var(--foreground)]">Contribute</h2>
             <p className="text-sm linear-muted">Support the pool with a custom contribution amount.</p>
+            {isOnChainMode ? (
+              <div className="rounded-lg border border-amber-400/40 bg-amber-400/10 px-4 py-3 text-sm text-amber-100">
+                <p className="font-semibold">On-chain approval required</p>
+                <p className="mt-1">
+                  Freighter wallet approval will open on every contribution. Your selected wallet must exist and be funded on Stellar testnet.
+                </p>
+              </div>
+            ) : null}
             <div className="rounded-lg border border-[color:var(--border-default)] bg-[color:var(--surface)]/82 p-4 text-sm linear-muted space-y-3">
               <p className="font-semibold text-[color:var(--foreground)]">Contribution Group</p>
               <select
@@ -196,7 +214,7 @@ export default function Dashboard() {
                 className="linear-input w-full"
               >
                 <option value="">Select group</option>
-                {[...myGroups, ...groups]
+                {myGroups
                   .filter((group, index, array) => array.findIndex((item) => item.name === group.name) === index)
                   .map((group) => (
                     <option key={group.id || group.name} value={group.name}>

@@ -191,7 +191,7 @@ export default function Navbar({ className = '' }) {
             ) : null}
           </nav>
           <button type="button" onClick={handleWalletAction} className="linear-button-secondary px-4 py-2 text-sm">
-            {walletConnected ? 'Disconnect Wallet' : 'Connect Freighter Wallet'}
+            {walletConnected ? 'Disconnect Wallet' : 'Connect Wallet'}
           </button>
           {isAuthenticated ? (
             <button type="button" onClick={handleLogout} className="linear-button-primary px-4 py-2 text-sm">
@@ -287,7 +287,7 @@ export default function Navbar({ className = '' }) {
           ) : null}
           <div className="grid gap-2">
             <button type="button" onClick={handleWalletAction} className="linear-button-secondary w-full text-sm">
-              {walletConnected ? `Disconnect ${shortWalletAddress}` : 'Connect Freighter Wallet'}
+              {walletConnected ? `Disconnect ${shortWalletAddress}` : 'Connect Wallet'}
             </button>
             {isAuthenticated ? (
               <button type="button" onClick={handleLogout} className="linear-button-primary w-full text-sm">

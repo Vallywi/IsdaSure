@@ -72,6 +72,30 @@ export default function FAQ() {
       answer:
         'First, connect your Freighter wallet to unlock your IsdaSure account. Then, complete user registration with basic information and a profile picture. Once registered, you can browse existing groups and join one that matches your barangay or fishing community, or create a new group if one does not exist. Your group admin will guide you on the daily contribution amount and payout rules.',
     },
+    {
+      question: 'What happens if I miss a contribution?',
+      icon: CreditCard,
+      answer:
+        'If you miss a scheduled contribution, your record remains visible and your payout basis can be lower compared to members who contributed consistently. IsdaSure does not hide missed entries. This transparent history helps keep the system fair for everyone and encourages regular participation in the group fund.',
+    },
+    {
+      question: 'Can I be in more than one group?',
+      icon: Users,
+      answer:
+        'Your account is designed to participate in one active group at a time for clear contribution tracking and payout computation. If your community setup changes, you can leave your current group and then join another one, based on your admin and platform rules.',
+    },
+    {
+      question: 'What if my transaction fails?',
+      icon: Wallet,
+      answer:
+        'If a transaction fails, check your wallet connection, network status, and available balance first. Then retry the action. Failed transactions are not treated as successful contributions, so your on-chain history stays accurate. If the issue continues, ask your group admin for guidance and retry once conditions are stable.',
+    },
+    {
+      question: 'Who can trigger a storm event?',
+      icon: Lock,
+      answer:
+        'Only authorized group admins can trigger a storm event in the system. This protection prevents unauthorized payout actions and keeps support distribution aligned with the group rules. Every trigger is recorded, so members can verify when and how emergency payouts were activated.',
+    },
   ];
 
   return (

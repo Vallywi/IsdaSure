@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle2 } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Info, ShieldCheck, Wallet } from 'lucide-react';
 import adminImage from '../../images/Admin.jpg';
 import userImage from '../../images/User.jpg';
 import communityImage from '../../images/Community.jpg';
@@ -231,7 +231,7 @@ export default function ConnectWallet() {
 
             <div className="hidden items-center gap-2 md:flex">
               <button type="button" onClick={handleConnect} className="linear-button-primary px-4 py-2 text-sm">
-                Connect Freighter Wallet
+                Connect Wallet
               </button>
             </div>
 
@@ -270,7 +270,7 @@ export default function ConnectWallet() {
 
             <div className="flex flex-col gap-3 sm:flex-row">
               <button type="button" onClick={handleConnect} className="linear-button-primary w-full sm:w-auto">
-                Verify Now
+                Connect Wallet
               </button>
               <button type="button" onClick={() => navigate('/register')} className="linear-button-secondary w-full sm:w-auto">
                 Register User
@@ -332,7 +332,7 @@ export default function ConnectWallet() {
         <section
           ref={ctaRef}
           className={[
-            'relative mt-20 overflow-hidden rounded-[2.2rem] border border-[color:var(--border-accent)] bg-[color:var(--accent)] p-8 text-white shadow-[0_0_0_1px_rgba(94,106,210,0.6),0_24px_60px_rgba(31,41,55,0.4)] transition-all duration-700 ease-out sm:mt-24 sm:p-10 lg:mt-28',
+            'relative mt-20 min-h-[300px] overflow-hidden rounded-[2.2rem] border border-[color:var(--border-accent)] bg-[color:var(--accent)] p-10 text-white shadow-[0_0_0_1px_rgba(94,106,210,0.6),0_24px_60px_rgba(31,41,55,0.4)] transition-all duration-700 ease-out sm:mt-24 sm:min-h-[320px] sm:p-12 lg:mt-28',
             ctaVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0',
           ].join(' ')}
         >
@@ -342,13 +342,30 @@ export default function ConnectWallet() {
               <p className="linear-kicker !text-white/70">Ready to link the future?</p>
               <h2 className="text-4xl font-semibold tracking-tight sm:text-5xl">Secure your community trust flow today.</h2>
               <p className="text-sm leading-6 text-white/85">Start with wallet connection, then continue directly into the role-based journey.</p>
+              <div className="flex flex-wrap gap-2 pt-1">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-white/40 bg-white/10 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-white/90">
+                  <Wallet className="h-3.5 w-3.5" />
+                  <span>Wallet-approved transactions</span>
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-white/40 bg-white/10 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-white/90">
+                  <ShieldCheck className="h-3.5 w-3.5" />
+                  <span>Group-based protection flow</span>
+                </span>
+              </div>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
               <button type="button" onClick={handleConnect} className="inline-flex items-center justify-center rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-brand-700 transition hover:bg-slate-100">
-                Connect Freighter Wallet
+                <span className="inline-flex items-center gap-2">
+                  <Wallet className="h-4 w-4" />
+                  <span>Connect Now</span>
+                </span>
               </button>
-              <button type="button" onClick={() => navigate('/roles')} className="inline-flex items-center justify-center rounded-2xl border border-white/50 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
-                Documentation
+              <button type="button" onClick={() => navigate('/about-us')} className="inline-flex items-center justify-center rounded-2xl border border-white/50 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
+                <span className="inline-flex items-center gap-2">
+                  <Info className="h-4 w-4" />
+                  <span>About Us</span>
+                  <ArrowRight className="h-4 w-4" />
+                </span>
               </button>
             </div>
           </div>

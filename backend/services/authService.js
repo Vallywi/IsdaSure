@@ -87,6 +87,15 @@ function findUserByWalletAddress(walletAddress) {
   return users.find((user) => String(user.walletAddress || '').trim().toLowerCase() === value);
 }
 
+function findUsersByWalletAddress(walletAddress) {
+  const value = String(walletAddress || '').trim().toLowerCase();
+  if (!value) {
+    return [];
+  }
+
+  return users.filter((user) => String(user.walletAddress || '').trim().toLowerCase() === value);
+}
+
 function findUserByFullName(fullName) {
   const value = String(fullName || '').trim().toLowerCase();
   if (!value) {
@@ -97,12 +106,44 @@ function findUserByFullName(fullName) {
 }
 
 function resolveUser({ identifier, walletAddress, fullName } = {}) {
-  return (
-    findUserByIdentifier(identifier) ||
-    findUserByWalletAddress(walletAddress) ||
-    findUserByFullName(fullName) ||
-    findUserByIdentifier(fullName)
-  );
+  const normalizedIdentifier = normalizeIdentifier(identifier);
+  const normalizedFullName = String(fullName || '').trim().toLowerCase();
+  const walletMatches = findUsersByWalletAddress(walletAddress);
+
+  if (normalizedIdentifier) {
+    const directByIdentifier = findUserByIdentifier(normalizedIdentifier);
+    if (directByIdentifier) {
+      return directByIdentifier;
+    }
+
+    const byIdentifierInsideWallet = walletMatches.find((user) => normalizeIdentifier(user.identifier) === normalizedIdentifier);
+    if (byIdentifierInsideWallet) {
+      return byIdentifierInsideWallet;
+    }
+  }
+
+  if (normalizedFullName) {
+    const byFullNameInsideWallet = walletMatches.find((user) => String(user.fullName || '').trim().toLowerCase() === normalizedFullName);
+    if (byFullNameInsideWallet) {
+      return byFullNameInsideWallet;
+    }
+
+    const directByFullName = findUserByFullName(normalizedFullName);
+    if (directByFullName) {
+      return directByFullName;
+    }
+
+    const identifierFromFullName = findUserByIdentifier(normalizedFullName);
+    if (identifierFromFullName) {
+      return identifierFromFullName;
+    }
+  }
+
+  if (walletMatches.length === 1) {
+    return walletMatches[0];
+  }
+
+  return null;
 }
 
 function recordUserActivity({ identifier, walletAddress, fullName } = {}, activity = {}) {

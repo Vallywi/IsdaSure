@@ -109,7 +109,20 @@ async function prepareUnsignedSorobanTransaction({ walletAddress, contractCall, 
   }
 
   const server = createRpcServer();
-  const sourceAccount = await server.getAccount(source);
+  let sourceAccount;
+  try {
+    sourceAccount = await server.getAccount(source);
+  } catch (error) {
+    const rawMessage = String(error?.message || '');
+    if (/account not found/i.test(rawMessage)) {
+      const friendly = new Error(
+        `Wallet account not found on Soroban network: ${source}. Fund this wallet on Stellar testnet first, then retry contribution to approve in Freighter.`,
+      );
+      friendly.status = 400;
+      throw friendly;
+    }
+    throw error;
+  }
   const contract = new Contract(contractId);
   const operation = contract.call(method, ...normalizeContractArgs(contractCall?.args));
 

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { resolveUser } = require('./authService');
+const { resolveUser, listUsers } = require('./authService');
 
 const dataDirectory = path.join(__dirname, '..', 'data');
 const groupsFilePath = path.join(dataDirectory, 'groups.json');
@@ -55,23 +55,32 @@ function toIsoDateOnly(timestamp = new Date().toISOString()) {
 }
 
 function getMemberReferenceKeys(member) {
-  const keys = [];
   const identifier = normalizeIdentifier(member?.identifier);
   const walletAddress = normalizeWallet(member?.walletAddress);
   const fullName = String(member?.fullName || '').trim().toLowerCase();
-  if (identifier) keys.push(`id:${identifier}`);
-  if (walletAddress) keys.push(`wallet:${walletAddress}`);
-  if (fullName) keys.push(`name:${fullName}`);
-  return keys;
+  return { identifier, walletAddress, fullName };
 }
 
 function referencesMatch(a, b) {
-  const left = new Set(getMemberReferenceKeys(a));
+  const left = getMemberReferenceKeys(a);
   const right = getMemberReferenceKeys(b);
-  return right.some((key) => left.has(key));
+
+  if (left.identifier && right.identifier) {
+    return left.identifier === right.identifier;
+  }
+
+  if (left.fullName && right.fullName) {
+    return left.fullName === right.fullName;
+  }
+
+  if (left.walletAddress && right.walletAddress) {
+    return left.walletAddress === right.walletAddress;
+  }
+
+  return false;
 }
 
-function buildMember({ identifier, walletAddress, fullName, profilePicture, picture }) {
+function buildMember({ identifier, walletAddress, fullName, profilePicture, picture, joinedAt }) {
   const normalizedIdentifier = normalizeIdentifier(identifier);
   const normalizedWalletAddress = normalizeWallet(walletAddress);
   const normalizedFullName = String(fullName || '').trim();
@@ -91,20 +100,50 @@ function buildMember({ identifier, walletAddress, fullName, profilePicture, pict
     fullName: normalizedFullName,
     profilePicture: memberPicture,
     picture: memberPicture,
-    joinedAt: new Date().toISOString(),
+    joinedAt: joinedAt || new Date().toISOString(),
   };
 }
 
 function memberKey(member) {
-  return getMemberReferenceKeys(member)[0] || '';
+  const reference = getMemberReferenceKeys(member);
+  return reference.identifier || reference.fullName || reference.walletAddress || '';
 }
 
 function getContributionKey(member) {
-  const wallet = normalizeWallet(member?.walletAddress);
-  if (wallet) return wallet;
   const identifier = normalizeIdentifier(member?.identifier);
   if (identifier) return identifier;
-  return String(member?.fullName || '').trim().toLowerCase();
+  const fullName = String(member?.fullName || '').trim().toLowerCase();
+  if (fullName) return fullName;
+  return normalizeWallet(member?.walletAddress);
+}
+
+function buildEventKey(entry, kind) {
+  const txHash = String(entry?.txHash || '').trim();
+  if (txHash) {
+    return `${kind}:tx:${txHash}`;
+  }
+
+  const identifier = normalizeIdentifier(entry?.identifier);
+  const walletAddress = normalizeWallet(entry?.walletAddress);
+  const user = String(entry?.user || '').trim().toLowerCase();
+  const amount = String(Number(entry?.amount || 0));
+  const timestamp = String(entry?.timestamp || '').trim();
+  const groupId = String(entry?.groupId || '').trim();
+  const groupName = String(entry?.groupName || '').trim().toLowerCase();
+  return `${kind}:fallback:${groupId}|${groupName}|${identifier}|${walletAddress}|${user}|${amount}|${timestamp}`;
+}
+
+function parseTimestamp(value) {
+  const time = new Date(value || 0).getTime();
+  return Number.isFinite(time) ? time : 0;
+}
+
+function compareChronological(a, b) {
+  const delta = parseTimestamp(a?.timestamp) - parseTimestamp(b?.timestamp);
+  if (delta !== 0) {
+    return delta;
+  }
+  return String(a?.id || '').localeCompare(String(b?.id || ''));
 }
 
 function normalizeGroup(rawGroup = {}) {
@@ -121,9 +160,69 @@ function normalizeGroup(rawGroup = {}) {
     }
   });
 
-  const totalPool = Number.isFinite(Number(rawGroup.totalPool))
-    ? Number(rawGroup.totalPool)
-    : Object.values(memberContributions).reduce((sum, value) => sum + Number(value || 0), 0);
+  const seenContributionKeys = new Set();
+  const dedupedContributionHistory = contributionHistory.filter((entry) => {
+    const eventKey = buildEventKey(entry, 'contribution');
+    if (seenContributionKeys.has(eventKey)) {
+      return false;
+    }
+    seenContributionKeys.add(eventKey);
+    return true;
+  });
+
+  const seenStormKeys = new Set();
+  const dedupedStormHistory = stormHistory.filter((entry) => {
+    const eventKey = buildEventKey(entry, 'storm');
+    if (seenStormKeys.has(eventKey)) {
+      return false;
+    }
+    seenStormKeys.add(eventKey);
+    return true;
+  });
+
+  const latestStormTimestamp = dedupedStormHistory.reduce(
+    (latest, entry) => Math.max(latest, parseTimestamp(entry.timestamp)),
+    0,
+  );
+
+  const hasEventHistory = dedupedContributionHistory.length > 0 || dedupedStormHistory.length > 0;
+  const rebuiltMemberContributions = {};
+  let rebuiltTotalPool = 0;
+
+  [...dedupedContributionHistory]
+    .sort(compareChronological)
+    .forEach((entry) => {
+      const entryTime = parseTimestamp(entry.timestamp);
+      if (latestStormTimestamp && entryTime <= latestStormTimestamp) {
+        return;
+      }
+
+      const entryMember = buildMember({
+        identifier: entry.identifier,
+        walletAddress: entry.walletAddress,
+        fullName: entry.user,
+      });
+      const resolvedMember = members.find((item) => referencesMatch(item, entryMember)) || entryMember;
+      const contributionKey = getContributionKey(resolvedMember);
+      const amount = Number(entry.amount || 0);
+
+      entry.contributionKey = contributionKey;
+      rebuiltMemberContributions[contributionKey] = Number(rebuiltMemberContributions[contributionKey] || 0) + amount;
+      rebuiltTotalPool += amount;
+    });
+
+  members.forEach((member) => {
+    const contributionKey = getContributionKey(member);
+    if (typeof rebuiltMemberContributions[contributionKey] !== 'number') {
+      rebuiltMemberContributions[contributionKey] = 0;
+    }
+  });
+
+  const currentPool = hasEventHistory
+    ? rebuiltTotalPool
+    : Number.isFinite(Number(rawGroup.totalPool))
+      ? Number(rawGroup.totalPool)
+      : Object.values(memberContributions).reduce((sum, value) => sum + Number(value || 0), 0);
 
   return {
     id: String(rawGroup.id || `group-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`),
@@ -135,14 +234,123 @@ function normalizeGroup(rawGroup = {}) {
     joinApprovalEnabled: Boolean(rawGroup.joinApprovalEnabled),
     members,
     pendingMembers,
-    totalPool,
-    memberContributions,
-    contributionHistory,
-    stormHistory,
+    totalPool: currentPool,
+    memberContributions: hasEventHistory ? rebuiltMemberContributions : memberContributions,
+    contributionHistory: dedupedContributionHistory,
+    stormHistory: dedupedStormHistory,
   };
 }
 
 state.groups = state.groups.map(normalizeGroup);
+
+function getUserContributionActivities(user, group) {
+  return (user?.activityHistory || []).filter((entry) => {
+    if (entry?.type !== 'contribution') {
+      return false;
+    }
+
+    const entryGroupName = normalizeName(entry.groupName || entry.metadata?.groupName || '');
+    const entryGroupId = String(entry.groupId || entry.metadata?.groupId || '').trim();
+    return entryGroupName === normalizeName(group.name) || entryGroupId === group.id;
+  });
+}
+
+function reconcileGroupFromUsers(group, users) {
+  const nextGroup = normalizeGroup(group);
+  const contributionEntriesByKey = new Map(
+    nextGroup.contributionHistory.map((entry) => [buildEventKey(entry, 'contribution'), entry]),
+  );
+
+  let changed = false;
+
+  users.forEach((user) => {
+    const activities = getUserContributionActivities(user, nextGroup);
+    if (!activities.length) {
+      return;
+    }
+
+    const member = buildMember(user);
+    const existingMember = nextGroup.members.find((item) => referencesMatch(item, member));
+
+    if (!existingMember) {
+      nextGroup.members.push(member);
+      changed = true;
+    }
+
+    activities.forEach((activity) => {
+      const txHash = String(activity.metadata?.txHash || activity.txHash || '').trim();
+      const sourceActivityId = String(activity.id || activity.metadata?.activityId || '').trim();
+      const contributionKey = getContributionKey(member);
+      const eventKey = txHash
+        ? `contribution:tx:${txHash}`
+        : sourceActivityId
+          ? `contribution:activity:${sourceActivityId}`
+          : buildEventKey({
+              identifier: user.identifier || member.identifier,
+              walletAddress: user.walletAddress || member.walletAddress,
+              fullName: user.fullName || member.fullName,
+              user: user.fullName || user.identifier || member.walletAddress,
+              amount: Number(activity.amount || 0),
+              timestamp: activity.timestamp || new Date().toISOString(),
+              groupId: nextGroup.id,
+              groupName: nextGroup.name,
+            }, 'contribution');
+      const reconciledEntry = {
+        id: txHash
+          ? `group-contribution-${txHash}`
+          : sourceActivityId
+            ? `group-contribution-${sourceActivityId}`
+            : `group-contribution-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+        groupId: nextGroup.id,
+        groupName: nextGroup.name,
+        user: user.fullName || user.identifier || member.walletAddress,
+        identifier: user.identifier || member.identifier,
+        walletAddress: user.walletAddress || member.walletAddress,
+        contributionKey,
+        amount: Number(activity.amount || 0),
+        timestamp: activity.timestamp || new Date().toISOString(),
+        txHash,
+        txStatus: activity.metadata?.txStatus || 'CONFIRMED',
+        explorerUrl: activity.metadata?.explorerUrl || '',
+        sourceActivityId,
+      };
+
+      if (contributionEntriesByKey.has(eventKey)) {
+        Object.assign(contributionEntriesByKey.get(eventKey), reconciledEntry);
+      } else {
+        nextGroup.contributionHistory.unshift(reconciledEntry);
+        contributionEntriesByKey.set(eventKey, reconciledEntry);
+        changed = true;
+      }
+    });
+  });
+
+  return nextGroup;
+}
+
+function reconcileGroupsFromUsers() {
+  const users = listUsers();
+  state.groups = state.groups.map((group) => reconcileGroupFromUsers(group, users));
+  saveState(state);
+}
+
+function removeSmokeTestGroups() {
+  const previousLength = state.groups.length;
+  state.groups = state.groups.filter((group) => {
+    const name = String(group?.name || '').trim().toLowerCase();
+    const creatorIdentifier = String(group?.createdBy?.identifier || '').trim().toLowerCase();
+    const isSmokeName = name.startsWith('smokegroup-');
+    const isSmokeCreator = creatorIdentifier === 'smoke@isdasure.dev';
+    return !(isSmokeName || isSmokeCreator);
+  });
+
+  if (state.groups.length !== previousLength) {
+    saveState(state);
+  }
+}
+
+reconcileGroupsFromUsers();
+removeSmokeTestGroups();
 
 function contributedToday(group, member) {
   const contributionKey = getContributionKey(member);

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Sparkles, ShieldCheck, Upload, UserRound, Wallet } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import SpotlightCard from '../components/SpotlightCard';
 import { useWallet } from '../hooks/useWallet';
@@ -140,19 +141,25 @@ export default function Register() {
 
           <div className="grid gap-4 md:grid-cols-3">
             {[
-              ['Mangingisda Profile', 'Keep fisherfolk identity, contact details, and age in one trusted profile.'],
-              ['Storm-Ready Access', 'Wallet-linked identity helps unlock secure storm support workflows.'],
-              ['Community Security', 'Your account is protected by role checks and wallet-based verification.'],
-            ].map(([title, copy]) => (
+              { title: 'Mangingisda Profile', copy: 'Keep fisherfolk identity, contact details, and age in one trusted profile.', icon: UserRound },
+              { title: 'Storm-Ready Access', copy: 'Wallet-linked identity helps unlock secure storm support workflows.', icon: Wallet },
+              { title: 'Community Security', copy: 'Your account is protected by role checks and wallet-based verification.', icon: ShieldCheck },
+            ].map(({ title, copy, icon: CardIcon }) => (
               <SpotlightCard key={title} className="p-5 [&::before]:hidden">
-                <p className="linear-kicker">{title}</p>
+                <p className="linear-kicker flex items-center gap-2">
+                  <CardIcon className="h-4 w-4 text-[color:var(--accent-bright)]" />
+                  <span>{title}</span>
+                </p>
                 <p className="mt-3 text-sm leading-6 linear-muted">{copy}</p>
               </SpotlightCard>
             ))}
           </div>
 
           <div className="rounded-2xl border border-[color:var(--border-default)] bg-[color:var(--surface)]/60 px-4 py-3 backdrop-blur-xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--foreground-subtle)]">Functionality highlights</p>
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--foreground-subtle)]">
+              <Sparkles className="h-3.5 w-3.5 text-[color:var(--accent-bright)]" />
+              <span>Functionality highlights</span>
+            </p>
             <p className="mt-2 text-sm linear-muted">Auto-save draft, wallet-linked verification, profile photo preview, and secure registration flow built for coastal fisherfolk communities.</p>
           </div>
           </section>
@@ -160,7 +167,10 @@ export default function Register() {
           <SpotlightCard className="space-y-5 [&::before]:hidden">
           <div>
             <p className="linear-kicker">Registration panel</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[color:var(--foreground)]">User Registration</h2>
+            <h2 className="mt-2 flex items-center gap-2 text-2xl font-semibold tracking-tight text-[color:var(--foreground)]">
+              <UserRound className="h-6 w-6 text-[color:var(--accent-bright)]" />
+              <span>User Registration</span>
+            </h2>
           </div>
           <form className="grid gap-4" onSubmit={handleSubmit}>
             <label className="block">
@@ -190,7 +200,10 @@ export default function Register() {
               <input type="number" min="1" value={age} onChange={(event) => setAge(event.target.value)} className="linear-input" />
             </label>
             <label className="block">
-              <span className="mb-2 block text-sm font-semibold text-[color:var(--foreground)]">Upload Profile Picture</span>
+              <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-[color:var(--foreground)]">
+                <Upload className="h-4 w-4 text-[color:var(--accent-bright)]" />
+                <span>Upload Profile Picture</span>
+              </span>
               <input type="file" accept="image/*" onChange={handlePictureUpload} className="linear-input" />
             </label>
 

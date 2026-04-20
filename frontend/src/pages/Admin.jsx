@@ -77,8 +77,8 @@ export default function Admin() {
   }, [groups]);
 
   useEffect(() => {
-    if (!selectedStormGroup && allGroupsSummary.length) {
-      setSelectedStormGroup(allGroupsSummary[0].name);
+    if (selectedStormGroup && !allGroupsSummary.some((group) => group.name === selectedStormGroup)) {
+      setSelectedStormGroup('');
     }
   }, [allGroupsSummary, selectedStormGroup]);
 
