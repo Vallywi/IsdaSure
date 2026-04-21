@@ -372,6 +372,18 @@ IsdaSure is a blockchain-based web platform that enables fisherfolk communities 
 
 ---
 
+## 💎 Stellar Expert Link
+
+[View Contract on Stellar Expert](https://stellar.expert/explorer/testnet/contract/CDNZVMTK3RNWWEQTG4JYC55O5P47YYTC2C2ACJVPI5MDJP63TH3KKKKS)
+
+![Stellar Expert Contract](frontend/images/stellar_expert.png)
+
+## Smart Contract Address
+
+`CCDNZVMTK3RNWWEQTG4JYC55O5P47YYTC2C2ACJVPI5MDJP63TH3KKKKS`
+
+---
+
 ## 🔌API Endpoints (backend) 
 
 Below is a short summary of the backend API (all routes are under `/_/backend/api`).
