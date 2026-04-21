@@ -737,14 +737,32 @@ export function AppProvider({ children }) {
     setTxLifecycle(defaultTxLifecycle);
 
     try {
-      const prepared = await prepareContributeInvocation({
-        user: auth.user?.fullName || auth.user?.identifier || wallet.address,
-        identifier: auth.user?.identifier || '',
-        walletAddress: wallet.address,
-        amount: normalizedAmount,
-        groupId: activeGroup?.id,
-        groupName: activeGroupName,
-      });
+      let prepared;
+      try {
+        prepared = await prepareContributeInvocation({
+          user: auth.user?.fullName || auth.user?.identifier || wallet.address,
+          identifier: auth.user?.identifier || '',
+          walletAddress: wallet.address,
+          amount: normalizedAmount,
+          groupId: activeGroup?.id,
+          groupName: activeGroupName,
+        });
+      } catch (err) {
+        // If the Soroban RPC can't find the wallet account, fall back to prompting Freighter
+        // to sign a lightweight manageData transaction so the wallet is involved in the flow.
+        const raw = String(err?.message || '').toLowerCase();
+        if (raw.includes('wallet account not found on soroban network') || raw.includes('account not found')) {
+          prepared = {
+            mode: 'mock',
+            unsignedTxXdr: '',
+            networkPassphrase: import.meta.env.VITE_STELLAR_NETWORK_PASSPHRASE || 'Test SDF Network ; September 2015',
+            contractId: import.meta.env.VITE_SOROBAN_CONTRACT_ID || '',
+            method: 'contribute',
+          };
+        } else {
+          throw err;
+        }
+      }
 
       const nonce = createNonce();
       const requiresWalletSignature = prepared?.mode !== 'mock' || shouldRequireWalletSignature();

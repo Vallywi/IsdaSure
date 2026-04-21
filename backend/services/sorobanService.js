@@ -221,9 +221,10 @@ function buildMockConfirmedTx(contractCall) {
 }
 
 function assertRpcConfiguredForHosted() {
-  if (isVercelRuntime && !isSorobanRpcConfigured()) {
+  const allowMockOnHosted = String(process.env.ALLOW_MOCK_ON_HOSTED || '').toLowerCase() === 'true';
+  if (isVercelRuntime && !isSorobanRpcConfigured() && !allowMockOnHosted) {
     const error = new Error(
-      'Soroban RPC is not configured on Vercel. Set SOROBAN_RPC_URL and SOROBAN_CONTRACT_ID in Vercel environment variables to enable real on-chain transactions and Stellar Expert history links.',
+      'Soroban RPC is not configured on Vercel. Set SOROBAN_RPC_URL and SOROBAN_CONTRACT_ID in Vercel environment variables to enable real on-chain transactions and Stellar Expert history links. If you want to allow mock mode on hosted, set ALLOW_MOCK_ON_HOSTED=true (not recommended for production).',
     );
     error.status = 500;
     throw error;
