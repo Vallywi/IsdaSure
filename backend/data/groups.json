@@ -60,24 +60,10 @@
         "arturo@gmail.com": 50,
         "rolando@gmail.com": 100,
         "juan@gmail.com": 150,
-        "test+local@example.com": 0,
-        "autoadd@example.com": 50
+        "autoadd@example.com": 50,
+        "test+local@example.com": 0
       },
       "contributionHistory": [
-        {
-          "id": "group-contribution-1776777244352-633fe7",
-          "groupId": "group-1776686662728",
-          "groupName": "Baranggay Butuan",
-          "user": "Auto Add User",
-          "identifier": "autoadd@example.com",
-          "walletAddress": "GAUTOADDR",
-          "contributionKey": "autoadd@example.com",
-          "amount": 50,
-          "timestamp": "2026-04-21T13:14:04.352Z",
-          "txHash": "",
-          "txStatus": "CONFIRMED",
-          "explorerUrl": ""
-        },
         {
           "id": "group-contribution-activity-1776699361045-ad2565",
           "groupId": "group-1776686662728",
@@ -107,6 +93,20 @@
           "txStatus": "CONFIRMED",
           "explorerUrl": "",
           "sourceActivityId": "activity-1776699370625-9ecb9a"
+        },
+        {
+          "id": "group-contribution-1776777244352-633fe7",
+          "groupId": "group-1776686662728",
+          "groupName": "Baranggay Butuan",
+          "user": "Auto Add User",
+          "identifier": "autoadd@example.com",
+          "walletAddress": "GAUTOADDR",
+          "contributionKey": "autoadd@example.com",
+          "amount": 50,
+          "timestamp": "2026-04-21T13:14:04.352Z",
+          "txHash": "",
+          "txStatus": "CONFIRMED",
+          "explorerUrl": ""
         },
         {
           "id": "group-contribution-activity-1776699361045-ad2565",

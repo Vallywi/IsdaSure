@@ -974,14 +974,8 @@ export function AppProvider({ children }) {
       pushToast(note, 'info');
       setSuccessWithToast('✅ Contribution Successful');
 
-      // Redirect user to contribution history so they see the recorded contribution
-      try {
-        if (typeof window !== 'undefined') {
-          window.setTimeout(() => {
-            window.location.href = '/contribution-history';
-          }, 800);
-        }
-      } catch (e) {}
+      // Do not trigger a full page reload after contribute; UI is already
+      // updated via `setTransactionHistory` and `setPoolState` above.
       return nextStatus;
     } catch (error) {
       setWalletApprovalAction('');

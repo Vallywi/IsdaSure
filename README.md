@@ -369,11 +369,11 @@ See `backend/routes` for full details.
 <table>
 <tr>
 <td width="50%" valign="top">
-<b>Home page – Showcases IsdaSure’s platform for transparent, wallet-based support for fisherfolk communities.</b><br/>
+<b>Home page – Showcases IsdaSure’s platform for transparent, wallet-based support for fisherfolk communities.</b><br/><br/>
 <img src="frontend/images/home page.png" width="100%"/><br/>
 </td>
 <td width="50%" valign="top">
-<b>How It Works Page – Shows simple step-by-step instructions on how users join, contribute, and receive payouts.</b><br/>
+<b>How It Works Page – Shows simple step-by-step instructions on how users join, contribute, and receive payouts.</b><br/><br/>
 <img src="frontend/images/how it works.png" width="100%" /><br/>
 </td>
 </tr>
@@ -384,12 +384,32 @@ See `backend/routes` for full details.
 <img src="frontend/images/about us.png" width="100%"/><br/>
 </td>
 <td width="50%" valign="top">
-<b>FAQ Page – Answers common questions to help users understand how the platform works and build trust.</b><br/>
+<b>FAQ Page – Answers common questions to help users understand how the platform works and build trust.</b><br/><br/>
 <img src="frontend/images/faq.png" width="100%"/><br/>
 </td>
 </tr>
 
+<tr>
+<td width="50%" valign="top">
+<b>Role Selection Page – Guides users to choose between roles (Barangay Official, Login, or Register) based on how they want to use IsdaSure.</b><br/><br/>
+<img src="frontend/images/roles.png" width="100%"/><br/>
+</td>
+</tr>
 
+<tr>
+<td width="50%" valign="top">
+<b>Barangay Official Login Page – Allows authorized barangay officials to access governance tools, trigger storm events, and manage community payouts.</b><br/><br/>
+<img src="frontend/images/Baranggay.png" width="100%"/><br/>
+</td>
+<td width="50%" valign="top">
+<b>User Login Page – Enables members to securely access their personal dashboard, contributions, and activity using their account credentials.</b><br/><br/>
+<img src="frontend/images/user log in.png" width="100%"/><br/>
+</td>
+<td width="50%" valign="top">
+<b>User Registration Page – Lets new users create a profile with wallet-linked identity for secure participation in the platform.</b><br/><br/>
+<img src="frontend/images/registered.png" width="100%"/><br/>
+</td>
+</tr>
 
 
 </table>

@@ -81,6 +81,12 @@ export async function apiGetStatus() {
   return request('/status');
 }
 
+export async function apiRecentContributions() {
+  const res = await request('/status');
+  // support both shapes: { status: { recentContributions } } or { recentContributions }
+  return (res.status && res.status.recentContributions) || res.recentContributions || [];
+}
+
 export async function apiGetChainHistory(limit = 30) {
   return request(`/chain/history?limit=${limit}`);
 }

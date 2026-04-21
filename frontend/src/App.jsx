@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
 import ContributionHistory from './pages/ContributionHistory';
+import DebugContributions from './pages/DebugContributions';
 import HowItWorks from './pages/HowItWorks';
 import AboutUs from './pages/AboutUs';
 import FAQ from './pages/FAQ';
@@ -33,6 +34,7 @@ export default function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/contribution-history" element={<ContributionHistory />} />
+            <Route path="/debug/recent-contributions" element={<DebugContributions />} />
             <Route path="/admin" element={<Admin />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
