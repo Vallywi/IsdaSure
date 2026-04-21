@@ -935,9 +935,8 @@ export function AppProvider({ children }) {
         actionLabel: 'Contribute',
         contractResult: tx.contractResult || null,
       });
-      if (tx.mode === 'mock') {
-        pushToast('Running in mock chain mode. Configure Soroban RPC to get a real on-chain tx hash.', 'info');
-      }
+      const note = tx.contractResult?.note || 'Running in mock chain mode. Configure Soroban RPC to get a real on-chain tx hash.';
+      pushToast(note, 'info');
       setSuccessWithToast('✅ Contribution Successful');
       return nextStatus;
     } catch (error) {
@@ -964,10 +963,9 @@ export function AppProvider({ children }) {
       throw new Error('Wallet not connected');
     }
     if (ADMIN_WALLET_ADDRESS && wallet.address.toUpperCase() !== ADMIN_WALLET_ADDRESS) {
-      throw new Error('Only the admin wallet can trigger storm day.');
-    }
-
-    const targetGroupName = String(groupNameOverride || activeGroupName || '').trim();
+        const note = tx.contractResult?.note || 'Running in mock chain mode. Configure Soroban RPC to get a real on-chain tx hash.';
+        pushToast(note, 'info');
+        setSuccessWithToast('✅ Contribution Successful');
     if (!targetGroupName) {
       throw new Error('Select a group before triggering storm day.');
     }
