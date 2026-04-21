@@ -285,20 +285,7 @@ async function prepareContributionTransaction(payload = {}) {
 
     return prepared;
   } catch (error) {
-    if (!isMissingMethodError(error)) {
-      throw error;
-    }
-
-    // Compatibility path for contracts that expose increment(amount) instead of contribute(user, amount).
-    return prepareUnsignedSorobanTransaction({
-      walletAddress: payload.walletAddress,
-      networkPassphrase: payload.networkPassphrase || payload.contractCall?.networkPassphrase,
-      contractCall: {
-        ...contractCall,
-        method: 'increment',
-        args: [amount],
-      },
-    });
+    throw error;
   }
 }
 
@@ -323,20 +310,7 @@ async function prepareStormTransaction(payload = {}) {
 
     return prepared;
   } catch (error) {
-    if (!isMissingMethodError(error)) {
-      throw error;
-    }
-
-    // Compatibility path for contracts that expose reset() instead of trigger_storm(admin).
-    return prepareUnsignedSorobanTransaction({
-      walletAddress,
-      networkPassphrase: payload.networkPassphrase || payload.contractCall?.networkPassphrase,
-      contractCall: {
-        ...contractCall,
-        method: 'reset',
-        args: [],
-      },
-    });
+    throw error;
   }
 }
 
