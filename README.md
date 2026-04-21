@@ -390,22 +390,22 @@ See `backend/routes` for full details.
 </tr>
 
 <tr>
-<td width="50%" valign="top">
+<td width="100%" valign="top">
 <b>Role Selection Page – Guides users to choose between roles (Barangay Official, Login, or Register) based on how they want to use IsdaSure.</b><br/><br/>
 <img src="frontend/images/roles.png" width="100%"/><br/>
 </td>
 </tr>
 
 <tr>
-<td width="50%" valign="top">
+<td width="33%" valign="top">
 <b>Barangay Official Login Page – Allows authorized barangay officials to access governance tools, trigger storm events, and manage community payouts.</b><br/><br/>
 <img src="frontend/images/Baranggay.png" width="100%"/><br/>
 </td>
-<td width="50%" valign="top">
+<td width="33%" valign="top">
 <b>User Login Page – Enables members to securely access their personal dashboard, contributions, and activity using their account credentials.</b><br/><br/>
 <img src="frontend/images/user log in.png" width="100%"/><br/>
 </td>
-<td width="50%" valign="top">
+<td width="33%" valign="top">
 <b>User Registration Page – Lets new users create a profile with wallet-linked identity for secure participation in the platform.</b><br/><br/>
 <img src="frontend/images/registered.png" width="100%"/><br/>
 </td>
