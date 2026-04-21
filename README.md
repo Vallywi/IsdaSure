@@ -60,14 +60,14 @@ Benefits:
 
 ---
 
-## How It Works (detailed flow) 🔁 🧭 ⚙️ 🦀 🎛️
+## How It Works (detailed flow) 🔁
 
 Below is a compact, step-by-step flow that describes user, backend, and contract interactions. The ASCII diagram shows decision points and RPC fallbacks so you can trace how the app behaves both when the Soroban RPC is healthy and when it is not.
 
 Client / Backend / Contract flow (simplified):
 
 ```
-User (browser)            Backend API                 Soroban RPC / Contract
+User (browser) 🧑‍🌾     Backend API 🖥️            Soroban RPC / Contract 🦀
 ------------               -------------              ---------------------
 Register -> POST /auth     -> backend saves user -> returns userId
   |                          (users.json)                |
@@ -77,44 +77,44 @@ Join/Create Group -> POST /groups/create -> backend writes group -> returns grou
   v                              v                       |
 Open Group page -> GET /groups -> backend returns members & pool state -> UI shows group
 
-Contribute flow (daily):
-User clicks "Contribute" -> frontend calls POST /contribute/prepare {groupId, amount}
+Contribute flow (daily) 💸:
+User clicks "Contribute" 🧑‍🌾 -> frontend calls POST /contribute/prepare {groupId, amount}
   |
-  +--> Backend `sorobanService.prepareTransaction` attempts to build a Soroban `prepare` request
-        |-- If RPC available & contract method exists: returns unsigned prepared XDR (mode: onchain)
-        |-- If RPC returns account-not-found OR method-not-found OR network errors: backend
+  +--> Backend `sorobanService.prepareTransaction` 🔧 attempts to build a Soroban `prepare` request
+        |-- ✅ If RPC available & contract method exists: returns unsigned prepared XDR (mode: onchain)
+        |-- ⚠️ If RPC returns account-not-found OR method-not-found OR network errors: backend
             returns a `mockPreparedTx` or a `manageData` fallback instruction (mode: fallback/mock)
   |
-User's Freighter wallet signs prepared XDR (or signs `manageData` fallback) -> frontend receives signature/XDR
+User's Freighter wallet signs prepared XDR 🔏 (or signs `manageData` fallback) -> frontend receives signature/XDR
   |
-Frontend POST /contribute {signedXdr, mode} -> backend `sorobanService.submitSignedTransaction`
-        |-- If RPC submit succeeds: backend polls tx status -> marks confirmed onchain
-        |-- If submit fails or RPC unreachable: backend records a mocked confirmation with note
+Frontend POST /contribute {signedXdr, mode} 📤 -> backend `sorobanService.submitSignedTransaction`
+        |-- ✅ If RPC submit succeeds: backend polls tx status -> marks confirmed onchain
+        |-- ❌ If submit fails or RPC unreachable: backend records a mocked confirmation with note
             (mode: mock) so the UX shows success and histories remain consistent
   |
-Backend updates `pool.json`, `groups.json` and app `chainHistory` -> UI refreshes to show contribution
+Backend updates `pool.json` 🗄️, `groups.json` and app `chainHistory` -> UI refreshes to show contribution
 
-Storm trigger (admin):
+Storm trigger (admin) ⛈️:
 Admin clicks "Trigger Storm" -> frontend POST /triggerStorm
   |
-  +--> backend validates admin and computes payout plan (split logic, eligible contributors)
-        |-- Backend attempts to `prepare` contract-call for `distribute_payouts`
-            |-- If RPC + contract available: prepare -> sign (admin) -> submit -> confirm onchain
-            |-- If RPC not available: backend can produce a mocked distribution record and mark
+  +--> backend validates admin and computes payout plan (split logic, eligible contributors) 🧮
+        |-- Backend attempts to `prepare` contract-call for `distribute_payouts` 🔁
+            |-- ✅ If RPC + contract available: prepare -> sign (admin) -> submit -> confirm onchain
+            |-- ⚠️ If RPC not available: backend can produce a mocked distribution record and mark
                 payouts in app state (with `note: mocked due to RPC`) so users still see results
   |
-Contract (if onchain): verifies balances/eligibility -> executes transfers -> emits events -> tx confirmed
+Contract (if onchain): verifies balances/eligibility -> executes transfers -> emits events -> tx confirmed ✅
 
-Explorer / History:
+Explorer / History 📜:
 After onchain confirmation, backend stores explorer URL and tx details in `chainHistory` for UI.
 If mocked, backend stores a synthetic record with `note` explaining the fallback.
 
-Error & Edge Handling:
-- Account not found: occurs when wallet never funded on testnet; prepare may fail. App offers
+Error & Edge Handling 🛠️:
+- 🪪 Account not found: occurs when wallet never funded on testnet; prepare may fail. App offers
   `manageData` fallback so user can still sign and associate a contribution.
-- Method not found: node may not support Soroban contract methods; backend falls back to mock prepare.
-- DNS / ENOTFOUND: backend catches network errors, creates mock confirmations to preserve UX.
-- Vercel ephemeral FS: packaged data is copied to `/tmp` on first run so admin UI has seeded groups.
+- 🔍 Method not found: node may not support Soroban contract methods; backend falls back to mock prepare.
+- 🌐 DNS / ENOTFOUND: backend catches network errors, creates mock confirmations to preserve UX.
+- 🧰 Vercel ephemeral FS: packaged data is copied to `/tmp` on first run so admin UI has seeded groups.
 ```
 
 Step-by-step explanation (long form):
