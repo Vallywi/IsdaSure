@@ -370,22 +370,22 @@ See `backend/routes` for full details.
 <tr>
 <td width="50%" valign="top">
 <b>Home page – Showcases IsdaSure’s platform for transparent, wallet-based support for fisherfolk communities.</b><br/><br/>
-<img src="frontend/images/home page.png" width="100%"/><br/>
+<img src="frontend/images/home-page.png" width="100%"/><br/>
 </td>
 <td width="50%" valign="top">
 <b>How It Works Page – Shows simple step-by-step instructions on how users join, contribute, and receive payouts.</b><br/><br/>
-<img src="frontend/images/how it works.png" width="100%" /><br/>
+<img src="frontend/images/how-it-works.png" width="100%" /><br/>
 </td>
 </tr>
 
 <tr>
 <td width="50%" valign="top">
 <b>About Page – Explains the real-world problem (typhoons and income loss) and how IsdaSure offers a fair, community-driven solution.</b><br/><br/>
-<img src="frontend/images/about us.png" width="100%"/><br/>
+<img src="frontend/images/about-us.png" width="100%"/><br/>
 </td>
 <td width="50%" valign="top">
 <b>FAQ Page – Answers common questions to help users understand how the platform works and build trust.</b><br/><br/>
-<img src="frontend/images/faq.png" width="100%"/><br/>
+<img src="frontend/images/fq.png" width="100%"/><br/>
 </td>
 </tr>
 
