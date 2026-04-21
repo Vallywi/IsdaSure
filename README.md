@@ -60,81 +60,113 @@ Benefits:
 
 ---
 
-## How It Works (high-level) 🔁
+## How It Works (detailed flow) 🔁
 
-1. Users register and join a named group.
-2. Each day users make a small contribution (₱) via the app and sign with Freighter.
-3. Contributions are recorded on-chain (or mocked when RPC unavailable) and stored in the app state.
-4. When a storm day is declared by an authorized admin, the contract distributes funds to group members.
+Below is a compact, step-by-step flow that describes user, backend, and contract interactions. The ASCII diagram shows decision points and RPC fallbacks so you can trace how the app behaves both when the Soroban RPC is healthy and when it is not.
 
----
-
-## How It Works — Detailed Flow 🔁
-
-Below is a step-by-step ASCII flow that explains how contributions, prepare/submit, and storm-trigger distribution work. It includes the frontend, backend, and Soroban RPC interactions plus common failure/fallback paths so the flow remains understandable and actionable.
+Client / Backend / Contract flow (simplified):
 
 ```
-User (Freighter wallet)
+User (browser)            Backend API                 Soroban RPC / Contract
+------------               -------------              ---------------------
+Register -> POST /auth     -> backend saves user -> returns userId
+  |                          (users.json)                |
+  v                          v                          |
+Join/Create Group -> POST /groups/create -> backend writes group -> returns groupId
+  |                          |                          |
+  v                          v                          |
+Open Group page -> GET /groups -> backend returns members & pool state -> UI shows group
+
+Contribute flow (daily):
+User clicks "Contribute" -> frontend calls POST /contribute/prepare {groupId, amount}
   |
-  |-- Register / Login ---------------------------+
-  |  (frontend: Signup -> backend /users -> data/users.json)
+  +--> Backend `sorobanService.prepareTransaction` attempts to build a Soroban `prepare` request
+        |-- If RPC available & contract method exists: returns unsigned prepared XDR (mode: onchain)
+        |-- If RPC returns account-not-found OR method-not-found OR network errors: backend
+            returns a `mockPreparedTx` or a `manageData` fallback instruction (mode: fallback/mock)
   |
-  |-- Create Group -------------------------------+   Admin / Group Owner
-  |  (frontend POST /_/backend/api/groups/create) |   (optional approval flow)
-  |                                                |
-  |-- Join Group ---------------------------------+--> GroupService adds member (or creates join request)
-  |  (frontend POST /_/backend/api/groups/join)   |    - `forceAddMember()` fallback allows wallet to contribute immediately
+User's Freighter wallet signs prepared XDR (or signs `manageData` fallback) -> frontend receives signature/XDR
   |
-  +-- Contribute Flow ----------------------------+
-     1) Frontend: user clicks "Contribute" with `amount` and selected `groupId`.
-     2) Frontend POST -> `/_/backend/api/contribute/prepare` with wallet address & amount.
-        - Backend (`sorobanService.prepareTransactionWithFallback`) attempts to build Soroban `prepare` using `SOROBAN_RPC_URL`.
-        - If RPC responds OK: returns unsigned prepared transaction (XDR) and `txNonce`.
-        - If RPC errors (Account not found | method not found | DNS ENOTFOUND):
-            - Backend returns a minimal mocked "prepared" payload and a flag `mode: 'mock'` OR a suggested `fallback: 'manageData'` flow.
-     3) Frontend: signs the prepared tx using Freighter.
-        - If prepared XDR available -> call Freighter signPreparedTransaction
-        - If fallback recommended -> build a small `manageData` op and call Freighter.signTransaction
-        - User may cancel at this stage -> frontend shows friendly cancellation toast and aborts.
-     4) Frontend POST -> `/_/backend/api/contribute` with signed envelope/XDR and metadata.
-        - Backend tries to `submitSignedSorobanTransaction` to Soroban RPC.
-        - On SUCCESS:
-            - Backend records confirmed tx in `chainHistory` and updates `data/pool.json` and `data/groups.json` contributions.
-            - It sets `tx.mode = 'onchain'` and includes explorer URL if available.
-        - On FAILURE (network / RPC submission error):
-            - Backend creates a mocked confirmation entry (tx.mode = 'mock') with `note` explaining reason (e.g., "No Soroban RPC configured; using mocked confirmation") and still records contribution locally.
-     5) Frontend displays toast: success (onchain) or info (mocked) including `backend.note` so user understands if action was simulated.
-
-  +-- Daily State & Accounting --------------------+
-     - Backend aggregates contributions per-group and per-user into `pool.json`.
-     - Contribution history items reference `tx.id`, `tx.mode`, `amount`, and `confirmedAt` (mock or onchain).
-
-Storm Trigger (Admin flow)
+Frontend POST /contribute {signedXdr, mode} -> backend `sorobanService.submitSignedTransaction`
+        |-- If RPC submit succeeds: backend polls tx status -> marks confirmed onchain
+        |-- If submit fails or RPC unreachable: backend records a mocked confirmation with note
+            (mode: mock) so the UX shows success and histories remain consistent
   |
-  |-- Admin clicks "Trigger Storm" for a Group
-  |-- Frontend -> `/_/backend/api/triggerStorm/prepare`
-  |     - Backend prepares a Soroban `trigger_storm` call (or returns mock prepared payload when RPC unavailable)
-  |-- Admin signs prepared tx with Freighter
-  |-- Frontend -> `/_/backend/api/triggerStorm/submit`
-  |     - Backend attempts RPC submission and waits for confirmation
-  |     - On success -> contract executes distribution: calculates per-member payout and transfers via contract.
-  |     - Backend records distribution in `chainHistory` and updates member balances in `data/groups.json`.
-  |     - On failure -> backend records a mocked distribution entry with explanatory `note` and still distributes locally according to fallback rules.
+Backend updates `pool.json`, `groups.json` and app `chainHistory` -> UI refreshes to show contribution
 
-Edge Cases & Failure Paths
-  - Freighter not installed / user cancels signing -> frontend aborts and shows clear action guidance.
-  - RPC returns `Account not found` when preparing: backend suggests `manageData` fallback so the wallet can still sign a small proof-of-possession and contribute.
-  - RPC `method not found` (contract not deployed or RPC mismatch): backend returns a helpful message and a `mock` prepared tx so UX isn't blocked.
-  - DNS / ENOTFOUND: treat as transient network failure -> return mock prepare with `note` and record mock submission if needed.
-  - Hosted runtime (Vercel): file system is ephemeral -> packaged `backend/data/*.json` copied to `/tmp/isdasure-data` on first run so admin UI sees seeded groups/users.
+Storm trigger (admin):
+Admin clicks "Trigger Storm" -> frontend POST /triggerStorm
+  |
+  +--> backend validates admin and computes payout plan (split logic, eligible contributors)
+        |-- Backend attempts to `prepare` contract-call for `distribute_payouts`
+            |-- If RPC + contract available: prepare -> sign (admin) -> submit -> confirm onchain
+            |-- If RPC not available: backend can produce a mocked distribution record and mark
+                payouts in app state (with `note: mocked due to RPC`) so users still see results
+  |
+Contract (if onchain): verifies balances/eligibility -> executes transfers -> emits events -> tx confirmed
 
-Observability & UX
-  - Each contribution and trigger is recorded in `chainHistory` with `mode: 'onchain'|'mock'`, `note`, and optional `explorerUrl`.
-  - Frontend surfaces `mode` and `note` in toasts and in `ContributionHistory` list so users can tell if an action was mocked.
-  - Admin pages show when the app is running in mock mode (based on environment vars and RPC availability) so maintainers can decide to set `SOROBAN_RPC_URL` and `SOROBAN_CONTRACT_ID`.
+Explorer / History:
+After onchain confirmation, backend stores explorer URL and tx details in `chainHistory` for UI.
+If mocked, backend stores a synthetic record with `note` explaining the fallback.
 
-``` 
+Error & Edge Handling:
+- Account not found: occurs when wallet never funded on testnet; prepare may fail. App offers
+  `manageData` fallback so user can still sign and associate a contribution.
+- Method not found: node may not support Soroban contract methods; backend falls back to mock prepare.
+- DNS / ENOTFOUND: backend catches network errors, creates mock confirmations to preserve UX.
+- Vercel ephemeral FS: packaged data is copied to `/tmp` on first run so admin UI has seeded groups.
+```
 
+Step-by-step explanation (long form):
+
+1) Register & group setup
+   - User registers via the frontend (email/name or quick guest mode). Backend stores the record
+     in `backend/data/users.json` and returns a userId.
+   - A user can create or join a group. Groups are saved to `backend/data/groups.json`.
+
+2) Prepare contribution (frontend -> backend)
+   - When a user wants to contribute, the frontend calls POST `/contribute/prepare` with
+     `groupId`, `amount`, and the currently connected wallet address.
+   - Backend (`sorobanService`) tries to build a Soroban prepared transaction using the
+     configured `SOROBAN_RPC_URL` and the contract's `contribute` method.
+   - If the RPC and contract are healthy, backend returns an unsigned prepared XDR. If the
+     RPC fails to prepare (account not found, method missing, DNS error), backend returns a
+     `mockPreparedTx` or a minimal `manageData` fallback payload and sets `mode=fallback`.
+
+3) Signing (wallet)
+   - The frontend asks Freighter to sign the prepared XDR (or fallback manageData). This ensures
+     the wallet holder is involved in the action and the UX shows the expected signing flow.
+
+4) Submit (frontend -> backend)
+   - Signed XDR is POSTed to `/contribute`. Backend attempts `submitSignedSorobanTransaction`.
+   - On success: backend polls for final status, updates `pool.json` and adds an onchain entry
+     in `chainHistory` with explorer URL.
+   - On failure (or when operating in fallback/mock mode): backend records a mocked confirmation
+     entry containing `note` describing why it was mocked. The UI shows success but also displays
+     that this was a mock confirmation (for transparency).
+
+5) Storm trigger & payouts
+   - An authorized admin triggers a storm via POST `/triggerStorm`.
+   - Backend calculates the payout per eligible contributor (split by contribution shares).
+   - If onchain: backend prepares a `distribute_payouts` contract call, admin signs+submits, and
+     the contract performs transfers. Backend stores the confirmed tx.
+   - If RPC unavailable: backend writes mocked payouts to state and records `chainHistory` notes.
+
+6) UX & transparency
+   - Contributions and payouts are visible in the UI. When mock confirmations are used the app
+     clearly marks those entries with a `mock` note and optional explorer link placeholder.
+   - Admin dashboard shows seeded groups (copied from packaged JSON to `/tmp` on hosted runtimes).
+
+7) Production notes & moving to real on-chain mode
+   - To enable real on-chain behavior set `SOROBAN_RPC_URL` and `SOROBAN_CONTRACT_ID` in Vercel.
+   - Ensure admin wallet is funded on testnet so prepares / submits succeed and `account not found`
+     errors are avoided during prepare.
+
+This flow is intentionally tolerant: contributors always sign something (either prepared XDR or a
+manageData fallback) and the backend records a clear audit trail whether the result was onchain or mocked.
+
+
+---
 
 ## Project Structure 📁
 
