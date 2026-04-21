@@ -458,6 +458,42 @@ export function AppProvider({ children }) {
     loadMyGroups();
   }, [auth.isAuthenticated, auth.user, wallet.address]);
 
+  // If an active group name is set but not present in the current collections,
+  // attempt to refresh the server lists a few times to avoid "Group not found" races.
+  useEffect(() => {
+    if (!activeGroupName) return undefined;
+
+    let cancelled = false;
+
+    const normalize = (s) => String(s || '').trim().toLowerCase();
+
+    async function ensureActiveGroupPresent() {
+      const target = normalize(activeGroupName);
+      // Fast local check
+      if ((mergedGroups || []).some((g) => normalize(g?.name) === target)) return;
+
+      for (let i = 0; i < 3 && !cancelled; i++) {
+        try {
+          const { groups: freshGroups = [], myGroups: freshMyGroups = [] } = await refreshGroupCollections();
+          const found = [...(freshGroups || []), ...(freshMyGroups || [])].some((g) => normalize(g?.name) === target);
+          if (found) return;
+        } catch (e) {
+          // ignore and retry
+        }
+        await new Promise((res) => setTimeout(res, 120 * (i + 1)));
+      }
+
+      if (!cancelled) {
+        setErrorMessage('Group not found.');
+      }
+    }
+
+    ensureActiveGroupPresent();
+    return () => {
+      cancelled = true;
+    };
+  }, [activeGroupName, mergedGroups, refreshGroupCollections]);
+
   useEffect(() => {
     const intervalId = window.setInterval(async () => {
       try {
