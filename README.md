@@ -58,6 +58,15 @@ Benefits:
 
 ---
 
+## 👥 Target Users
+
+- **Fisherfolk & coastal households:** Low-friction micro-insurance contributors.
+- **Barangay officials / community admins:** Manage groups, authorize storm triggers, supervise payouts.
+- **Local NGOs & organizers:** Coordinate group setup and outreach.
+- **Developers & auditors:** Inspect contract logic and adapt for new communities.
+
+---
+
 ## 🔁How It Works (detailed flow) 
 
 Below is a compact, step-by-step flow that describes user, backend, and contract interactions. The ASCII diagram shows decision points and RPC fallbacks so you can trace how the app behaves both when the Soroban RPC is healthy and when it is not.
@@ -376,15 +385,41 @@ Contract tests use JSON snapshots under `test_snapshots/` to verify state transi
 
 ---
 
-## Notes on Hosted/RPC behavior ☁️
+## ☁️Notes on Hosted/RPC behavior 
 
 - Vercel has an ephemeral filesystem. Packaged `backend/data/*.json` files are copied into `/tmp` on first run so admin UI can display seeded groups/users.
 - Soroban RPC nodes may return `Account not found` for wallets that have not been funded on testnet; the app provides a friendly fallback that allows wallets to sign a lightweight manageData tx so contributions can still be associated with a wallet.
 
+
 ---
 
-## Contributing 🤝
+## 🎨 Tech Stack
 
-Contributions are welcome — open an issue or a pull request. Please follow the repository's coding style and add tests for contract logic when changing `contract/src`.
+- **Smart Contracts:** Soroban (Rust SDK)
+- **Frontend:** React + Vite (Tailwind CSS)
+- **Wallet:** Freighter (Stellar)
+- **Network:** Stellar Testnet
 
+---
+
+## 🧱 Challenges Faced
+
+- **Freighter in hosted contexts:** Browser wallet calls can hang on hosted domains (Vercel). We implemented timeouts and allow-list fallbacks to avoid UI lockups.
+- **Ephemeral hosting storage:** Vercel’s filesystem is ephemeral; we seed data and use `getState()`/`saveState()` patterns and defensive create-on-validate flows.
+- **Unreliable RPCs & account state:** Soroban RPC may return `Account not found` or DNS errors; the backend supports mock/manageData fallbacks to preserve UX and audit trails.
+- **Legacy SDK & XDR handling:** Upgrading SDKs required robust decoding for Tx(v1) and FeeBump envelopes and resilient parsing of simulation payloads.
+- **Low-connectivity users:** Designed small payloads, clear fallback paths, and mock confirmations for intermittent network conditions.
+
+---
+
+## ⚙️Powered by Stellar & Soroban
+
+⚡ High-Speed Finality:
+- Transactions settle in seconds, enabling real-time financial assistance.
+💸 Predictable Low Costs:
+- Near-zero fees allow scalable micro-contribution systems.
+🔐 On-Chain Integrity:
+- Immutable records ensure verifiable and tamper-proof transactions.
+🧩 Programmable Logic (Soroban):
+- Smart contracts enforce contribution tracking and automated payouts.
 
