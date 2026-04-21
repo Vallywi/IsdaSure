@@ -52,16 +52,16 @@ export async function connectFreighterWallet() {
   const api = getFreighterApi();
   let address = '';
 
-  if (api?.getPublicKey) {
-    const result = await api.getPublicKey();
+  if (freighterSdk?.requestAccess) {
+    const result = await freighterSdk.requestAccess();
     if (result?.error) {
       throw new Error(result.error);
     }
     address = extractAddress(result);
   }
 
-  if (!address && freighterSdk?.requestAccess) {
-    const result = await freighterSdk.requestAccess();
+  if (api?.getPublicKey) {
+    const result = await api.getPublicKey();
     if (result?.error) {
       throw new Error(result.error);
     }

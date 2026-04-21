@@ -5,6 +5,7 @@ import PoolCard from '../components/PoolCard';
 import SpotlightCard from '../components/SpotlightCard';
 import { useWallet } from '../hooks/useWallet';
 import { useContract } from '../hooks/useContract';
+import { buildStellarExpertTxUrl } from '../services/stellar';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -298,8 +299,13 @@ export default function Dashboard() {
                 </p>
                 {txLifecycle.txHash ? <p className="mt-1 break-all text-xs">Hash: {txLifecycle.txHash}</p> : null}
                 {txLifecycle.ledger ? <p className="mt-1 text-xs">Ledger: {txLifecycle.ledger}</p> : null}
-                {txLifecycle.explorerUrl ? (
-                  <a href={txLifecycle.explorerUrl} target="_blank" rel="noreferrer" className="mt-2 inline-flex text-xs font-semibold text-[color:var(--accent-bright)] underline">
+                {txLifecycle.explorerUrl || txLifecycle.txHash ? (
+                  <a
+                    href={txLifecycle.explorerUrl || buildStellarExpertTxUrl(txLifecycle.txHash || '')}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-2 inline-flex text-xs font-semibold text-[color:var(--accent-bright)] underline"
+                  >
                     View on Stellar Expert
                   </a>
                 ) : null}
@@ -351,9 +357,14 @@ export default function Dashboard() {
                     <p className="mt-1 linear-muted">Amount: ₱{Number(entry.amount || 0)}</p>
                     <p className="text-xs linear-muted">{new Date(entry.timestamp).toLocaleString()}</p>
                     {entry.txStatus ? <p className="mt-1 text-xs linear-muted">Tx: {entry.txStatus}</p> : null}
-                    {entry.explorerUrl ? (
+                    {entry.explorerUrl || entry.txHash ? (
                       <p className="mt-2">
-                        <a href={entry.explorerUrl} target="_blank" rel="noreferrer" className="text-xs font-semibold text-[color:var(--accent-bright)] underline">
+                        <a
+                          href={entry.explorerUrl || buildStellarExpertTxUrl(entry.txHash || '')}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-xs font-semibold text-[color:var(--accent-bright)] underline"
+                        >
                           View on Stellar Expert
                         </a>
                       </p>

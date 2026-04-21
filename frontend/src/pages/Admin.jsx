@@ -6,6 +6,7 @@ import SpotlightCard from '../components/SpotlightCard';
 import TransactionHistoryList from '../components/TransactionHistoryList';
 import { useWallet } from '../hooks/useWallet';
 import { useContract } from '../hooks/useContract';
+import { buildStellarExpertTxUrl } from '../services/stellar';
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -161,8 +162,13 @@ export default function Admin() {
                   Transaction: {txLifecycle.phase === 'pending' ? 'Pending' : txLifecycle.phase === 'confirmed' ? 'Confirmed' : 'Failed'}
                 </p>
                 {txLifecycle.txHash ? <p className="mt-1 break-all text-xs">Hash: {txLifecycle.txHash}</p> : null}
-                {txLifecycle.explorerUrl ? (
-                  <a href={txLifecycle.explorerUrl} target="_blank" rel="noreferrer" className="mt-2 inline-flex text-xs font-semibold text-[color:var(--accent-bright)] underline">
+                {txLifecycle.explorerUrl || txLifecycle.txHash ? (
+                  <a
+                    href={txLifecycle.explorerUrl || buildStellarExpertTxUrl(txLifecycle.txHash || '')}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-2 inline-flex text-xs font-semibold text-[color:var(--accent-bright)] underline"
+                  >
                     View on Stellar Expert
                   </a>
                 ) : null}

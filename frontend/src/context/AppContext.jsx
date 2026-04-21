@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { StrKey } from '@stellar/stellar-sdk';
 import {
   apiApproveGroupJoin,
   apiCreateGroup,
@@ -25,6 +26,7 @@ import {
   prepareContributeInvocation,
   prepareTriggerStormInvocation,
 } from '../services/contract';
+import { buildStellarExpertTxUrl } from '../services/stellar';
 
 const defaultPoolState = {
   chainMode: 'mock',
@@ -85,6 +87,25 @@ function readStoredValue(key, fallback) {
   }
 }
 
+function isValidWalletAddress(address) {
+  return StrKey.isValidEd25519PublicKey(String(address || '').trim());
+}
+
+function readStoredWalletState() {
+  const stored = readStoredValue('isdasure-wallet', defaultWalletState);
+  if (!stored?.connected || !isValidWalletAddress(stored.address)) {
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem('isdasure-wallet');
+    }
+    return defaultWalletState;
+  }
+
+  return {
+    connected: true,
+    address: String(stored.address).trim(),
+  };
+}
+
 function shortAddress(address) {
   return formatWalletAddress(address);
 }
@@ -132,7 +153,7 @@ function normalizeActivityHistory(entries, fallbackUser) {
     timestamp: entry.timestamp || new Date().toISOString(),
     txHash: entry.txHash || entry.metadata?.txHash || '',
     txStatus: entry.txStatus || entry.metadata?.txStatus || 'CONFIRMED',
-    explorerUrl: entry.explorerUrl || entry.metadata?.explorerUrl || '',
+    explorerUrl: entry.explorerUrl || entry.metadata?.explorerUrl || buildStellarExpertTxUrl(entry.txHash || entry.metadata?.txHash || ''),
     groupName: entry.groupName || entry.metadata?.groupName || '',
     title: entry.title || '',
     metadata: entry.metadata || {},
@@ -146,7 +167,7 @@ export function AppProvider({ children }) {
     }
     return window.localStorage.getItem('isdasure-theme') || 'dark';
   });
-  const [wallet, setWallet] = useState(() => readStoredValue('isdasure-wallet', defaultWalletState));
+  const [wallet, setWallet] = useState(() => readStoredWalletState());
   const [auth, setAuth] = useState(() => initialAuthState);
   const [poolState, setPoolState] = useState(defaultPoolState);
   const [users, setUsers] = useState([]);
@@ -210,6 +231,16 @@ export function AppProvider({ children }) {
   }, [activeGroup, auth.user, wallet.address]);
 
   const createNonce = () => `${Date.now()}-${Math.random().toString(16).slice(2, 10)}`;
+
+  const shouldRequireWalletSignature = () => {
+    if (typeof window === 'undefined') {
+      return true;
+    }
+
+    const host = String(window.location.hostname || '').toLowerCase();
+    const isLocalHost = ['localhost', '127.0.0.1', '::1'].includes(host);
+    return !isLocalHost || isFreighterAvailable();
+  };
 
   const refreshGroupCollections = async () => {
     const [allGroupsResponse, myGroupsResponse] = await Promise.all([
@@ -449,6 +480,10 @@ export function AppProvider({ children }) {
   const connectWallet = async () => {
     const address = await connectFreighterWallet();
 
+    if (!isValidWalletAddress(address)) {
+      throw new Error('Freighter returned an invalid wallet address. Please reconnect the wallet and try again.');
+    }
+
     setWallet({ connected: true, address });
     setSuccessWithToast('Wallet connected successfully');
     return address;
@@ -676,7 +711,7 @@ export function AppProvider({ children }) {
       });
 
       const nonce = createNonce();
-      const requiresWalletSignature = prepared?.mode !== 'mock' || isFreighterAvailable();
+      const requiresWalletSignature = prepared?.mode !== 'mock' || shouldRequireWalletSignature();
       let signedTxXdr = '';
 
       if (requiresWalletSignature) {
@@ -755,7 +790,7 @@ export function AppProvider({ children }) {
         timestamp: new Date().toISOString(),
         txHash: tx.txHash || '',
         txStatus: tx.status || 'PENDING',
-        explorerUrl: tx.explorerUrl || '',
+        explorerUrl: tx.explorerUrl || buildStellarExpertTxUrl(tx.txHash || ''),
       };
 
       setTransactionHistory((previous) => [entry, ...previous]);
@@ -764,7 +799,7 @@ export function AppProvider({ children }) {
         txHash: tx.txHash || '',
         status: tx.status || 'PENDING',
         ledger: tx.ledger || null,
-        explorerUrl: tx.explorerUrl || '',
+        explorerUrl: tx.explorerUrl || buildStellarExpertTxUrl(tx.txHash || ''),
         actionLabel: 'Contribute',
         contractResult: tx.contractResult || null,
       });
@@ -824,7 +859,7 @@ export function AppProvider({ children }) {
       });
 
       const nonce = createNonce();
-      const requiresWalletSignature = prepared?.mode !== 'mock';
+      const requiresWalletSignature = prepared?.mode !== 'mock' || shouldRequireWalletSignature();
       let signedTxXdr = '';
 
       if (requiresWalletSignature) {
@@ -876,7 +911,7 @@ export function AppProvider({ children }) {
         timestamp: new Date().toISOString(),
         txHash: tx.txHash || '',
         txStatus: tx.status || 'PENDING',
-        explorerUrl: tx.explorerUrl || '',
+        explorerUrl: tx.explorerUrl || buildStellarExpertTxUrl(tx.txHash || ''),
       }));
 
       setPayoutHistory(Array.isArray(nextStatus.payoutLogs) ? nextStatus.payoutLogs : payoutEntries);
@@ -886,7 +921,7 @@ export function AppProvider({ children }) {
         txHash: tx.txHash || '',
         status: tx.status || 'PENDING',
         ledger: tx.ledger || null,
-        explorerUrl: tx.explorerUrl || '',
+        explorerUrl: tx.explorerUrl || buildStellarExpertTxUrl(tx.txHash || ''),
         actionLabel: 'Payout Release',
         contractResult: tx.contractResult || null,
       });

@@ -1,4 +1,5 @@
 import SpotlightCard from './SpotlightCard';
+import { buildStellarExpertTxUrl } from '../services/stellar';
 
 function typeLabel(type) {
   return type === 'payout' ? 'Payout received' : 'Contribution sent';
@@ -65,9 +66,14 @@ export default function TransactionHistoryList({ title, items = [], emptyText = 
               </div>
               <p className="mt-2 text-lg font-semibold text-[color:var(--accent-bright)]">₱{item.amount}</p>
               {item.txStatus ? <p className={`mt-2 inline-flex rounded-full px-2 py-1 text-[11px] font-semibold ${txStatusClass(item.txStatus)}`}>{item.txStatus}</p> : null}
-              {item.explorerUrl ? (
+              {item.explorerUrl || item.txHash ? (
                 <p className="mt-2">
-                  <a href={item.explorerUrl} target="_blank" rel="noreferrer" className="text-xs font-semibold text-[color:var(--accent-bright)] underline">
+                  <a
+                    href={item.explorerUrl || buildStellarExpertTxUrl(item.txHash || '')}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs font-semibold text-[color:var(--accent-bright)] underline"
+                  >
                     View on Stellar Expert
                   </a>
                 </p>
