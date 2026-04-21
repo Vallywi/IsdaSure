@@ -156,6 +156,7 @@ export default function Admin() {
             </div>
             {txLifecycle.phase !== 'idle' ? (
               <div className="rounded-lg border border-[color:var(--border-default)] bg-[color:var(--surface)] px-4 py-3 text-sm linear-muted">
+                {txLifecycle.actionLabel ? <p className="text-xs font-semibold text-[color:var(--accent-bright)]">Action: {txLifecycle.actionLabel}</p> : null}
                 <p className="font-semibold text-[color:var(--foreground)]">
                   Transaction: {txLifecycle.phase === 'pending' ? 'Pending' : txLifecycle.phase === 'confirmed' ? 'Confirmed' : 'Failed'}
                 </p>

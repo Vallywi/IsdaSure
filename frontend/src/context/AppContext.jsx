@@ -58,6 +58,7 @@ const defaultTxLifecycle = {
   status: '',
   ledger: null,
   explorerUrl: '',
+  actionLabel: '',
   contractResult: null,
 };
 
@@ -747,6 +748,7 @@ export function AppProvider({ children }) {
       const entry = {
         id: `contribution-${Date.now()}`,
         type: 'contribution',
+        actionLabel: 'Contribute',
         user: auth.user?.fullName || 'User',
         amount: normalizedAmount,
         groupName: activeGroupName,
@@ -763,6 +765,7 @@ export function AppProvider({ children }) {
         status: tx.status || 'PENDING',
         ledger: tx.ledger || null,
         explorerUrl: tx.explorerUrl || '',
+        actionLabel: 'Contribute',
         contractResult: tx.contractResult || null,
       });
       if (tx.mode === 'mock') {
@@ -867,6 +870,7 @@ export function AppProvider({ children }) {
       const payoutEntries = (nextStatus.payouts || []).map((item) => ({
         id: `payout-${Date.now()}-${item.user}`,
         type: 'payout',
+        actionLabel: 'Payout Release',
         user: item.user,
         amount: item.amount,
         timestamp: new Date().toISOString(),
@@ -883,6 +887,7 @@ export function AppProvider({ children }) {
         status: tx.status || 'PENDING',
         ledger: tx.ledger || null,
         explorerUrl: tx.explorerUrl || '',
+        actionLabel: 'Payout Release',
         contractResult: tx.contractResult || null,
       });
       if (tx.mode === 'mock') {

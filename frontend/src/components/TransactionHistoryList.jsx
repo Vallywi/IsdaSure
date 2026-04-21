@@ -4,6 +4,22 @@ function typeLabel(type) {
   return type === 'payout' ? 'Payout received' : 'Contribution sent';
 }
 
+function actionLabel(item) {
+  if (item?.actionLabel) {
+    return item.actionLabel;
+  }
+
+  if (item?.type === 'payout') {
+    return 'Payout Release';
+  }
+
+  if (item?.type === 'contribution') {
+    return 'Contribute';
+  }
+
+  return 'Activity';
+}
+
 function txStatusClass(status) {
   if (status === 'FAILED') {
     return 'bg-rose-500/15 text-rose-200 border border-rose-400/30';
@@ -40,6 +56,7 @@ export default function TransactionHistoryList({ title, items = [], emptyText = 
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="font-semibold text-[color:var(--foreground)]">{item.user}</p>
+                  <p className="text-xs font-semibold text-[color:var(--accent-bright)]">{actionLabel(item)}</p>
                   <p className="text-xs linear-muted">{formatTimestamp(item.timestamp)}</p>
                 </div>
                 <span className={`rounded-full px-3 py-1 text-xs font-bold ${typeBadge(item.type)}`}>
