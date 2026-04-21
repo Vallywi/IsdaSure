@@ -12,6 +12,7 @@ const {
 const {
   isMemberOfGroup,
   getGroupByName,
+  createGroup,
   forceAddMember,
   getMemberGroupStats,
   recordContribution,
@@ -255,9 +256,35 @@ function validateContribution(payload = {}) {
     throw new Error('You must join or create a group before contributing.');
   }
 
-  const group = getGroupByName(groupKey);
+  let group = getGroupByName(groupKey);
   if (!group) {
-    throw new Error('Group not found.');
+    // In serverless or distributed deployments the freshly created group
+    // may not yet be present on the current function instance's writable
+    // store. Attempt to create the group on-the-fly using the provided
+    // payload so the contribution can proceed. If creation fails, return
+    // the original error.
+    try {
+      console.info('[IsdaSure] validateContribution: group not found, creating fallback group', groupKey);
+      // createGroup expects groupName and at least one user reference
+      createGroup({
+        groupName: groupKey,
+        identifier: payload.identifier,
+        walletAddress: payload.walletAddress,
+        fullName: user,
+        dailyLimit: Number(process.env.DAILY_PESO_LIMIT || 1000),
+      });
+      // re-fetch the group after creation
+      const recreated = getGroupByName(groupKey);
+      if (!recreated) {
+        throw new Error('Group not found.');
+      }
+      // assign group for downstream validation
+      // eslint-disable-next-line no-param-reassign
+      group = recreated; // eslint-disable-line
+    } catch (e) {
+      console.error('[IsdaSure] validateContribution: fallback create group failed', e && e.message);
+      throw new Error('Group not found.');
+    }
   }
 
   const groupName = group.name;
@@ -273,13 +300,21 @@ function validateContribution(payload = {}) {
   if (!isMember) {
     // Auto-add the contributor as a member so any connected Freighter wallet can contribute
     try {
+      console.info('[IsdaSure] validateContribution: attempting forceAddMember', {
+        identifier: payload.identifier,
+        walletAddress: payload.walletAddress,
+        fullName: user,
+        groupName: group.name,
+      });
       forceAddMember({
         identifier: payload.identifier,
         walletAddress: payload.walletAddress,
         fullName: user,
         groupName: group.name,
       });
+      console.info('[IsdaSure] validateContribution: forceAddMember succeeded');
     } catch (err) {
+      console.error('[IsdaSure] validateContribution: forceAddMember failed', err && err.message);
       // If forced add fails for any reason, fall back to the original error
       throw new Error('You are not a member of this group. Join the group before contributing.');
     }

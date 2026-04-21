@@ -1,13 +1,32 @@
 {
-  "totalPool": 300,
+  "totalPool": 350,
   "contributors": [
     "Arturo De Vera",
     "Rolando Mendoza",
-    "Juan Dela Cruz"
+    "Juan Dela Cruz",
+    "Test User",
+    "Auto Add User",
+    "CLI Tester",
+    "CLI Tester 2",
+    "Test User"
   ],
   "recentContributions": [
     {
-      "id": "group-contribution-1776702478944-e98638",
+      "id": "group-contribution-1776777244352-633fe7",
+      "groupId": "group-1776686662728",
+      "groupName": "Baranggay Butuan",
+      "user": "Auto Add User",
+      "identifier": "autoadd@example.com",
+      "walletAddress": "GAUTOADDR",
+      "contributionKey": "autoadd@example.com",
+      "amount": 50,
+      "timestamp": "2026-04-21T13:14:04.352Z",
+      "txHash": "",
+      "txStatus": "CONFIRMED",
+      "explorerUrl": ""
+    },
+    {
+      "id": "group-contribution-92f922f6446ab295f68c4d8d136ca8b7ab5fa86d4f992feb1680276cfc58c406",
       "groupId": "group-1776686662728",
       "groupName": "Baranggay Butuan",
       "user": "Juan Dela Cruz",
@@ -15,13 +34,14 @@
       "walletAddress": "GCSLI5OL53MUDBUN25LUWMDBLD5BJWO457VSTKVDMNXDW4Z26R4DJX3X",
       "contributionKey": "juan@gmail.com",
       "amount": 150,
-      "timestamp": "2026-04-20T16:27:58.944Z",
+      "timestamp": "2026-04-20T16:27:58.966Z",
       "txHash": "92f922f6446ab295f68c4d8d136ca8b7ab5fa86d4f992feb1680276cfc58c406",
       "txStatus": "CONFIRMED",
-      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/92f922f6446ab295f68c4d8d136ca8b7ab5fa86d4f992feb1680276cfc58c406"
+      "explorerUrl": "",
+      "sourceActivityId": "activity-1776702478966-f7b9f1"
     },
     {
-      "id": "group-contribution-1776702047463-a3da77",
+      "id": "group-contribution-8f451341a34795bc9ab91199102ce1f234b4a73d26d1aa1d08af1e34352a69de",
       "groupId": "group-1776686662728",
       "groupName": "Baranggay Butuan",
       "user": "Rolando Mendoza",
@@ -29,13 +49,14 @@
       "walletAddress": "GB6UNOCKG4SPG2YE3D6SHDUNQ5GQGMWZ2FUWDGQ7N7QWHOCRJJSLTITJ",
       "contributionKey": "rolando@gmail.com",
       "amount": 100,
-      "timestamp": "2026-04-20T16:20:47.463Z",
+      "timestamp": "2026-04-20T16:20:47.487Z",
       "txHash": "8f451341a34795bc9ab91199102ce1f234b4a73d26d1aa1d08af1e34352a69de",
       "txStatus": "CONFIRMED",
-      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/8f451341a34795bc9ab91199102ce1f234b4a73d26d1aa1d08af1e34352a69de"
+      "explorerUrl": "",
+      "sourceActivityId": "activity-1776702047487-ee4f1c"
     },
     {
-      "id": "group-contribution-1776701696790-d1411b",
+      "id": "group-contribution-6a1e7ac8f57a36452ac048d3e8ddd3cf8341d1d6a53fb258607d7da7734b86c2",
       "groupId": "group-1776686662728",
       "groupName": "Baranggay Butuan",
       "user": "Arturo De Vera",
@@ -43,10 +64,11 @@
       "walletAddress": "GAXOTV5GNXDLYCVHFIFGRTFB25J2BHILNRDBENB7X474NTANRH22WU5T",
       "contributionKey": "arturo@gmail.com",
       "amount": 50,
-      "timestamp": "2026-04-20T16:14:56.791Z",
+      "timestamp": "2026-04-20T16:14:56.810Z",
       "txHash": "6a1e7ac8f57a36452ac048d3e8ddd3cf8341d1d6a53fb258607d7da7734b86c2",
       "txStatus": "CONFIRMED",
-      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/6a1e7ac8f57a36452ac048d3e8ddd3cf8341d1d6a53fb258607d7da7734b86c2"
+      "explorerUrl": "",
+      "sourceActivityId": "activity-1776701696810-1195a5"
     },
     {
       "id": "group-contribution-fc8bcd7efa7951a0b41baa0fa96d8baf7eacae7b8cc320c44537778c84f16d6b",
@@ -162,6 +184,56 @@
   ],
   "lastUpdated": "Now",
   "chainHistory": [
+    {
+      "id": "chain-1776777244378-605390",
+      "type": "contribution",
+      "user": "Auto Add User",
+      "amount": 50,
+      "groupId": "group-1776686662728",
+      "groupName": "Baranggay Butuan",
+      "txHash": "",
+      "status": "CONFIRMED",
+      "ledger": null,
+      "explorerUrl": "",
+      "timestamp": "2026-04-21T13:14:04.378Z",
+      "contractResult": {
+        "note": "Soroban RPC rejected transaction; recorded mocked confirmation. (Missing signed transaction XDR.)",
+        "contractCall": {
+          "contractId": "CDNZVMTK3RNWWEQTG4JYC55O5P47YYTC2C2ACJVPI5MDJP63TH3KKKKS",
+          "method": "contribute",
+          "args": [
+            "Auto Add User",
+            "group-1776686662728",
+            50
+          ]
+        }
+      }
+    },
+    {
+      "id": "chain-1776776860462-c978b7",
+      "type": "contribution",
+      "user": "Test User",
+      "amount": 50,
+      "groupId": "group-1776686662728",
+      "groupName": "Baranggay Butuan",
+      "txHash": "",
+      "status": "CONFIRMED",
+      "ledger": null,
+      "explorerUrl": "",
+      "timestamp": "2026-04-21T13:07:40.462Z",
+      "contractResult": {
+        "note": "Soroban RPC rejected transaction; recorded mocked confirmation. (Missing signed transaction XDR.)",
+        "contractCall": {
+          "contractId": "CDNZVMTK3RNWWEQTG4JYC55O5P47YYTC2C2ACJVPI5MDJP63TH3KKKKS",
+          "method": "contribute",
+          "args": [
+            "Test User",
+            "group-1776686662728",
+            50
+          ]
+        }
+      }
+    },
     {
       "id": "chain-1776702478960-cbefdb",
       "type": "contribution",

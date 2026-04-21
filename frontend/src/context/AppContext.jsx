@@ -787,6 +787,21 @@ export function AppProvider({ children }) {
     if (Array.isArray(response.status?.chainHistory)) {
       setChainHistory(response.status.chainHistory);
     }
+    // Populate transactionHistory from server recent contributions so
+    // the user's contribution history reflects server-side records.
+    try {
+      const serverContribs = Array.isArray(response.status?.recentContributions) ? response.status.recentContributions : [];
+      if (serverContribs.length > 0) {
+        const incoming = normalizeActivityHistory(serverContribs, auth.user);
+        setTransactionHistory((previous) => {
+          const existingIds = new Set((previous || []).map((e) => e.id));
+          const merged = [...incoming.filter((e) => !existingIds.has(e.id)), ...previous];
+          return merged.slice(0, 200);
+        });
+      }
+    } catch (e) {
+      // ignore normalization errors and keep existing history
+    }
     return response.status;
   };
 

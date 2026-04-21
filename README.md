@@ -365,6 +365,20 @@ See `backend/routes` for full details.
 
 ---
 
+<table>
+<tr>
+<td width="50%" align="center">
+<img src="frontend/images/home page.png" alt="Verified credential" width="100%"/><br/>
+<b>Home Page</b><br/>
+</td>
+<td width="50%" align="center">
+<img src="frontend/images/how it works.png" alt="Verified credential" width="100%"/><br/>
+<b>Home Page</b><br/>
+</td>
+</tr>
+</table>
+
+
 ## 🧪Testing & Snapshots 
 
 Contract tests use JSON snapshots under `test_snapshots/` to verify state transitions. Run `cargo test` to execute.

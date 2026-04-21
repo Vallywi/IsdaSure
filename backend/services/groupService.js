@@ -566,7 +566,9 @@ function joinGroup(payload = {}) {
 }
 
 function forceAddMember(payload = {}) {
-  const group = findGroup(payload.groupName || payload.groupId);
+  console.info('[IsdaSure] forceAddMember called with payload', payload);
+  const state = getState();
+  const group = state.groups.find((g) => normalizeName(g.name) === normalizeName(payload.groupName) || g.id === String(payload.groupId || '').trim());
   if (!group) {
     throw new Error('Group not found.');
   }
@@ -582,15 +584,21 @@ function forceAddMember(payload = {}) {
   }
 
   // Forcefully add the member regardless of joinApprovalEnabled
-  group.members.push(member);
-  upsertMemberContributionContainer(group, member);
-  saveState(state);
+  try {
+    group.members.push(member);
+    upsertMemberContributionContainer(group, member);
+    saveState(state);
+  } catch (e) {
+    console.error('[IsdaSure] forceAddMember failed', e && e.message);
+    throw e;
+  }
 
   return publicGroup(group);
 }
 
 function approveJoinRequest(payload = {}) {
-  const group = findGroup(payload.groupName || payload.groupId);
+  const state = getState();
+  const group = state.groups.find((g) => normalizeName(g.name) === normalizeName(payload.groupName) || g.id === String(payload.groupId || '').trim());
   if (!group) {
     throw new Error('Group not found.');
   }
@@ -620,7 +628,8 @@ function approveJoinRequest(payload = {}) {
 }
 
 function rejectJoinRequest(payload = {}) {
-  const group = findGroup(payload.groupName || payload.groupId);
+  const state = getState();
+  const group = state.groups.find((g) => normalizeName(g.name) === normalizeName(payload.groupName) || g.id === String(payload.groupId || '').trim());
   if (!group) {
     throw new Error('Group not found.');
   }
@@ -646,6 +655,7 @@ function rejectJoinRequest(payload = {}) {
 function getUserGroups(payload = {}) {
   const probe = buildMember(payload);
   if (!memberKey(probe)) return [];
+  const state = getState();
   return state.groups.filter((group) => group.members.some((member) => referencesMatch(member, probe))).map((group) => publicGroup(group));
 }
 
@@ -681,7 +691,8 @@ function getMemberGroupStats(payload = {}, groupNameOrId) {
 }
 
 function recordContribution(payload = {}) {
-  const group = findGroup(payload.groupName || payload.groupId);
+  const state = getState();
+  const group = state.groups.find((g) => normalizeName(g.name) === normalizeName(payload.groupName) || g.id === String(payload.groupId || '').trim());
   if (!group) {
     throw new Error('Group not found.');
   }
@@ -729,7 +740,8 @@ function recordContribution(payload = {}) {
 }
 
 function triggerStormForGroup(payload = {}) {
-  const group = findGroup(payload.groupName || payload.groupId);
+  const state = getState();
+  const group = state.groups.find((g) => normalizeName(g.name) === normalizeName(payload.groupName) || g.id === String(payload.groupId || '').trim());
   if (!group) {
     throw new Error('Group not found.');
   }
@@ -775,12 +787,14 @@ function triggerStormForGroup(payload = {}) {
 }
 
 function allContributionHistory() {
+  const state = getState();
   return state.groups
     .flatMap((group) => group.contributionHistory.map((entry) => ({ ...entry, groupId: group.id, groupName: group.name })))
     .sort((a, b) => String(b.timestamp).localeCompare(String(a.timestamp)));
 }
 
 function allStormHistory() {
+  const state = getState();
   return state.groups
     .flatMap((group) => group.stormHistory.map((entry) => ({ ...entry, groupId: group.id, groupName: group.name })))
     .sort((a, b) => String(b.timestamp).localeCompare(String(a.timestamp)));
