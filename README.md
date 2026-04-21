@@ -98,7 +98,6 @@ Fallback & Edge Cases
   - Vercel/hosted: when `SOROBAN_RPC_URL` is unset and `ALLOW_MOCK_ON_HOSTED=true`, the app intentionally uses mocked confirmations to keep UX functional.
 
 ``` 
-
 ---
 
 ## Project Structure 📁
