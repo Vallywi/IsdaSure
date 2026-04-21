@@ -406,8 +406,30 @@ See `backend/routes` for full details.
 <img src="frontend/images/user log in.png" width="100%"/><br/>
 </td>
 <td width="50%" valign="top">
-<b>User Registration Page – Lets new users create a profile with wallet-linked identity for secure participation in the platform.</b><br/><br/>
+<b>User Registration Page – Lets new Fisherfolks create a profile with wallet-linked identity for secure participation in the platform.</b><br/><br/>
 <img src="frontend/images/registered.png" width="100%"/><br/>
+</td>
+</tr>
+
+<tr>
+<td width="50%" valign="top">
+<b>User Dashboard (Contribute & Group View) – Allows users to join or create groups, contribute funds, and view members, contribution history, and storm events in one place.</b><br/><br/>
+<img src="frontend/images/user-portal.png" width="100%"/><br/>
+</td>
+<td width="50%" valign="top">
+<b>Contribute Section – Users add funds to their group’s shared pool to support future emergency payouts when there's a typhoon.</b><br/><br/>
+<img src="frontend/images/contribute.png" width="100%"/><br/>
+</td>
+</tr>
+
+<tr>
+<td width="50%" valign="top">
+<b>Admin Dashboard Overview – Provides a summary of total pool funds, number of contributors, and admin status for quick monitoring.</b><br/><br/>
+<img src="frontend/images/admin-portal.png" width="100%"/><br/>
+</td>
+<td width="50%" valign="top">
+<b>Trigger Storm Day Page – Lets admins activate a storm event for a selected group, enabling payout distribution to affected members.</b><br/><br/>
+<img src="frontend/images/admin-trigger.png" width="100%"/><br/>
 </td>
 </tr>
 
