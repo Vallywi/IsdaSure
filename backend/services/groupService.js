@@ -28,12 +28,14 @@ function ensureStore() {
       if (fs.existsSync(groupsReadFilePath)) {
         const contents = fs.readFileSync(groupsReadFilePath, 'utf8');
         fs.writeFileSync(groupsFilePath, contents, 'utf8');
+        console.info('[IsdaSure] Copied packaged groups.json to writable path:', groupsFilePath);
         return;
       }
     } catch (e) {
       // fall through and initialize with default
     }
     fs.writeFileSync(groupsFilePath, JSON.stringify(defaultState, null, 2));
+    console.info('[IsdaSure] Initialized empty groups.json at:', groupsFilePath);
   }
 }
 
@@ -44,6 +46,7 @@ function readState() {
     const readPath = fs.existsSync(groupsFilePath) ? groupsFilePath : (fs.existsSync(groupsReadFilePath) ? groupsReadFilePath : groupsFilePath);
     const raw = fs.readFileSync(readPath, 'utf8');
     const parsed = JSON.parse(raw);
+    console.info('[IsdaSure] Read groups.json from', readPath, 'count:', Array.isArray(parsed.groups) ? parsed.groups.length : 0);
     return parsed && Array.isArray(parsed.groups) ? parsed : { ...defaultState };
   } catch {
     return { ...defaultState };
@@ -53,6 +56,7 @@ function readState() {
 function saveState(nextState) {
   ensureStore();
   fs.writeFileSync(groupsFilePath, JSON.stringify(nextState, null, 2));
+  console.info('[IsdaSure] Saved groups.json to', groupsFilePath, 'count:', Array.isArray(nextState.groups) ? nextState.groups.length : 0);
 }
 
 const state = readState();
@@ -423,6 +427,7 @@ function publicGroup(group, { includeHistory = true } = {}) {
 }
 
 function listGroups() {
+  console.info('[IsdaSure] listGroups returning', state.groups.length, 'groups from', groupsFilePath);
   return state.groups.map((group) => publicGroup(group));
 }
 
@@ -489,12 +494,14 @@ function createGroup(payload = {}) {
 
   state.groups.push(group);
   saveState(state);
+  console.info('[IsdaSure] Created group', group.name, 'now', state.groups.length, 'groups');
   return publicGroup(group);
 }
 
 function joinGroup(payload = {}) {
   const group = findGroup(payload.groupName || payload.groupId);
   if (!group) {
+    console.warn('[IsdaSure] joinGroup failed: group not found for', payload.groupName || payload.groupId, 'current groups:', state.groups.map(g => g.name));
     throw new Error('Group not found.');
   }
 
