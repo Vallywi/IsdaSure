@@ -8,5 +8,9 @@
     "dev": "node scripts/dev-single-server.js",
     "dev:single": "node scripts/dev-single-server.js",
     "start": "node scripts/dev-single-server.js"
+  },
+  "dependencies": {
+    "@stellar/stellar-sdk": "^15.0.1",
+    "minimist": "^1.2.8"
   }
 }
