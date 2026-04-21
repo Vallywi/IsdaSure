@@ -8,8 +8,8 @@
       "framework": "vite"
     },
     "backend": {
-      "entrypoint": "backend",
-      "routePrefix": "/_/backend"
+      "entrypoint": "backend/index.js",
+      "routePrefix": "./_/backend"
     }
     
   }
