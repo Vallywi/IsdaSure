@@ -1,16 +1,25 @@
 [![Live Demo](https://img.shields.io/badge/Live_Demo-isda--sure-F59E0B?style=for-the-badge&logo=vercel&logoColor=white)](https://isda-sure.vercel.app/)
-[![Stellar Testnet](https://img.shields.io/badge/Stellar-Testnet-7C3AED?style=for-the-badge&logo=stellar&logoColor=white)](https://stellar.expert/explorer/testnet/contract/CDNZVMTK3RNWWEQTG4JYC55O5P47YYTC2C2ACJVPI5MDJP63TH3KKKKS)
+[![IsdaSure](https://img.shields.io/badge/Project-IsdaSure-06B6D4?style=for-the-badge&logo=stellar&logoColor=white)](https://isda-sure.vercel.app/)
+[![Stellar Testnet](https://img.shields.io/badge/Network-Testnet-7C3AED?style=for-the-badge&logo=stellar&logoColor=white)](https://stellar.expert/explorer/testnet/contract/CDNZVMTK3RNWWEQTG4JYC55O5P47YYTC2C2ACJVPI5MDJP63TH3KKKKS)
 [![Soroban SDK](https://img.shields.io/badge/Soroban_SDK-22.0.0-3B82F6?style=for-the-badge)](https://docs.rs/soroban-sdk/22.0.0)
-[![Vite](https://img.shields.io/badge/Vite-5.4.21-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Vite](https://img.shields.io/badge/Frontend-Vite_React-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22C55E?style=for-the-badge)](LICENSE)
 
 <p align="center">
-  <img src="frontend/images/logo.png" alt="IsdaSure" width="450" style="max-width:100%; height:auto; object-fit:cover;" />
+  <img src="frontend/images/icon2.png" alt="IsdaSure hero" width="500" style="max-width:100%; height:auto; object-fit:cover; border-radius:8px;" />
 </p>
 
-<h2 align="center">
-  IsdaSure: On-Chain Financial Protection for Coastal Communities 🐟
-</h2>
+## IsdaSure — Community-Powered Storm Protection
+
+IsdaSure is a lightweight Soroban smart-contract application on the Stellar Testnet that enables coastal communities to pool small daily contributions and distribute payouts automatically when extreme weather prevents fishing activity. It is designed for low friction, on-chain transparency, and resilient UX even when RPC nodes are intermittent.
+
+Key ideas:
+- Small, frequent contributions from community members
+- On-chain pooled fund (Soroban contract) enforcing contribution and payout rules
+- Local admin (trusted community officer) triggers the distribution (“storm day”)
+- Wallet-signed actions using Freighter for safe key custody
+
+---
 
 IsdaSure is a Soroban-powered micro-insurance dApp on the Stellar network designed to ensure that fisherfolk are **financially protected during no-fishing days**. Built for coastal communities in the Philippines, it enables users to contribute small, consistent amounts into a shared on-chain fund, creating a reliable safety net during storms and extreme weather conditions.
 
@@ -54,6 +63,161 @@ The IsdaSure smart contract is a Soroban-based program deployed on the Stellar n
     <li><b>Limited Access to Insurance</b> – Traditional insurance services are often inaccessible to small-scale fisherfolk due to high costs, complicated requirements, and lack of availability in rural coastal areas, leaving them without any formal financial protection.</li>
     <li><b>Lack of Transparency</b> – Existing systems for distributing aid or community funds may lack clear tracking and accountability, leading to unequal distribution, mistrust, and uncertainty among beneficiaries, especially in underserved communities.</li>
 </ol>
+---
+
+## How It Works (Summary)
+
+1. Community members create or join a `Group` through the web app and register their identifier (name) and wallet address.
+2. Each member contributes a small peso-denominated amount (recorded in contract-local units) daily into the pooled group fund.
+3. A local admin triggers `trigger_storm` when fishing is unsafe; the Soroban contract enforces distribution rules and transfers payouts.
+4. Contributions, payouts, and history are available in the dashboard for audit and transparency.
+
+The frontend keeps a mirrored view of on-chain state to remain responsive; the backend provides resilient fallbacks and local persistence for a smooth UX in unreliable RPC environments.
+
+## Core Functions & Features
+
+- Contribution flows: on-chain record of contributions, per-group daily limits, and validation rules.
+- Auto member onboarding: a connected wallet can contribute and be auto-added to the group if allowed.
+- Storm trigger: a role-gated admin action that distributes pooled funds evenly to group members.
+- Chain / Mock mode: graceful mock confirmations when Soroban RPC is unavailable (configurable with `ALLOW_MOCK_ON_HOSTED`).
+- Admin dashboard: view groups, contributors, recent contributions, and payout history.
+
+## Project Structure
+
+```
+IsdaSure/
+├─ backend/                # Express API, minimal file-based store (production copies packaged data to /tmp)
+│  ├─ routes/              # API routes (/contribute, /groups, /auth, /trigger-storm)
+│  └─ services/            # groupService, sorobanService, sorobanRpcService, storagePath
+├─ frontend/               # Vite + React app (Freighter integration)
+│  ├─ src/
+│  │  ├─ components/      # UI components
+│  │  ├─ context/         # AppContext (central state + flows)
+│  │  └─ services/        # api, freighter, contract helpers
+├─ contract/               # Soroban Rust contract source and tests
+└─ scripts/                # diagnostics (check-contract.js) and helpers
+```
+
+## Architecture Overview
+
+- Browser UI (React + Vite) — wallet interactions use Freighter and fallback manageData flows when needed.
+- Backend (Express) — orchestrates data, read-from-packaged `backend/data` on hosted runtimes and writes into `/tmp` when deployed on Vercel.
+- Soroban contract — enforces contribution/payout rules; the contract ID is set via env `SOROBAN_CONTRACT_ID`.
+
+## Deployment & Contract Addresses (testnet)
+
+| Layer | Environment | Address |
+|---|---:|---|
+| Registry Contract | Stellar Testnet | `CDNZVMTK3RNWWEQTG4JYC55O5P47YYTC2C2ACJVPI5MDJP63TH3KKKKS` |
+| Live Web App | Vercel (production) | https://isda-sure.vercel.app |
+| Network Passphrase | Testnet | `Test SDF Network ; September 2015` |
+
+---
+
+## Prerequisites
+
+- Node.js v18+ (frontend + backend)
+- Rust toolchain (for building contract WASM)
+- `stellar` CLI / Soroban toolchain for contract deployment (optional for local dev)
+- Freighter browser extension (for signing transactions)
+
+## Smart Contract Setup & Testing
+
+1. Build contract:
+
+```bash
+cd contract
+rustup target add wasm32-unknown-unknown
+stellar contract build
+```
+
+2. Run tests (contract unit snapshots):
+
+```bash
+cd contract
+cargo test
+```
+
+3. Deploy to testnet (example):
+
+```bash
+# compile and deploy
+cd contract
+stellar contract build
+stellar contract deploy \
+  --wasm target/wasm32-unknown-unknown/release/isdasure.wasm \
+  --source MY_ADMIN_KEY \
+  --network testnet
+```
+
+## Frontend Local Setup
+
+1. Install:
+
+```bash
+cd frontend
+npm install
+```
+
+2. Create `.env` at project root with these keys (example):
+
+```
+VITE_API_URL=http://localhost:4000/_/backend/api
+VITE_SOROBAN_CONTRACT_ID=CDNZVMTK3RNWWEQTG4JYC55O5P47YYTC2C2ACJVPI5MDJP63TH3KKKKS
+VITE_STELLAR_NETWORK_PASSPHRASE="Test SDF Network ; September 2015"
+```
+
+3. Run dev server:
+
+```bash
+cd frontend
+npm run dev
+```
+
+## Backend Notes (runtime resilience)
+
+- On Vercel, filesystem is ephemeral — this project ships a packaged `backend/data/groups.json` used as seed data and copies it into `/tmp` for runtime writes.
+- Important env vars:
+  - `SOROBAN_RPC_URL` — RPC endpoint to prepare and submit Soroban transactions (if missing, app falls back to mock confirmations)
+  - `SOROBAN_CONTRACT_ID` — contract id for on-chain calls
+  - `ALLOW_MOCK_ON_HOSTED` — set to `true` to permit mock confirmations on hosted (not recommended for production)
+
+## Contribution Flow (high level)
+
+1. Frontend requests `POST /contribute/prepare` to backend.
+2. Backend attempts to call Soroban RPC `prepareTransaction`. If the RPC returns a "method not found" or account-not-found, the backend returns a mocked prepared payload so the frontend will still prompt Freighter for a signature.
+3. Frontend signs the unsigned XDR (or generates a signed manageData XDR for mock mode) and submits `POST /contribute` with `signedTxXdr` and `nonce`.
+4. Backend tries to submit to Soroban. If submission fails, backend records a mocked confirmation and persists contribution data locally.
+
+This flow ensures any connected Freighter wallet can take part immediately and preserves UX even when RPCs are flaky.
+
+## API Endpoints (backend)
+
+- `GET /_/backend/api/status` — current pool state and chainHistory
+- `POST /_/backend/api/contribute/prepare` — prepare contribution (returns unsigned XDR or mock mode)
+- `POST /_/backend/api/contribute` — submit contribution (signed XDR + nonce)
+- `POST /_/backend/api/groups` — list groups
+- `POST /_/backend/api/groups/create` — create group
+- `POST /_/backend/api/groups/join` — join group
+
+Refer to `backend/routes` for full list.
+
+## Testing & Snapshots
+
+- This repo includes contract state snapshots in `test_snapshots/` for verifying expected ledger transitions locally. Use them in test harness to validate behavior during contract upgrades.
+
+## Security & Operational Notes
+
+- Use `ALLOW_MOCK_ON_HOSTED=true` only for staging or when RPCs are intentionally disabled.
+- For production on-chain behavior, ensure `SOROBAN_RPC_URL` points to a reliable Soroban RPC endpoint and `SOROBAN_CONTRACT_ID` matches a deployed contract implementing `contribute` and `trigger_storm`.
+
+## Contributing
+
+Contributions are welcome. Open issues for bugs or feature requests. For code contributions, please fork the repo, create a feature branch, and open a PR.
+
+## License
+
+MIT — see `LICENSE` file.
 
 
 
