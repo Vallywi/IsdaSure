@@ -18,32 +18,63 @@ function safeMessage(value, fallback = 'Request failed') {
 }
 
 async function request(path, options = {}) {
-  const response = await fetch(`${API_URL}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {}),
-    },
-    ...options,
-  });
+  const url = `${API_URL}${path}`;
 
-  const data = await response.json().catch(() => ({}));
+  // attempt request once
+  const doFetch = async (targetUrl) => {
+    const response = await fetch(targetUrl, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options.headers || {}),
+      },
+      ...options,
+    });
 
-  // Basic logging for requests/responses to help with debugging in hosted environments
-  try {
-    console.debug('API request', { url: `${API_URL}${path}`, options, status: response.status, data });
-  } catch (e) {
-    // ignore logging errors
-  }
-
-  if (!response.ok || data.success === false) {
-    const err = new Error(safeMessage(data.message, 'Request failed'));
+    // try to parse JSON safely
+    let data = {};
     try {
-      console.error('API error', { url: `${API_URL}${path}`, status: response.status, data });
-    } catch (e) {}
-    throw err;
-  }
+      data = await response.json();
+    } catch {
+      data = {};
+    }
 
-  return data;
+    try {
+      console.debug('API request', { url: targetUrl, options, status: response.status, data });
+    } catch (e) {}
+
+    if (!response.ok || data.success === false) {
+      const messageParts = [safeMessage(data.message, `Request failed (status ${response.status})`)];
+      if (data && typeof data === 'object') {
+        try {
+          messageParts.push(JSON.stringify(data).slice(0, 240));
+        } catch {}
+      }
+      const err = new Error(messageParts.join(' - '));
+      try {
+        console.error('API error', { url: targetUrl, status: response.status, data });
+      } catch (e) {}
+      throw err;
+    }
+
+    return data;
+  };
+
+  // Primary attempt
+  try {
+    return await doFetch(url);
+  } catch (firstErr) {
+    // If running in production and initial host path fails, attempt a simple alternate path
+    try {
+      const alt = url.replace('/_/backend/api', '/api');
+      if (alt !== url) {
+        console.warn('Primary API path failed, trying fallback:', alt);
+        return await doFetch(alt);
+      }
+    } catch (secondErr) {
+      // fall through to rethrow the original error for clearer root cause
+    }
+    throw firstErr;
+  }
 }
 
 export async function apiGetStatus() {
