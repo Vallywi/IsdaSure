@@ -277,94 +277,8 @@ npm run dev
 Notes: The UI integrates with Freighter for signing. If `SOROBAN_RPC_URL` is missing on hosted environments, the backend falls back to a mock confirmation mode when `ALLOW_MOCK_ON_HOSTED=true`.
 
 ---
-
-## 🔌API Endpoints (backend) 
-
-Below are the backend API endpoints with expected request payloads, responses, and notes. Each endpoint is namespaced under `/_/backend/api` when the app is hosted.
-
-- 🔎 `GET /_/backend/api/status` — get current pool, groups, chainHistory
-  - Response: `{ success: true, totalPool, groups, recentContributions, chainHistory, chainMode, rpcConfigured, contributionRules, ... }`
-
-- 🧾 `POST /_/backend/api/contribute/prepare` — prepare unsigned Soroban tx for contribution
-  - Purpose: build a prepared transaction for the user's wallet to sign or return a mock/fallback when RPC unavailable.
-  - Request body (JSON):
-    - `groupId` or `groupName` (string) — target group
-    - `amount` (number) — contribution amount (peso)
-    - `walletAddress` (string) — user's Freighter wallet address
-    - `identifier` (string, optional) — user identifier (email/phone)
-    - `user` / `fullName` (string, optional) — human name
-    - `networkPassphrase` (string, optional) — override network passphrase
-    - `contractCall` (object, optional) — custom contractCall override
-  - Response (success): `{ success: true, mode: 'onchain'|'mock', unsignedTxXdr, networkPassphrase, contractId, method }`
-  - Notes: If RPC or contract method is missing the backend may return `mode: 'mock'` and a `contractId`/`method` for transparency.
-
-- 📤 `POST /_/backend/api/contribute` — submit signed tx / record contribution
-  - Purpose: accept a signed XDR (or fallback signed manageData) and record the contribution (onchain or mocked).
-  - Request body (JSON):
-    - `groupId` or `groupName` (string)
-    - `amount` (number)
-    - `walletAddress` (string)
-    - `identifier` (string, optional)
-    - `user` / `fullName` (string)
-    - `signedTxXdr` (string) — XDR signed by Freighter (may be empty for mock flows)
-    - `nonce` (string|number) — optional nonce used for replay protection
-    - `networkPassphrase` (string, optional)
-  - Response (success): `{ success: true, message: 'Contribution recorded', status: { ...snapshot }, tx: { mode, txHash, status, contractResult, explorerUrl } }`
-  - Notes: Backend will attempt to submit the signed XDR to Soroban RPC when configured; on failure it records a mocked confirmation with a `note` describing the reason.
-
-- 📁 `GET /_/backend/api/groups` — list groups (public view)
-  - Response: `{ success: true, groups: [ { id, name, totalPool, members, memberCount, contributionHistory, stormHistory, ... } ] }`
-
-- ➕ `POST /_/backend/api/groups/create` — create group
-  - Request body (JSON):
-    - `groupName` (string) — required
-    - `identifier` | `walletAddress` | `fullName` — a user reference that becomes the group creator
-    - `requiredDailyAmount` (number, optional)
-    - `dailyLimit` (number, optional)
-    - `joinApprovalEnabled` (boolean, optional)
-  - Response: `{ success: true, group: { ...publicGroup } }`
-
-- 🤝 `POST /_/backend/api/groups/join` — join a group (may be pending approval)
-  - Request body: `{ groupId|groupName, identifier|walletAddress|fullName, profilePicture? }`
-  - Response: `{ success: true, group, joinPending?: true, message?: string }`
-
-- 👤 `POST /_/backend/api/groups/my` — get groups where the user is a member
-  - Request body: `{ identifier|walletAddress|fullName }`
-  - Response: `{ success: true, groups: [ ... ] }`
-
-- ✅ `POST /_/backend/api/groups/approve` — approve a pending join (group creator only)
-  - Request body: `{ groupId|groupName, approver: {identifier|walletAddress|fullName}, target: {identifier|walletAddress|fullName} }`
-  - Response: `{ success: true, group }`
-
-- ❌ `POST /_/backend/api/groups/reject` — reject a pending join (group creator only)
-  - Request body: same shape as approve.
-  - Response: `{ success: true, group }`
-
-- 🧾 `POST /_/backend/api/auth/register` — create a user
-  - Request body: `{ fullName, identifier (email|phone), password, age, walletAddress, profilePicture? }`
-  - Response: `{ success: true, user: { id, role, fullName, identifier, walletAddress, profilePicture, activityHistory, createdAt } }`
-
-- 🔑 `POST /_/backend/api/auth/login` — login (local credential check)
-  - Request body: `{ identifier, password, role? }`
-  - Response: `{ success: true, user: { ...publicUser } }`
-
-- 🧾 `GET /_/backend/api/auth/users` — list public user entries
-  - Response: `{ success: true, users: [ { id, fullName, identifier, walletAddress, profilePicture, createdAt } ] }`
-
-- ⚡ `POST /_/backend/api/triggerStorm/prepare` — prepare a storm trigger contract call
-  - Request body: `{ groupId|groupName, admin|walletAddress, nonce?, networkPassphrase? }`
-  - Response: `{ success: true, mode: 'onchain'|'mock', unsignedTxXdr, contractId, method }`
-
-- ⛈️ `POST /_/backend/api/triggerStorm` — submit signed storm trigger and record payouts
-  - Request body: `{ groupId|groupName, admin|walletAddress, signedTxXdr, nonce?, networkPassphrase? }`
-  - Response: `{ success: true, message: 'Storm day triggered', status: { ...snapshot }, tx: { mode, txHash, status, contractResult } }`
-
-See `backend/routes` and `backend/services` for implementation details and exact error shapes. The backend uses clear `message` and `note` fields in mocked `tx.contractResult` entries to indicate why an onchain submission was not possible (e.g., `Account not found`, `method not found`, `DNS ENOTFOUND`).
-
-See `backend/routes` for full details.
-
----
-## 🎬 Live Walkthrough
+## ⛈️IsdaSure Webpage Content
+IsdaSure is a blockchain-based web platform that enables fisherfolk communities to contribute, track funds, and receive fair, transparent emergency support through a secure and role-based system.
 
 <table>
 <tr>
@@ -435,6 +349,23 @@ See `backend/routes` for full details.
 
 
 </table>
+
+---
+
+## 🔌API Endpoints (backend) 
+
+Below is a short summary of the backend API (all routes are under `/_/backend/api`).
+
+- `GET /status` — Returns pool, groups, recentContributions, chainHistory, chainMode, rpcConfigured, contributionRules, etc.
+- `POST /contribute/prepare` — Prepare a contribution (returns an unsigned XDR or a mock/fallback). Body: `groupId|groupName`, `amount`, `walletAddress`, `identifier?`, `user?`, `networkPassphrase?`, `contractCall?`.
+- `POST /contribute` — Submit signed XDR or record a mocked contribution. Body: `groupId|groupName`, `amount`, `walletAddress`, `identifier?`, `user?`, `signedTxXdr?`, `nonce?`.
+- `GET /groups` — List groups.
+- `POST /groups/create` — Create a group (provide `groupName` and creator info).
+- `POST /groups/join`, `POST /groups/my`, `POST /groups/approve`, `POST /groups/reject` — Join and manage membership.
+- `POST /auth/register`, `POST /auth/login`, `GET /auth/users` — Authentication endpoints.
+- `POST /triggerStorm/prepare`, `POST /triggerStorm` — Prepare and submit storm-trigger (onchain or mocked).
+
+Notes: the backend records clear `message` and `note` fields for mocked transactions (e.g., `Account not found`, `method not found`, `DNS ENOTFOUND`). See `backend/routes` and `backend/services` for implementation details.
 
 ---
 ## 🧪Testing & Snapshots 
