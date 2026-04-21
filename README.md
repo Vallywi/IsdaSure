@@ -60,7 +60,7 @@ Benefits:
 
 ---
 
-## How It Works (detailed flow) 🔁
+## How It Works (detailed flow) 🔁 🧭 ⚙️ 🦀 🎛️
 
 Below is a compact, step-by-step flow that describes user, backend, and contract interactions. The ASCII diagram shows decision points and RPC fallbacks so you can trace how the app behaves both when the Soroban RPC is healthy and when it is not.
 
@@ -71,10 +71,10 @@ User (browser)            Backend API                 Soroban RPC / Contract
 ------------               -------------              ---------------------
 Register -> POST /auth     -> backend saves user -> returns userId
   |                          (users.json)                |
-  v                          v                          |
+  v                              v                       |
 Join/Create Group -> POST /groups/create -> backend writes group -> returns groupId
-  |                          |                          |
-  v                          v                          |
+  |                              |                       |
+  v                              v                       |
 Open Group page -> GET /groups -> backend returns members & pool state -> UI shows group
 
 Contribute flow (daily):
