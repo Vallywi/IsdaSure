@@ -1,12 +1,12 @@
+
+<p align="center">
+  <img src="frontend/images/logo.png" height="150px" style="object-fit: cover;" />
+</p>
 [![Live Demo](https://img.shields.io/badge/Live_Demo-isda--sure-F59E0B?style=for-the-badge&logo=vercel&logoColor=white)](https://isda-sure.vercel.app/)
 [![Stellar Testnet](https://img.shields.io/badge/Stellar-Testnet-7C3AED?style=for-the-badge&logo=stellar&logoColor=white)](https://stellar.expert/explorer/testnet/contract/CDNZVMTK3RNWWEQTG4JYC55O5P47YYTC2C2ACJVPI5MDJP63TH3KKKKS)
 [![Soroban SDK](https://img.shields.io/badge/Soroban_SDK-22.0.0-3B82F6?style=for-the-badge)](https://docs.rs/soroban-sdk/22.0.0)
 [![Vite](https://img.shields.io/badge/Vite-5.4.21-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22C55E?style=for-the-badge)](LICENSE)
-
-<p align="center">
-  <img src="frontend/images/logo.png" height="150px" style="object-fit: cover;" />
-</p>
 
 <h2 align="center">
   IsdaSure: On-Chain Financial Protection for Coastal Communities 🐟
