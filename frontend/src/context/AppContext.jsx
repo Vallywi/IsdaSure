@@ -806,7 +806,22 @@ export function AppProvider({ children }) {
       throw new Error(`Contribution must be between ${minAmount} and ${maxAmount}.`);
     }
     if (!activeGroupName) {
-      throw new Error('Join or create a group before contributing.');
+      // Attempt to recover: refresh group collections and pick the first matching user group
+      console.warn('No activeGroupName set — attempting to refresh groups before contribute');
+      try {
+        await refreshGroupCollections();
+        const my = (auth.isAuthenticated && auth.user) ? (await apiMyGroups({ identifier: auth.user.identifier, walletAddress: wallet.address || auth.user.walletAddress, fullName: auth.user.fullName })).groups : [];
+        const pick = (my && my.length > 0 && my[0].name) ? my[0].name : (groups && groups.length > 0 ? groups[0].name : '');
+        if (pick) {
+          setActiveGroupName(pick);
+        }
+      } catch (e) {
+        console.error('Failed to auto-select group during contribute recovery', e);
+      }
+
+      if (!activeGroupName && !(auth.isAuthenticated && auth.user && myGroups && myGroups.length > 0)) {
+        throw new Error('Join or create a group before contributing.');
+      }
     }
 
     setLoading(true);
