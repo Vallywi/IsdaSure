@@ -59,7 +59,10 @@ function saveState(nextState) {
   console.info('[IsdaSure] Saved groups.json to', groupsFilePath, 'count:', Array.isArray(nextState.groups) ? nextState.groups.length : 0);
 }
 
-const state = readState();
+// Always reload state from disk for every operation to ensure persistence on serverless (Vercel)
+function getState() {
+  return readState();
+}
 
 function normalizeName(groupName) {
   return String(groupName || '').trim().toLowerCase();
@@ -427,11 +430,13 @@ function publicGroup(group, { includeHistory = true } = {}) {
 }
 
 function listGroups() {
+  const state = getState();
   console.info('[IsdaSure] listGroups returning', state.groups.length, 'groups from', groupsFilePath);
   return state.groups.map((group) => publicGroup(group));
 }
 
 function findGroup(groupNameOrId) {
+  const state = getState();
   const normalizedName = normalizeName(groupNameOrId);
   const normalizedId = String(groupNameOrId || '').trim();
   return state.groups.find((group) => normalizeName(group.name) === normalizedName || group.id === normalizedId) || null;
@@ -492,6 +497,7 @@ function createGroup(payload = {}) {
 
   upsertMemberContributionContainer(group, member);
 
+  const state = getState();
   state.groups.push(group);
   saveState(state);
   console.info('[IsdaSure] Created group', group.name, 'now', state.groups.length, 'groups');
@@ -499,7 +505,10 @@ function createGroup(payload = {}) {
 }
 
 function joinGroup(payload = {}) {
-  const group = findGroup(payload.groupName || payload.groupId);
+  const state = getState();
+  const group = state.groups.find(
+    (g) => normalizeName(g.name) === normalizeName(payload.groupName) || g.id === String(payload.groupId || '').trim()
+  );
   if (!group) {
     console.warn('[IsdaSure] joinGroup failed: group not found for', payload.groupName || payload.groupId, 'current groups:', state.groups.map(g => g.name));
     throw new Error('Group not found.');
