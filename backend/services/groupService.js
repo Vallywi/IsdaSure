@@ -64,6 +64,10 @@ function getState() {
   return readState();
 }
 
+// Module-level state removed to avoid duplicate identifier errors across
+// different load contexts. Initialization below uses local `s` values
+// returned by `getState()` to normalize and persist groups on startup.
+
 function normalizeName(groupName) {
   return String(groupName || '').trim().toLowerCase();
 }
@@ -267,7 +271,17 @@ function normalizeGroup(rawGroup = {}) {
   };
 }
 
-state.groups = state.groups.map(normalizeGroup);
+// Normalize any existing groups on startup and persist the normalized state.
+(function initNormalizeGroups() {
+  try {
+    const s = getState();
+    s.groups = (s.groups || []).map(normalizeGroup);
+    saveState(s);
+    console.info('[IsdaSure] Normalized existing groups on startup; count:', (s.groups || []).length);
+  } catch (e) {
+    console.warn('[IsdaSure] Failed to normalize groups on startup', e && e.message);
+  }
+})();
 
 function getUserContributionActivities(user, group) {
   return (user?.activityHistory || []).filter((entry) => {
@@ -356,13 +370,15 @@ function reconcileGroupFromUsers(group, users) {
 
 function reconcileGroupsFromUsers() {
   const users = listUsers();
-  state.groups = state.groups.map((group) => reconcileGroupFromUsers(group, users));
-  saveState(state);
+  const s = getState();
+  s.groups = (s.groups || []).map((group) => reconcileGroupFromUsers(group, users));
+  saveState(s);
 }
 
 function removeSmokeTestGroups() {
-  const previousLength = state.groups.length;
-  state.groups = state.groups.filter((group) => {
+  const s = getState();
+  const previousLength = (s.groups || []).length;
+  s.groups = (s.groups || []).filter((group) => {
     const name = String(group?.name || '').trim().toLowerCase();
     const creatorIdentifier = String(group?.createdBy?.identifier || '').trim().toLowerCase();
     const isSmokeName = name.startsWith('smokegroup-');
@@ -370,8 +386,8 @@ function removeSmokeTestGroups() {
     return !(isSmokeName || isSmokeCreator);
   });
 
-  if (state.groups.length !== previousLength) {
-    saveState(state);
+  if (s.groups.length !== previousLength) {
+    saveState(s);
   }
 }
 
@@ -461,16 +477,22 @@ function upsertMemberContributionContainer(group, member) {
 function createGroup(payload = {}) {
   const name = String(payload.groupName || '').trim();
   if (!name) {
-    throw new Error('Group name is required.');
+    const error = new Error('Group name is required.');
+    error.status = 400;
+    throw error;
   }
 
   const member = buildMember(payload);
   if (!member.identifier && !member.walletAddress && !member.fullName) {
-    throw new Error('User reference is required to create a group.');
+    const error = new Error('User reference is required to create a group.');
+    error.status = 400;
+    throw error;
   }
 
   if (findGroup(name)) {
-    throw new Error('Group already exists.');
+    const error = new Error('Group already exists.');
+    error.status = 400;
+    throw error;
   }
 
   const requiredDailyAmount = Number(payload.requiredDailyAmount || REQUIRED_DAILY_CONTRIBUTION);
@@ -622,7 +644,6 @@ function rejectJoinRequest(payload = {}) {
 }
 
 function getUserGroups(payload = {}) {
-  const state = getState();
   const probe = buildMember(payload);
   if (!memberKey(probe)) return [];
   return state.groups.filter((group) => group.members.some((member) => referencesMatch(member, probe))).map((group) => publicGroup(group));
