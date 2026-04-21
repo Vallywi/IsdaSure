@@ -584,7 +584,9 @@ export function AppProvider({ children }) {
       dailyLimit: Number(poolState?.contributionRules?.dailyPesoLimit || 1000),
     });
     const next = response.group;
+    // Refresh collections and ensure the newly created group is present.
     await refreshGroupCollections();
+    // Prefer server-returned group object to avoid casing/trim issues.
     setMyGroups((previous) => {
       const filtered = previous.filter((item) => item.name !== next.name);
       return [next, ...filtered];
@@ -593,7 +595,24 @@ export function AppProvider({ children }) {
       const filtered = previous.filter((item) => item.name !== next.name);
       return [next, ...filtered];
     });
+
+    // Small retry to avoid race where mergedGroups isn't updated yet.
     setActiveGroupName(next.name);
+    // If mergedGroups doesn't contain the group yet, retry refresh once more after a short delay.
+    await new Promise((resolve) => setTimeout(resolve, 60));
+    if (!mergedGroups.find((g) => g.name === next.name)) {
+      await refreshGroupCollections();
+      setMyGroups((previous) => {
+        const filtered = previous.filter((item) => item.name !== next.name);
+        return [next, ...filtered];
+      });
+      setGroups((previous) => {
+        const filtered = previous.filter((item) => item.name !== next.name);
+        return [next, ...filtered];
+      });
+      setActiveGroupName(next.name);
+    }
+
     setSuccessWithToast(`Group ${next.name} created`);
     return next;
   };
@@ -609,6 +628,7 @@ export function AppProvider({ children }) {
       fullName: auth.user.fullName,
     });
     const next = response.group;
+    // Refresh collections and ensure join takes effect in UI.
     await refreshGroupCollections();
     setMyGroups((previous) => {
       const filtered = previous.filter((item) => item.name !== next.name);
@@ -618,7 +638,23 @@ export function AppProvider({ children }) {
       const filtered = previous.filter((item) => item.name !== next.name);
       return [next, ...filtered];
     });
+
     setActiveGroupName(next.name);
+    // Allow a short delay for state propagation, then retry refresh if necessary.
+    await new Promise((resolve) => setTimeout(resolve, 60));
+    if (!mergedGroups.find((g) => g.name === next.name)) {
+      await refreshGroupCollections();
+      setMyGroups((previous) => {
+        const filtered = previous.filter((item) => item.name !== next.name);
+        return [next, ...filtered];
+      });
+      setGroups((previous) => {
+        const filtered = previous.filter((item) => item.name !== next.name);
+        return [next, ...filtered];
+      });
+      setActiveGroupName(next.name);
+    }
+
     setSuccessWithToast(`Joined group ${next.name}`);
     return next;
   };
