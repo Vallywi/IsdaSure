@@ -369,8 +369,9 @@ See `backend/routes` for full details.
 
 Contract tests use JSON snapshots under `test_snapshots/` to verify state transitions. Run `cargo test` to execute.
 <p align="center">
-  <img src="frontend/images/test.png" alt="test" width="400" style="max-width:100%; height:auto; object-fit:cover; border-radius:8px;" />
+  <img src="frontend/images/test.png" alt="test" width="700" style="max-width:100%; height:auto; object-fit:cover; border-radius:8px;" />
 </p>
+
 ---
 
 ## Notes on Hosted/RPC behavior ☁️
