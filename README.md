@@ -372,8 +372,8 @@ See `backend/routes` for full details.
 <b>Home page – Showcases IsdaSure’s platform for transparent, wallet-based support for fisherfolk communities.</b><br/>
 <img src="frontend/images/home page.png" alt="Verified credential" width="100%"/><br/>
 </td>
-<b>Home Page</b><br/>
 <td width="50%" align="flex-start">
+<b>How It Works Page – Shows simple step-by-step instructions on how users join, contribute, and receive payouts.</b><br/>
 <img src="frontend/images/how it works.png" alt="Verified credential" width="100%"/><br/>
 </td>
 </tr>
