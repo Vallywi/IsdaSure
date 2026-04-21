@@ -864,10 +864,23 @@ export function AppProvider({ children }) {
 
       if (requiresWalletSignature) {
         setWalletApprovalAction('storm');
-        const signed = await signPreparedFreighterTransaction({
-          unsignedTxXdr: prepared.unsignedTxXdr,
-          networkPassphrase: prepared.networkPassphrase,
-        });
+        const signed = prepared?.mode === 'mock'
+          ? await signFreighterTransaction({
+              walletAddress: wallet.address,
+              action: 'storm',
+              payload: {
+                admin: auth.user?.identifier || auth.user?.fullName || 'admin',
+                walletAddress: wallet.address,
+                groupId: targetGroup.id,
+                groupName: targetGroup.name,
+                nonce,
+              },
+              memoText: `IsdaSure storm ${targetGroup.name}`,
+            })
+          : await signPreparedFreighterTransaction({
+              unsignedTxXdr: prepared.unsignedTxXdr,
+              networkPassphrase: prepared.networkPassphrase,
+            });
         signedTxXdr = signed.signedTxXdr;
       }
       setWalletApprovalAction('');

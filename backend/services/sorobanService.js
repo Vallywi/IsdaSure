@@ -30,6 +30,7 @@ const MAX_CONTRIBUTION = Number(process.env.MAX_CONTRIBUTION || 100000);
 const DAILY_PESO_LIMIT = Number(process.env.DAILY_PESO_LIMIT || 1000);
 const ESTIMATED_FEE_XLM = Number(process.env.ESTIMATED_FEE_XLM || 0.00001);
 const DEFAULT_CONTRACT_ID = String(process.env.SOROBAN_CONTRACT_ID || '').trim();
+const isVercelRuntime = Boolean(process.env.VERCEL || process.env.VERCEL_ENV);
 
 const defaultState = {
   totalPool: 0,
@@ -218,6 +219,16 @@ function buildMockConfirmedTx(contractCall) {
   };
 }
 
+function assertRpcConfiguredForHosted() {
+  if (isVercelRuntime && !isSorobanRpcConfigured()) {
+    const error = new Error(
+      'Soroban RPC is not configured on Vercel. Set SOROBAN_RPC_URL and SOROBAN_CONTRACT_ID in Vercel environment variables to enable real on-chain transactions and Stellar Expert history links.',
+    );
+    error.status = 500;
+    throw error;
+  }
+}
+
 function validateContribution(payload = {}) {
   const user = payload.user || 'Anonymous User';
   const amount = normalizeAmount(payload.amount ?? 50);
@@ -310,6 +321,7 @@ function validateAdminTrigger(payload = {}) {
 }
 
 async function prepareContributionTransaction(payload = {}) {
+  assertRpcConfiguredForHosted();
   const { user, amount, groupId } = validateContribution(payload);
   return prepareTransactionWithFallback({
     payload,
@@ -322,6 +334,7 @@ async function prepareContributionTransaction(payload = {}) {
 }
 
 async function prepareStormTransaction(payload = {}) {
+  assertRpcConfiguredForHosted();
   const { walletAddress } = validateAdminTrigger(payload);
   return prepareTransactionWithFallback({
     payload,
@@ -334,6 +347,7 @@ async function prepareStormTransaction(payload = {}) {
 }
 
 async function contributeToPool(payload = {}) {
+  assertRpcConfiguredForHosted();
   const { user, amount, groupName, groupId, contributedToday } = validateContribution(payload);
   const contractCall = buildContractCall({
     payload,
@@ -406,6 +420,7 @@ async function contributeToPool(payload = {}) {
         dailyTotal: contributedToday + amount,
         txHash: tx.txHash,
         txStatus: tx.status,
+        explorerUrl: tx.explorerUrl,
       },
     },
   );
@@ -417,6 +432,7 @@ async function contributeToPool(payload = {}) {
 }
 
 async function triggerStormDay(payload = {}) {
+  assertRpcConfiguredForHosted();
   const { admin, walletAddress, groupId, groupName } = validateAdminTrigger(payload);
   const contractCall = buildContractCall({
     payload,
@@ -501,6 +517,7 @@ async function triggerStormDay(payload = {}) {
           groupName,
           txHash: tx.txHash,
           txStatus: tx.status,
+          explorerUrl: tx.explorerUrl,
         },
       },
     );
