@@ -1,10 +1,14 @@
 const fs = require('fs');
 const path = require('path');
 const { resolveUser, listUsers } = require('./authService');
-const { getDataDirectory } = require('./storagePath');
+const { getDataDirectory, getReadDataDirectory } = require('./storagePath');
 
+// writable data directory (runtime writes go here)
 const dataDirectory = getDataDirectory();
+// packaged/read-only data directory (if present in the deployed bundle)
+const readDataDirectory = getReadDataDirectory();
 const groupsFilePath = path.join(dataDirectory, 'groups.json');
+const groupsReadFilePath = path.join(readDataDirectory, 'groups.json');
 const REQUIRED_DAILY_CONTRIBUTION = Number(process.env.REQUIRED_DAILY_CONTRIBUTION || 50);
 
 const defaultState = {
@@ -16,7 +20,19 @@ function ensureStore() {
     fs.mkdirSync(dataDirectory, { recursive: true });
   }
 
+  // If there is packaged data (bundled with the deployment) and the runtime write-path
+  // hasn't been initialized yet, copy the packaged file into the writable directory so
+  // runtime reads/writes operate from a writable copy.
   if (!fs.existsSync(groupsFilePath)) {
+    try {
+      if (fs.existsSync(groupsReadFilePath)) {
+        const contents = fs.readFileSync(groupsReadFilePath, 'utf8');
+        fs.writeFileSync(groupsFilePath, contents, 'utf8');
+        return;
+      }
+    } catch (e) {
+      // fall through and initialize with default
+    }
     fs.writeFileSync(groupsFilePath, JSON.stringify(defaultState, null, 2));
   }
 }
@@ -24,7 +40,9 @@ function ensureStore() {
 function readState() {
   try {
     ensureStore();
-    const raw = fs.readFileSync(groupsFilePath, 'utf8');
+    // Prefer runtime writable copy if present, otherwise attempt to read packaged file
+    const readPath = fs.existsSync(groupsFilePath) ? groupsFilePath : (fs.existsSync(groupsReadFilePath) ? groupsReadFilePath : groupsFilePath);
+    const raw = fs.readFileSync(readPath, 'utf8');
     const parsed = JSON.parse(raw);
     return parsed && Array.isArray(parsed.groups) ? parsed : { ...defaultState };
   } catch {
