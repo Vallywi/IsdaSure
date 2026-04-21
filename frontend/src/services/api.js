@@ -1,5 +1,7 @@
-const API_URL =
-  import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/_/backend/api' : '/api');
+const isLocalHost =
+  typeof window !== 'undefined' && ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+
+const API_URL = import.meta.env.VITE_API_URL || (isLocalHost ? '/api' : import.meta.env.PROD ? '/_/backend/api' : '/api');
 
 function safeMessage(value, fallback = 'Request failed') {
   try {

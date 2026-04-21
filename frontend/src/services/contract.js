@@ -4,6 +4,22 @@ const CONTRACT_ID =
   import.meta.env.VITE_SOROBAN_CONTRACT_ID ||
   '';
 
+function getContributionArgs(contractMethod, amount, user, groupId) {
+  if (contractMethod === 'increment') {
+    return [amount];
+  }
+
+  return [user, groupId, amount];
+}
+
+function getStormArgs(contractMethod, admin) {
+  if (contractMethod === 'reset') {
+    return [];
+  }
+
+  return [admin];
+}
+
 export async function invokeContribute({
   user,
   identifier,
@@ -29,7 +45,7 @@ export async function invokeContribute({
     contractCall: {
       contractId: contractId || CONTRACT_ID,
       method: contractMethod || 'contribute',
-      args: [user, groupId, amount],
+      args: getContributionArgs(contractMethod || 'contribute', amount, user, groupId),
       networkPassphrase,
     },
   });
@@ -73,7 +89,7 @@ export async function invokeTriggerStorm({
       contractId: contractId || CONTRACT_ID,
       method: contractMethod || 'trigger_storm',
       followUpMethod: 'distribute',
-      args: [groupId],
+      args: getStormArgs(contractMethod || 'trigger_storm', admin),
       networkPassphrase,
     },
   });
@@ -88,7 +104,7 @@ export async function prepareTriggerStormInvocation({ admin, walletAddress, grou
     contractCall: {
       contractId: contractId || CONTRACT_ID,
       method: 'trigger_storm',
-      args: [groupId],
+      args: [admin],
     },
   });
 }

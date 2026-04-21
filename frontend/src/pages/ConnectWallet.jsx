@@ -10,7 +10,7 @@ import { useWallet } from '../hooks/useWallet';
 
 export default function ConnectWallet() {
   const navigate = useNavigate();
-  const { connectWallet, isAuthenticated, userRole } = useWallet();
+  const { connectWallet } = useWallet();
   const [scrollProgress, setScrollProgress] = useState(0);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [heroVisible, setHeroVisible] = useState(false);
@@ -173,15 +173,6 @@ export default function ConnectWallet() {
     }
   };
 
-  const handleHistory = () => {
-    if (isAuthenticated && userRole === 'user') {
-      navigate('/contribution-history');
-      return;
-    }
-
-    navigate('/roles');
-  };
-
   const ecosystemCards = [
     {
       action: 'Action: Manage',
@@ -239,9 +230,6 @@ export default function ConnectWallet() {
             </nav>
 
             <div className="hidden items-center gap-2 md:flex">
-              <button type="button" onClick={handleHistory} className="linear-button-secondary px-4 py-2 text-sm">
-                Contribution History
-              </button>
               <button type="button" onClick={handleConnect} className="linear-button-primary px-4 py-2 text-sm">
                 Connect Wallet
               </button>
@@ -283,9 +271,6 @@ export default function ConnectWallet() {
             <div className="flex flex-col gap-3 sm:flex-row">
               <button type="button" onClick={handleConnect} className="linear-button-primary w-full sm:w-auto">
                 Connect Wallet
-              </button>
-              <button type="button" onClick={handleHistory} className="linear-button-secondary w-full sm:w-auto">
-                View Contribution History
               </button>
               <button type="button" onClick={() => navigate('/register')} className="linear-button-secondary w-full sm:w-auto">
                 Register User
@@ -373,12 +358,6 @@ export default function ConnectWallet() {
                 <span className="inline-flex items-center gap-2">
                   <Wallet className="h-4 w-4" />
                   <span>Connect Now</span>
-                </span>
-              </button>
-              <button type="button" onClick={handleHistory} className="inline-flex items-center justify-center rounded-2xl border border-white/50 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
-                <span className="inline-flex items-center gap-2">
-                  <span>Contribution History</span>
-                  <ArrowRight className="h-4 w-4" />
                 </span>
               </button>
               <button type="button" onClick={() => navigate('/about-us')} className="inline-flex items-center justify-center rounded-2xl border border-white/50 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10">

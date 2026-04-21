@@ -71,4 +71,4 @@ if (initialBuild.status !== 0) {
 }
 
 run('frontend-watch', 'npm', ['run', 'build:frontend:watch']);
-run('backend-dev', 'npm', ['--prefix', 'backend', 'run', 'dev']);
+run('backend-dev', 'node', ['backend/server.js']);

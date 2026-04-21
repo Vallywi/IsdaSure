@@ -351,6 +351,13 @@ export default function Dashboard() {
                     <p className="mt-1 linear-muted">Amount: ₱{Number(entry.amount || 0)}</p>
                     <p className="text-xs linear-muted">{new Date(entry.timestamp).toLocaleString()}</p>
                     {entry.txStatus ? <p className="mt-1 text-xs linear-muted">Tx: {entry.txStatus}</p> : null}
+                    {entry.explorerUrl ? (
+                      <p className="mt-2">
+                        <a href={entry.explorerUrl} target="_blank" rel="noreferrer" className="text-xs font-semibold text-[color:var(--accent-bright)] underline">
+                          View on Stellar Expert
+                        </a>
+                      </p>
+                    ) : null}
                   </div>
                 ))}
               </div>

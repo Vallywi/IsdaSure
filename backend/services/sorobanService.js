@@ -317,19 +317,19 @@ async function prepareContributionTransaction(payload = {}) {
     networkPassphrase: payload.networkPassphrase || payload.contractCall?.networkPassphrase,
     preferredMethod: 'contribute',
     fallbackMethod: 'increment',
-    args: [user, groupId, amount],
+    args: [amount],
   });
 }
 
 async function prepareStormTransaction(payload = {}) {
-  const { walletAddress, groupId } = validateAdminTrigger(payload);
+  const { walletAddress } = validateAdminTrigger(payload);
   return prepareTransactionWithFallback({
     payload,
     walletAddress,
     networkPassphrase: payload.networkPassphrase || payload.contractCall?.networkPassphrase,
     preferredMethod: 'trigger_storm',
     fallbackMethod: 'reset',
-    args: [groupId],
+    args: [],
   });
 }
 
