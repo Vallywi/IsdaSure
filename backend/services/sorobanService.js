@@ -141,6 +141,49 @@ function isMissingMethodError(error) {
   return /method .* was not found|non-existent contract function|MissingValue/i.test(message);
 }
 
+async function prepareTransactionWithFallback({
+  payload,
+  walletAddress,
+  networkPassphrase,
+  preferredMethod,
+  fallbackMethod,
+  args,
+}) {
+  const preferredContractCall = buildContractCall({
+    payload,
+    method: preferredMethod,
+    args,
+  });
+
+  if (!isSorobanRpcConfigured()) {
+    return buildMockPreparedTransaction({ payload, method: preferredMethod });
+  }
+
+  try {
+    return await prepareUnsignedSorobanTransaction({
+      walletAddress,
+      networkPassphrase,
+      contractCall: preferredContractCall,
+    });
+  } catch (error) {
+    if (!fallbackMethod || !isMissingMethodError(error)) {
+      throw error;
+    }
+
+    const fallbackContractCall = buildContractCall({
+      payload,
+      method: fallbackMethod,
+      args,
+    });
+
+    return prepareUnsignedSorobanTransaction({
+      walletAddress,
+      networkPassphrase,
+      contractCall: fallbackContractCall,
+    });
+  }
+}
+
 function buildMockPreparedTransaction({ payload, method }) {
   const contractCall = buildContractCall({
     payload,
@@ -266,52 +309,26 @@ function validateAdminTrigger(payload = {}) {
 
 async function prepareContributionTransaction(payload = {}) {
   const { user, amount, groupId } = validateContribution(payload);
-  const contractCall = buildContractCall({
+  return prepareTransactionWithFallback({
     payload,
-    method: 'contribute',
+    walletAddress: payload.walletAddress,
+    networkPassphrase: payload.networkPassphrase || payload.contractCall?.networkPassphrase,
+    preferredMethod: 'contribute',
+    fallbackMethod: 'increment',
     args: [user, groupId, amount],
   });
-
-  if (!isSorobanRpcConfigured()) {
-    return buildMockPreparedTransaction({ payload, method: 'contribute' });
-  }
-
-  try {
-    const prepared = await prepareUnsignedSorobanTransaction({
-      walletAddress: payload.walletAddress,
-      networkPassphrase: payload.networkPassphrase || payload.contractCall?.networkPassphrase,
-      contractCall,
-    });
-
-    return prepared;
-  } catch (error) {
-    throw error;
-  }
 }
 
 async function prepareStormTransaction(payload = {}) {
   const { walletAddress, groupId } = validateAdminTrigger(payload);
-  const contractCall = buildContractCall({
+  return prepareTransactionWithFallback({
     payload,
-    method: 'trigger_storm',
+    walletAddress,
+    networkPassphrase: payload.networkPassphrase || payload.contractCall?.networkPassphrase,
+    preferredMethod: 'trigger_storm',
+    fallbackMethod: 'reset',
     args: [groupId],
   });
-
-  if (!isSorobanRpcConfigured()) {
-    return buildMockPreparedTransaction({ payload, method: 'trigger_storm' });
-  }
-
-  try {
-    const prepared = await prepareUnsignedSorobanTransaction({
-      walletAddress,
-      networkPassphrase: payload.networkPassphrase || payload.contractCall?.networkPassphrase,
-      contractCall,
-    });
-
-    return prepared;
-  } catch (error) {
-    throw error;
-  }
 }
 
 async function contributeToPool(payload = {}) {
