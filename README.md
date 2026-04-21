@@ -62,10 +62,42 @@ Benefits:
 
 ## How It Works (high-level) 🔁
 
-1. Users register and join a named group.
-2. Each day users make a small contribution (₱) via the app and sign with Freighter.
-3. Contributions are recorded on-chain (or mocked when RPC unavailable) and stored in the app state.
-4. When a storm day is declared by an authorized admin, the contract distributes funds to group members.
+```
+User (any Freighter wallet)
+  ├─ register(account)
+  │    └─ backend: create user record
+  ├─ join_group(groupId)
+  │    └─ backend: add member to group (forceAddMember if needed)
+  └─ contribute(amount)
+       ├─ frontend: POST /contribute/prepare -> backend
+       │    ├─ backend: prepareUnsignedSorobanTransaction(contribute)
+       │    │    ├─ [OK] -> returns prepared XDR (mode: onchain)
+       │    │    └─ [ERR: account-not-found | method-not-found | DNS] ->
+       │    │         build fallback prepared payload (manageData or mock) (mode: fallback)
+       │    └─ frontend: signPreparedTx with Freighter (or sign manageData)
+       ├─ frontend: POST /contribute (signed XDR)
+       │    └─ backend: submitSignedSorobanTransaction
+       │         ├─ [OK] -> record contribution, update `data/pool.json`, append chainHistory (txHash)
+       │         └─ [ERR: submit failed / RPC down] -> record mocked confirmation with `note` explaining fallback (mode: mock)
+       └─ UI: show toast with status (onchain / fallback / mock-note)
+
+Admin (authorized)
+  └─ triggerStorm(groupId)
+       ├─ backend: validate admin -> build trigger_storm transaction (prepare)
+       │    ├─ [OK] -> frontend/admin signs -> submit -> contract executes payouts
+       │    └─ [ERR RPC/method missing] -> backend simulates distribution and records mock payouts
+       └─ backend: update group balances, save distribution receipts to chainHistory
+
+Contract (Soroban)
+  ├─ contribute(account, groupId, amount) -> increments contributor record inside contract
+  └─ trigger_storm(groupId) -> calculates shares, transfers payouts to contributors
+
+Fallback & Edge Cases
+  - If Soroban RPC returns `Account not found` during prepare: frontend will sign a minimal `manageData` fallback so the wallet is involved and a contribution can be attributed to that address.
+  - If RPC returns `method not found` or network errors: backend will return a mock prepared payload and on submission will record a mocked confirmation with an explanatory `note`; UI surfaces this note.
+  - Vercel/hosted: when `SOROBAN_RPC_URL` is unset and `ALLOW_MOCK_ON_HOSTED=true`, the app intentionally uses mocked confirmations to keep UX functional.
+
+``` 
 
 ---
 
