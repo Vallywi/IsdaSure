@@ -12,6 +12,7 @@ const {
 const {
   isMemberOfGroup,
   getGroupByName,
+  forceAddMember,
   getMemberGroupStats,
   recordContribution,
   triggerStormForGroup,
@@ -253,7 +254,18 @@ function validateContribution(payload = {}) {
     group.id,
   );
   if (!isMember) {
-    throw new Error('You are not a member of this group. Join the group before contributing.');
+    // Auto-add the contributor as a member so any connected Freighter wallet can contribute
+    try {
+      forceAddMember({
+        identifier: payload.identifier,
+        walletAddress: payload.walletAddress,
+        fullName: user,
+        groupName: group.name,
+      });
+    } catch (err) {
+      // If forced add fails for any reason, fall back to the original error
+      throw new Error('You are not a member of this group. Join the group before contributing.');
+    }
   }
 
   const requiredDailyAmount = Number(group?.requiredDailyAmount || 50);

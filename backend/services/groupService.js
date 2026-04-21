@@ -509,6 +509,30 @@ function joinGroup(payload = {}) {
   return publicGroup(group);
 }
 
+function forceAddMember(payload = {}) {
+  const group = findGroup(payload.groupName || payload.groupId);
+  if (!group) {
+    throw new Error('Group not found.');
+  }
+
+  const member = buildMember(payload);
+  if (!member.identifier && !member.walletAddress && !member.fullName) {
+    throw new Error('User reference is required to join group.');
+  }
+
+  const alreadyMember = group.members.some((item) => referencesMatch(item, member));
+  if (alreadyMember) {
+    return publicGroup(group);
+  }
+
+  // Forcefully add the member regardless of joinApprovalEnabled
+  group.members.push(member);
+  upsertMemberContributionContainer(group, member);
+  saveState(state);
+
+  return publicGroup(group);
+}
+
 function approveJoinRequest(payload = {}) {
   const group = findGroup(payload.groupName || payload.groupId);
   if (!group) {
@@ -745,4 +769,5 @@ module.exports = {
   allContributionHistory,
   allStormHistory,
   getGlobalPoolSummary,
+  forceAddMember,
 };
