@@ -1,3 +1,9 @@
+[![Live Demo](https://img.shields.io/badge/Live_Demo-isda--sure-F59E0B?style=for-the-badge&logo=vercel&logoColor=white)](https://isda-sure.vercel.app/)
+[![Stellar Testnet](https://img.shields.io/badge/Stellar-Testnet-7C3AED?style=for-the-badge&logo=stellar&logoColor=white)](https://stellar.expert/explorer/testnet/contract/CDNZVMTK3RNWWEQTG4JYC55O5P47YYTC2C2ACJVPI5MDJP63TH3KKKKS)
+[![Soroban SDK](https://img.shields.io/badge/Soroban_SDK-22.0.0-3B82F6?style=for-the-badge)](https://docs.rs/soroban-sdk/22.0.0)
+[![Vite](https://img.shields.io/badge/Vite-5.4.21-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-22C55E?style=for-the-badge)](LICENSE)
+
 <p align="center">
   <img src="frontend/images/logo.png" height="150px" style="object-fit: cover;" />
 </p>
@@ -39,11 +45,6 @@ Instead of falling into debt, Juan now has a reliable safety net powered by his 
 <h2> Smart Contract Short Description </h2>
 The IsdaSure smart contract is a Soroban-based program deployed on the Stellar network that securely manages the entire lifecycle of the community fund, from collecting contributions to distributing payouts. It allows fisherfolk to contribute small amounts into a shared on-chain pool, where all transactions are recorded transparently and cannot be altered. The contract enforces predefined rules, ensuring that only authorized users—such as a trusted barangay officer—can trigger a storm event. Once triggered, the smart contract automatically calculates and distributes the pooled funds equally among all contributors, eliminating delays, manual processing, and the need for intermediaries. By automating this process, the contract provides a reliable, trustless, and efficient financial safety net that ensures fisherfolk receive immediate support during no-fishing days caused by storms or extreme weather conditions.
 
-<h2> Vercel Deployment </h2>
-This repository includes a root <code>vercel.json</code> that defines the frontend and backend as separate Vercel services. The root package is also an npm workspace, so a single install step pulls in both service dependencies. In production, the frontend calls the backend through the <code>/_/backend</code> service prefix. If you need durable production data, replace the JSON file storage with an external database.
-
-<h2> Local One-Command Run </h2>
-Run <code>npm start</code> from the repository root to host the frontend and backend together in one local process. It builds the frontend, watches for changes, and starts the backend on <code>http://localhost:4000</code>.
 
 <h2>What the IsdaSure Solves</h2>
 <ol>
