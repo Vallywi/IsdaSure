@@ -221,15 +221,17 @@ function buildMockConfirmedTx(contractCall) {
 function validateContribution(payload = {}) {
   const user = payload.user || 'Anonymous User';
   const amount = normalizeAmount(payload.amount ?? 50);
-  const groupName = String(payload.groupName || payload.groupId || '').trim();
-  if (!groupName) {
+  const groupKey = String(payload.groupId || payload.groupName || '').trim();
+  if (!groupKey) {
     throw new Error('You must join or create a group before contributing.');
   }
 
-  const group = getGroupByName(groupName);
+  const group = getGroupByName(groupKey);
   if (!group) {
     throw new Error('Group not found.');
   }
+
+  const groupName = group.name;
 
   const isMember = isMemberOfGroup(
     {
@@ -294,7 +296,7 @@ function validateAdminTrigger(payload = {}) {
     throw error;
   }
 
-  const group = getGroupByName(payload.groupName || payload.groupId);
+  const group = getGroupByName(payload.groupId || payload.groupName);
   if (!group) {
     throw new Error('Group not found.');
   }
