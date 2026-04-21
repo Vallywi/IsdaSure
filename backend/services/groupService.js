@@ -622,6 +622,7 @@ function rejectJoinRequest(payload = {}) {
 }
 
 function getUserGroups(payload = {}) {
+  const state = getState();
   const probe = buildMember(payload);
   if (!memberKey(probe)) return [];
   return state.groups.filter((group) => group.members.some((member) => referencesMatch(member, probe))).map((group) => publicGroup(group));
