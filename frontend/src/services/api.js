@@ -28,8 +28,19 @@ async function request(path, options = {}) {
 
   const data = await response.json().catch(() => ({}));
 
+  // Basic logging for requests/responses to help with debugging in hosted environments
+  try {
+    console.debug('API request', { url: `${API_URL}${path}`, options, status: response.status, data });
+  } catch (e) {
+    // ignore logging errors
+  }
+
   if (!response.ok || data.success === false) {
-    throw new Error(safeMessage(data.message, 'Request failed'));
+    const err = new Error(safeMessage(data.message, 'Request failed'));
+    try {
+      console.error('API error', { url: `${API_URL}${path}`, status: response.status, data });
+    } catch (e) {}
+    throw err;
   }
 
   return data;

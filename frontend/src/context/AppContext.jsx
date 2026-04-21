@@ -893,6 +893,11 @@ export function AppProvider({ children }) {
       const nextStatus = response.status || response;
       const tx = response.tx || {};
 
+      // Log the contribution result for diagnostics
+      try {
+        console.info('Contribute response', { prepared, response, tx, nextStatus });
+      } catch (e) {}
+
       setPoolState((previous) => ({
         ...previous,
         ...nextStatus,
@@ -938,6 +943,15 @@ export function AppProvider({ children }) {
       const note = tx.contractResult?.note || 'Running in mock chain mode. Configure Soroban RPC to get a real on-chain tx hash.';
       pushToast(note, 'info');
       setSuccessWithToast('✅ Contribution Successful');
+
+      // Redirect user to contribution history so they see the recorded contribution
+      try {
+        if (typeof window !== 'undefined') {
+          window.setTimeout(() => {
+            window.location.href = '/contribution-history';
+          }, 800);
+        }
+      } catch (e) {}
       return nextStatus;
     } catch (error) {
       setWalletApprovalAction('');
