@@ -20,10 +20,10 @@ IsdaSure README - detailed, Soroban-focused project documentation
   <img src="frontend/gif/sea.gif" alt="Sea" width="400" style="max-width:80%; height:auto; object-fit:cover; border-radius:8px;" />
 </p>
 
----
+
 ## ❗Problem 
 
-Juan, a small-scale fisherman in a coastal barangay in Batangas, loses all income for days during storms and is forced to take high-interest loans to survive, pushing his family into recurring debt and financial instability.
+Allan, a small-scale fisherman in a coastal barangay in Batangas, relies on his daily catch to provide for his family, but when storms hit, he is unable to go out to sea and loses his only source of income for days or even weeks. With no savings or immediate support, he is forced to take high-interest loans just to survive, trapping his family in a cycle of recurring debt and long-term financial instability.
 
 
 ## 💡Solution 
@@ -378,7 +378,7 @@ IsdaSure is a blockchain-based web platform that enables fisherfolk communities 
 
 ![Stellar Expert Contract](frontend/images/stellar_expert.png)
 
-## Smart Contract Address
+## ✅Smart Contract Address
 
 `CCDNZVMTK3RNWWEQTG4JYC55O5P47YYTC2C2ACJVPI5MDJP63TH3KKKKS`
 
