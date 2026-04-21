@@ -368,26 +368,27 @@ See `backend/routes` for full details.
 
 <table>
 <tr>
-<td width="50%" align="flex-start">
+<td width="50%" style="vertical-align: top;">
 <b>Home page – Showcases IsdaSure’s platform for transparent, wallet-based support for fisherfolk communities.</b><br/>
 <img src="frontend/images/home page.png" alt="Verified credential" width="100%"/><br/>
 </td>
-<td width="50%" align="flex-start">
+<td width="50%" style="vertical-align: top;">
 <b>How It Works Page – Shows simple step-by-step instructions on how users join, contribute, and receive payouts.</b><br/>
 <img src="frontend/images/how it works.png" alt="Verified credential" width="100%"/><br/>
 </td>
 </tr>
 
 <tr>
-<td width="50%" align="flex-start">
-<b>Home page – Showcases IsdaSure’s platform for transparent, wallet-based support for fisherfolk communities.</b><br/>
+<td width="50%" style="vertical-align: top;">
+<b>About Page – Explains the real-world problem (typhoons and income loss) and how IsdaSure offers a fair, community-driven solution.</b><br/>
 <img src="frontend/images/about us.png" alt="Verified credential" width="100%"/><br/>
 </td>
-<b>Home Page</b><br/>
-<td width="50%" align="flex-start">
+<td width="50%" style="vertical-align: top;">
+<b>FAQ Page – Answers common questions to help users understand how the platform works and build trust.</b><br/>
 <img src="frontend/images/faq.png" alt="Verified credential" width="100%"/><br/>
 </td>
 </tr>
+
 
 
 
