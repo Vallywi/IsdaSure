@@ -364,21 +364,36 @@ See `backend/routes` and `backend/services` for implementation details and exact
 See `backend/routes` for full details.
 
 ---
+## 🎬 Live Walkthrough
 
 <table>
 <tr>
-<td width="50%" align="center">
+<td width="50%" align="flex-start">
+<b>Home page – Showcases IsdaSure’s platform for transparent, wallet-based support for fisherfolk communities.</b><br/>
 <img src="frontend/images/home page.png" alt="Verified credential" width="100%"/><br/>
-<b>Home Page</b><br/>
 </td>
-<td width="50%" align="center">
-<img src="frontend/images/how it works.png" alt="Verified credential" width="100%"/><br/>
 <b>Home Page</b><br/>
+<td width="50%" align="flex-start">
+<img src="frontend/images/how it works.png" alt="Verified credential" width="100%"/><br/>
 </td>
 </tr>
+
+<tr>
+<td width="50%" align="flex-start">
+<b>Home page – Showcases IsdaSure’s platform for transparent, wallet-based support for fisherfolk communities.</b><br/>
+<img src="frontend/images/about us.png" alt="Verified credential" width="100%"/><br/>
+</td>
+<b>Home Page</b><br/>
+<td width="50%" align="flex-start">
+<img src="frontend/images/faq.png" alt="Verified credential" width="100%"/><br/>
+</td>
+</tr>
+
+
+
 </table>
 
-
+---
 ## 🧪Testing & Snapshots 
 
 Contract tests use JSON snapshots under `test_snapshots/` to verify state transitions. Run `cargo test` to execute.
