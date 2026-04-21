@@ -380,7 +380,7 @@ See `backend/routes` for full details.
 
 <tr>
 <td width="50%" valign="top">
-<b>About Page – Explains the real-world problem (typhoons and income loss) and how IsdaSure offers a fair, community-driven solution.</b><br/>
+<b>About Page – Explains the real-world problem (typhoons and income loss) and how IsdaSure offers a fair, community-driven solution.</b><br/><br/>
 <img src="frontend/images/about us.png" width="100%"/><br/>
 </td>
 <td width="50%" valign="top">
