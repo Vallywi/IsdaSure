@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-22C55E?style=for-the-badge)](LICENSE)
 
 <p align="center">
-  <img src="frontend/images/icon2.png" alt="IsdaSure" width="820" style="max-width:100%; height:auto; object-fit:cover;" />
+  <img src="frontend/images/logo.png" alt="IsdaSure" width="300" style="max-width:100%; height:auto; object-fit:cover;" />
 </p>
 
 <h2 align="center">
