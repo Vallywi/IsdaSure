@@ -414,12 +414,9 @@ Contract tests use JSON snapshots under `test_snapshots/` to verify state transi
 
 ## ⚙️Powered by Stellar & Soroban
 
-⚡ High-Speed Finality:
-- Transactions settle in seconds, enabling real-time financial assistance.
-💸 Predictable Low Costs:
-- Near-zero fees allow scalable micro-contribution systems.
-🔐 On-Chain Integrity:
-- Immutable records ensure verifiable and tamper-proof transactions.
-🧩 Programmable Logic (Soroban):
-- Smart contracts enforce contribution tracking and automated payouts.
+
+- ⚡ High-Speed Finality: Transactions settle in seconds, enabling real-time financial assistance.
+- 💸 Predictable Low Costs: Near-zero fees allow scalable micro-contribution systems.
+- 🔐 On-Chain Integrity: Immutable records ensure verifiable and tamper-proof transactions.
+- 🧩 Programmable Logic (Soroban): Smart contracts enforce contribution tracking and automated payouts.
 
