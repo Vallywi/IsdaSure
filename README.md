@@ -218,7 +218,7 @@ IsdaSure/                       📦 Project root
 
 ---
 
-## Smart Contract: Build / Test / Deploy (contract/) 🦀
+## 🦀Smart Contract: Build / Test / Deploy (contract/)
 
 1. Install the wasm target and build toolchain
 
@@ -251,7 +251,7 @@ stellar contract deploy --wasm target/wasm32-unknown-unknown/release/isdasure.wa
 
 ---
 
-## Frontend: Local Setup (frontend/) 🎛️
+## 🎛️Frontend: Local Setup (frontend/) 
 
 1. Install dependencies
 
@@ -279,8 +279,6 @@ Notes: The UI integrates with Freighter for signing. If `SOROBAN_RPC_URL` is mis
 ---
 
 ## 🔌API Endpoints (backend) 
-
-## API Endpoints (backend) 🔌
 
 Below are the backend API endpoints with expected request payloads, responses, and notes. Each endpoint is namespaced under `/_/backend/api` when the app is hosted.
 
@@ -367,10 +365,12 @@ See `backend/routes` for full details.
 
 ---
 
-## Testing & Snapshots 🧪
+## 🧪Testing & Snapshots 
 
 Contract tests use JSON snapshots under `test_snapshots/` to verify state transitions. Run `cargo test` to execute.
-
+<p align="center">
+  <img src="frontend/images/test.png" alt="test" width="400" style="max-width:100%; height:auto; object-fit:cover; border-radius:8px;" />
+</p>
 ---
 
 ## Notes on Hosted/RPC behavior ☁️
